@@ -7,7 +7,7 @@ type User struct {
     Password    string `json:"password"`
 	Address     string `json:"address" gorm:"null"`
 	PhoneNumber string `json:"phone_number" goem:"null"`
-	NIK         string `json:"nik" gorm:"unique"`
+	NIK         string `json:"nik"`
 	Token       string `json:"token"`
 	Role        string `json:"role"`
 }

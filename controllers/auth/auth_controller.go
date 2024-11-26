@@ -26,7 +26,7 @@ func (userController AuthController) LoginController(c echo.Context) error {
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
-	return base.SuccesResponse(c, response.FromEntities(user))
+	return base.SuccesResponse(c, response.LoginFromEntities(user))
 }
 
 func (userController AuthController) RegisterController(c echo.Context) error {
@@ -38,5 +38,5 @@ func (userController AuthController) RegisterController(c echo.Context) error {
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
-	return base.SuccesResponse(c, response.FromEntities(user))
+	return base.SuccesResponse(c, response.RegisterFromEntities(user))
 }
