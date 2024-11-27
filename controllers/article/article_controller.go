@@ -9,15 +9,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ArticleHandler struct {
+type ArticleController struct {
     ArticleService article.ArticleService
 }
 
-func NewArticleHandler(service article.ArticleService) *ArticleHandler {
-    return &ArticleHandler{ArticleService: service}
+func NewArticleHandler(service article.ArticleService) *ArticleController {
+    return &ArticleController{ArticleService: service}
 }
 
-func (h *ArticleHandler) GetAll(c echo.Context) error {
+func (h *ArticleController) GetAll(c echo.Context) error {
 	articles, err := h.ArticleService.GetAllArticles()
 	if err != nil {
 		return base.ErrorResponse(c, err)
@@ -25,7 +25,7 @@ func (h *ArticleHandler) GetAll(c echo.Context) error {
 	return base.SuccesResponse(c, articles)
 }
 
-func (h *ArticleHandler) GetByID(c echo.Context) error {
+func (h *ArticleController) GetByID(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     article, err := h.ArticleService.GetArticleByID(uint(id))
     if err != nil {
@@ -34,7 +34,7 @@ func (h *ArticleHandler) GetByID(c echo.Context) error {
     return base.SuccesResponse(c, article)
 }
 
-func (h *ArticleHandler) Create(c echo.Context) error {
+func (h *ArticleController) Create(c echo.Context) error {
 	var article entities.Article
 	if err := c.Bind(&article); err != nil {
 		return base.ErrorResponse(c, err)

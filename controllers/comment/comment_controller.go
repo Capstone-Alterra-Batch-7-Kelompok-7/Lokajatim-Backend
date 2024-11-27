@@ -9,15 +9,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type CommentHandler struct {
+type CommentController struct {
     CommentService comment.CommentService
 }
 
-func NewCommentHandler(service comment.CommentService) *CommentHandler {
-    return &CommentHandler{CommentService: service}
+func NewCommentHandler(service comment.CommentService) *CommentController {
+    return &CommentController{CommentService: service}
 }
 
-func (h *CommentHandler) GetAllComments(c echo.Context) error {
+func (h *CommentController) GetAllComments(c echo.Context) error {
 	comments, err := h.CommentService.GetAllComments()
 	if err != nil {
 		return base.ErrorResponse(c, err)
@@ -25,7 +25,7 @@ func (h *CommentHandler) GetAllComments(c echo.Context) error {
 	return base.SuccesResponse(c, comments)
 }
 
-func (h *CommentHandler) Create(c echo.Context) error {
+func (h *CommentController) Create(c echo.Context) error {
     var comment entities.Comment
     if err := c.Bind(&comment); err != nil {
         return base.ErrorResponse(c, err)
@@ -37,7 +37,7 @@ func (h *CommentHandler) Create(c echo.Context) error {
     return base.SuccesResponse(c, created)
 }
 
-func (h *CommentHandler) Delete(c echo.Context) error {
+func (h *CommentController) Delete(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     if err := h.CommentService.DeleteComment(uint(id)); err != nil {
         return base.ErrorResponse(c, err)

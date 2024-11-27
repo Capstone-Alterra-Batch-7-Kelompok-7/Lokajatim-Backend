@@ -3,7 +3,9 @@ package routes
 import (
 	"os"
 
+	"lokajatim/controllers/article"
 	"lokajatim/controllers/auth"
+	"lokajatim/controllers/comment"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -14,6 +16,8 @@ import (
 
 type RouteController struct {
 	AuthController *auth.AuthController
+	CommentController *comment.CommentController
+	ArticleController *article.ArticleController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -30,4 +34,12 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 			return new(middleware.JwtCustomClaims)
 		},
 	}))
+
+	eJWT.GET("/articles", rc.ArticleController.GetAll)
+    eJWT.GET("/articles/:id", rc.ArticleController.GetByID)
+    eJWT.POST("/articles", rc.ArticleController.Create)
+
+	eJWT.GET("/comments", rc.CommentController.GetAllComments)
+    eJWT.POST("/comments", rc.CommentController.Create)
+    eJWT.DELETE("/comments/:id", rc.CommentController.Delete)
 }
