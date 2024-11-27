@@ -35,11 +35,11 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 		},
 	}))
 
-	eJWT.GET("/articles", rc.ArticleController.GetAll)
-    eJWT.GET("/articles/:id", rc.ArticleController.GetByID)
-    eJWT.POST("/articles", rc.ArticleController.Create)
+	e.GET("/articles", rc.ArticleController.GetAll)
+    e.GET("/articles/:id", rc.ArticleController.GetByID)
+    e.POST("/articles", rc.ArticleController.Create)
 
-	eJWT.GET("/comments", rc.CommentController.GetAllComments)
-    eJWT.POST("/comments", rc.CommentController.Create)
-    eJWT.DELETE("/comments/:id", rc.CommentController.Delete)
+	e.GET("/comments", rc.CommentController.GetAllComments)
+    e.POST("/comments", rc.CommentController.Create)
+    e.DELETE("/comments/:id", rc.CommentController.Delete)
 }
