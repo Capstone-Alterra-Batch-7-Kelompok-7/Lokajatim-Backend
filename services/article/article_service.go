@@ -9,6 +9,8 @@ type ArticleService interface {
     GetAllArticles() ([]entities.Article, error)
     GetArticleByID(id uint) (entities.Article, error)
     CreateArticle(article *entities.Article) (*entities.Article, error)
+    UpdateArticle(id uint, article *entities.Article) (*entities.Article, error)
+	DeleteArticle(id uint) error
 }
 
 type articleService struct {
@@ -29,4 +31,12 @@ func (s *articleService) GetArticleByID(id uint) (entities.Article, error) {
 
 func (s *articleService) CreateArticle(article *entities.Article) (*entities.Article, error) {
 	return s.articleRepo.Create(article)
+}
+
+func (s *articleService) UpdateArticle(id uint, article *entities.Article) (*entities.Article, error) {
+	return s.articleRepo.Update(id, article)
+}
+
+func (s *articleService) DeleteArticle(id uint) error {
+	return s.articleRepo.Delete(id)
 }

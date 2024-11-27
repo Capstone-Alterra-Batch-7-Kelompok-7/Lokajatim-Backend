@@ -14,9 +14,18 @@ func NewCommentRepository(db *gorm.DB) CommentRepository {
     return &commentRepositoryImpl{db: db}
 }
 
-func (r *commentRepositoryImpl) GetAllComments() ([]entities.Comment, error) {
+func (r *commentRepositoryImpl) GetCommentByID(id uint) (entities.Comment, error) {
+	var comment entities.Comment
+	result := r.db.First(&comment, id)
+	if result.Error != nil {
+		return entities.Comment{}, result.Error
+	}
+	return comment, nil
+}
+
+func (r *commentRepositoryImpl) GetCommentsByArticleID(articleID uint) ([]entities.Comment, error) {
 	var comments []entities.Comment
-	result := r.db.Find(&comments)
+	result := r.db.Where("article_id = ?", articleID).Find(&comments)
 	if result.Error != nil {
 		return nil, result.Error
 	}

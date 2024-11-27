@@ -47,3 +47,25 @@ func (h *ArticleController) Create(c echo.Context) error {
 	return base.SuccesResponse(c, createdArticle)
 }
 
+func (h *ArticleController) Update(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var article entities.Article
+	if err := c.Bind(&article); err != nil {
+		return base.ErrorResponse(c, err)
+	}
+	updatedArticle, err := h.ArticleService.UpdateArticle(uint(id), &article)
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+	return base.SuccesResponse(c, updatedArticle)
+}
+
+func (h *ArticleController) Delete(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := h.ArticleService.DeleteArticle(uint(id))
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+	return base.SuccesResponse(c, "Article deleted successfully")
+}
+

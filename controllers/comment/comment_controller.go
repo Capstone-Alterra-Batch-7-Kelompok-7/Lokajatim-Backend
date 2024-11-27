@@ -17,11 +17,32 @@ func NewCommentController(service comment.CommentService) *CommentController {
     return &CommentController{CommentService: service}
 }
 
-func (h *CommentController) GetAllComments(c echo.Context) error {
-	comments, err := h.CommentService.GetAllComments()
+
+func (h *CommentController) GetCommentByID(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
+
+	comment, err := h.CommentService.GetCommentByID(uint(id))
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+
+	return base.SuccesResponse(c, comment)
+
+}
+func (h *CommentController) GetCommentsByArticleID(c echo.Context) error {
+	articleID, err := strconv.Atoi(c.Param("article_id"))
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+
+	comments, err := h.CommentService.GetCommentsByArticleID(uint(articleID))
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+
 	return base.SuccesResponse(c, comments)
 }
 
