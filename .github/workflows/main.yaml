@@ -53,6 +53,11 @@ jobs:
               run: |
                 curl -o postman-collection.json "https://api.postman.com/collections/30501877-73037f6b-5615-461e-b967-26fdcbc863eb?access_key=${{ secrets.POSTMAN_ACCESS_KEY }}"
 
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '16'
+
             - name: Install Postman-to-Swagger Converter
               run: npm install -g postman-to-openapi
 
