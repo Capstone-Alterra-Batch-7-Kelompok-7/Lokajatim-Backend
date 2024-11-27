@@ -13,7 +13,7 @@ type CommentController struct {
     CommentService comment.CommentService
 }
 
-func NewCommentHandler(service comment.CommentService) *CommentController {
+func NewCommentController(service comment.CommentService) *CommentController {
     return &CommentController{CommentService: service}
 }
 
