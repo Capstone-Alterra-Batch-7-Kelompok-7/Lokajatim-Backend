@@ -6,14 +6,17 @@ import (
 	authController "lokajatim/controllers/auth"
 	articleController "lokajatim/controllers/article"
 	commentController "lokajatim/controllers/comment"
+    likeController "lokajatim/controllers/like"
 	"lokajatim/middleware"
 	authRepo "lokajatim/repositories/auth"
 	articleRepo "lokajatim/repositories/article"
 	commentRepo "lokajatim/repositories/comment"
+    likeRepo "lokajatim/repositories/like"
 	"lokajatim/routes"
 	authService "lokajatim/services/auth"
 	articleService "lokajatim/services/article"
 	commentService "lokajatim/services/comment"
+    likeService "lokajatim/services/like"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -44,18 +47,24 @@ func main() {
 	// Initialize Article components
 	articleRepo := articleRepo.NewArticleRepository(db)
 	articleService := articleService.NewArticleService(articleRepo)
-	articleController := articleController.NewArticleController(articleService)
+	articleController := articleController.NewArticleController(*articleService)
 
 	// Initialize Comment components
 	commentRepo := commentRepo.NewCommentRepository(db)
 	commentService := commentService.NewCommentService(commentRepo)
 	commentController := commentController.NewCommentController(*commentService)
 
+    // Initialize Like components
+    likeRepo := likeRepo.NewLikeRepository(db)
+    likeService := likeService.NewLikeService(likeRepo)
+    likeController := likeController.NewLikeController(likeService)
+
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
 		AuthController:    authController,
 		ArticleController: articleController,
 		CommentController: commentController,
+        LikeController:   likeController,
 	}
 
 	// Setup routes

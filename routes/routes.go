@@ -6,6 +6,8 @@ import (
 	"lokajatim/controllers/article"
 	"lokajatim/controllers/auth"
 	"lokajatim/controllers/comment"
+	"lokajatim/controllers/like"
+
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -15,9 +17,10 @@ import (
 )
 
 type RouteController struct {
-	AuthController *auth.AuthController
+	AuthController    *auth.AuthController
 	CommentController *comment.CommentController
 	ArticleController *article.ArticleController
+	LikeController    *like.LikeController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -37,14 +40,22 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 
 	// Article Routes
 	eJWT.GET("/articles", rc.ArticleController.GetAll)
-    eJWT.GET("/articles/:id", rc.ArticleController.GetByID)
-    eJWT.POST("/articles", rc.ArticleController.Create)
-	eJWT.PUT("/articles/:id", rc.ArticleController.Update)  
-	eJWT.DELETE("/articles/:id", rc.ArticleController.Delete)  
+	eJWT.GET("/articles/:id", rc.ArticleController.GetByID)
+	eJWT.POST("/articles", rc.ArticleController.Create)
+	eJWT.PUT("/articles/:id", rc.ArticleController.Update)
+	eJWT.DELETE("/articles/:id", rc.ArticleController.Delete)
 
 	// Comments Routes
 	eJWT.GET("comments/articles/:article_id", rc.CommentController.GetCommentsByArticleID)
 	eJWT.GET("/comments/:id", rc.CommentController.GetCommentByID)
-    eJWT.POST("/comments", rc.CommentController.Create)
-    eJWT.DELETE("/comments/:id", rc.CommentController.Delete)
+	eJWT.POST("/comments", rc.CommentController.Create)
+	eJWT.DELETE("/comments/:id", rc.CommentController.Delete)
+
+	// Like Routes
+	eJWT.POST("/likes", rc.LikeController.LikeArticle)
+	eJWT.DELETE("/likes/:id", rc.LikeController.UnlikeArticle)
+	eJWT.GET("/likes/articles/:article_id", rc.LikeController.GetLikesByArticle)
+	eJWT.GET("/likes/users/:user_id", rc.LikeController.CountLikes)
+	eJWT.GET("/likes", rc.LikeController.IsUserLikedArticle)
+
 }

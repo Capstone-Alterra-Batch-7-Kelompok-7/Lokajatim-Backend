@@ -6,68 +6,49 @@ import (
 	"gorm.io/gorm"
 )
 
-type articleRepository struct{
+type articleRepositoryImpl struct {
 	db *gorm.DB
 }
 
 func NewArticleRepository(db *gorm.DB) ArticleRepository {
-	return &articleRepository{db: db}
+	return &articleRepositoryImpl{db: db}
 }
 
-func (r *articleRepository) GetAll() ([]entities.Article, error) {
+func (r *articleRepositoryImpl) GetAll() ([]entities.Article, error) {
 	var articles []entities.Article
-	
-	result := r.db.Preload("Comments").Find(&articles) 
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.db.Find(&articles).Error; err != nil {
+		return nil, err
 	}
 	return articles, nil
 }
 
-func (r *articleRepository) GetByID(id uint) (entities.Article, error) {
-    var article entities.Article
-
-    result := r.db.Preload("Comments").First(&article, id) 
-    return article, result.Error
-}
-
-func (r *articleRepository) Create(article *entities.Article) (*entities.Article, error) {
-	result := r.db.Create(&article)
+func (r *articleRepositoryImpl) GetByID(id int) (entities.Article, error) {
+	var article entities.Article
+	result := r.db.First(&article, id)
 	if result.Error != nil {
-		return nil, result.Error
+		return entities.Article{}, result.Error
 	}
-	
-	result = r.db.Preload("Comments").First(&article, article.ID)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	
 	return article, nil
 }
 
-func (r *articleRepository) Update(id uint, article *entities.Article) (*entities.Article, error) {
-	var existingArticle entities.Article
-	result := r.db.First(&existingArticle, id)
-	if result.Error != nil {
-		return nil, result.Error
+func (r *articleRepositoryImpl) Create(article entities.Article) (*entities.Article, error) {
+	if err := r.db.Create(&article).Error; err != nil {
+		return nil, err
 	}
-
-	// Update article fields
-	existingArticle.Title = article.Title
-	existingArticle.Content = article.Content
-	existingArticle.Photo = article.Photo
-	existingArticle.Like = article.Like
-
-	// Save the updated article
-	result = r.db.Save(&existingArticle)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return &existingArticle, nil
+	return &article, nil
 }
 
-func (r *articleRepository) Delete(id uint) error {
-	result := r.db.Delete(&entities.Article{}, id)
-	return result.Error
+func (r *articleRepositoryImpl) Update(id int, article entities.Article) (*entities.Article, error) {
+	if err := r.db.Model(&entities.Article{}).Where("id = ?", id).Updates(article).Error; err != nil {
+		return nil, err
+	}
+	return &article, nil
+}
+
+func (r *articleRepositoryImpl) Delete(id int) error {
+	var article entities.Article
+	if err := r.db.Delete(&article, id).Error; err != nil {
+		return err
+	}
+	return nil
 }

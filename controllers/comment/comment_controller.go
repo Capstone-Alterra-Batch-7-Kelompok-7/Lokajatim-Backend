@@ -2,7 +2,8 @@ package comment
 
 import (
 	"lokajatim/controllers/base"
-	"lokajatim/entities"
+	"lokajatim/controllers/comment/request"
+	"lokajatim/controllers/pagination"
 	"lokajatim/services/comment"
 	"strconv"
 
@@ -24,7 +25,7 @@ func (h *CommentController) GetCommentByID(c echo.Context) error {
 		return base.ErrorResponse(c, err)
 	}
 
-	comment, err := h.CommentService.GetCommentByID(uint(id))
+	comment, err := h.CommentService.GetCommentByID((id))
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
@@ -38,19 +39,24 @@ func (h *CommentController) GetCommentsByArticleID(c echo.Context) error {
 		return base.ErrorResponse(c, err)
 	}
 
-	comments, err := h.CommentService.GetCommentsByArticleID(uint(articleID))
+	comments, err := h.CommentService.GetCommentsByArticleID(articleID)
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+	return pagination.SuccessPaginatedResponse(c, comments, 1, 10, int64(len(comments)))
+}
+
+func (h *CommentController) Create(c echo.Context) error {
+    req := new(request.CommentRequest)
+    if err := c.Bind(&req); err != nil {
+        return base.ErrorResponse(c, err)
+    }
+
+	comment, err := req.ToEntities()
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
 
-	return base.SuccesResponse(c, comments)
-}
-
-func (h *CommentController) Create(c echo.Context) error {
-    var comment entities.Comment
-    if err := c.Bind(&comment); err != nil {
-        return base.ErrorResponse(c, err)
-    }
     created, err := h.CommentService.CreateComment(comment)
     if err != nil {
         return base.ErrorResponse(c, err)
@@ -60,7 +66,7 @@ func (h *CommentController) Create(c echo.Context) error {
 
 func (h *CommentController) Delete(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
-    if err := h.CommentService.DeleteComment(uint(id)); err != nil {
+    if err := h.CommentService.DeleteComment(id); err != nil {
         return base.ErrorResponse(c, err)
     }
     return base.SuccesResponse(c, map[string]string{"message": "Comment deleted"})

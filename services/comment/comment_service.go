@@ -13,22 +13,18 @@ func NewCommentService(commentRepo comment.CommentRepository) *CommentService {
 	return &CommentService{commentRepository: commentRepo}
 }
 
-func (s *CommentService) GetCommentByID(id uint) (entities.Comment, error) {
+func (s *CommentService) GetCommentByID(id int) (entities.Comment, error) {
 	return s.commentRepository.GetCommentByID(id)
 }
 
-func (s *CommentService) GetCommentsByArticleID(articleID uint) ([]entities.Comment, error) {
+func (s *CommentService) GetCommentsByArticleID(articleID int) ([]entities.Comment, error) {
 	return s.commentRepository.GetCommentsByArticleID(articleID)
 }
 
 func (s *CommentService) CreateComment(comment entities.Comment) (entities.Comment, error) {
-	createdComment, err := s.commentRepository.CreateComment(comment)
-	if err != nil {
-		return entities.Comment{}, err
-	}
-	return createdComment, nil
+	return s.commentRepository.CreateComment(comment)
 }
 
-func (s *CommentService) DeleteComment(id uint) error {
+func (s *CommentService) DeleteComment(id int) error {
 	return s.commentRepository.DeleteComment(id)
 }

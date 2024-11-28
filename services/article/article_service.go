@@ -5,38 +5,30 @@ import (
 	"lokajatim/repositories/article"
 )
 
-type ArticleService interface {
-    GetAllArticles() ([]entities.Article, error)
-    GetArticleByID(id uint) (entities.Article, error)
-    CreateArticle(article *entities.Article) (*entities.Article, error)
-    UpdateArticle(id uint, article *entities.Article) (*entities.Article, error)
-	DeleteArticle(id uint) error
+type ArticleService struct {
+	articleRepository article.ArticleRepository
 }
 
-type articleService struct {
-    articleRepo article.ArticleRepository
+func NewArticleService(articleRepo article.ArticleRepository) *ArticleService {
+	return &ArticleService{articleRepository: articleRepo}
 }
 
-func NewArticleService(repo article.ArticleRepository) ArticleService {
-    return &articleService{articleRepo: repo}
+func (s *ArticleService) GetAllArticles() ([]entities.Article, error) {
+	return s.articleRepository.GetAll()
 }
 
-func (s *articleService) GetAllArticles() ([]entities.Article, error) {
-    return s.articleRepo.GetAll()
+func (s *ArticleService) GetArticleByID(id int) (entities.Article, error) {
+	return s.articleRepository.GetByID(id)
 }
 
-func (s *articleService) GetArticleByID(id uint) (entities.Article, error) {
-    return s.articleRepo.GetByID(id)
+func (s *ArticleService) CreateArticle(article *entities.Article) (*entities.Article, error) {
+	return s.articleRepository.Create(*article)
 }
 
-func (s *articleService) CreateArticle(article *entities.Article) (*entities.Article, error) {
-	return s.articleRepo.Create(article)
+func (s *ArticleService) UpdateArticle(id int, article *entities.Article) (*entities.Article, error) {
+	return s.articleRepository.Update(id, *article)
 }
 
-func (s *articleService) UpdateArticle(id uint, article *entities.Article) (*entities.Article, error) {
-	return s.articleRepo.Update(id, article)
-}
-
-func (s *articleService) DeleteArticle(id uint) error {
-	return s.articleRepo.Delete(id)
+func (s *ArticleService) DeleteArticle(id int) error {
+	return s.articleRepository.Delete(id)
 }
