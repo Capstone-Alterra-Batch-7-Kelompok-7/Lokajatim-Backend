@@ -35,6 +35,8 @@ func main() {
 
 	e := echo.New()
 
+	middleware.InitCors(e)
+
 	// Initialize Auth
 	authJwt := middleware.JwtLokajatim{}
 	authRepo := authRepo.NewAuthRepo(db)

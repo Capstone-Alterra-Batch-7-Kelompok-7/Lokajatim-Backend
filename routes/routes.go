@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"net/http"
 	"os"
 
 	"lokajatim/controllers/auth"
@@ -20,6 +21,10 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	// Authentication routes
 	e.POST("/login", rc.AuthController.LoginController)
 	e.POST("/register", rc.AuthController.RegisterController)
+
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, CORS with Clean Architecture!")
+	})
 
 	// Protected routes with JWT
 	eJWT := e.Group("")
