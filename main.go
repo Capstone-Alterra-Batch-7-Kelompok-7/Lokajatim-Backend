@@ -4,10 +4,13 @@ import (
 	"log"
 	"lokajatim/config"
 	authController "lokajatim/controllers/auth"
+	"lokajatim/controllers/event"
 	"lokajatim/middleware"
 	authRepo "lokajatim/repositories/auth"
+	eventRepo "lokajatim/repositories/event"
 	"lokajatim/routes"
 	authService "lokajatim/services/auth"
+	eventService "lokajatim/services/event"
 
 	_ "lokajatim/docs"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -27,6 +30,7 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
+	// Initialize Database
 	db, err := config.InitDatabase()
 	if err != nil {
 		log.Fatalf("Database initialization failed: %v", err)
@@ -35,6 +39,7 @@ func main() {
 
 	e := echo.New()
 
+	// Initialize CORS middleware
 	middleware.InitCors(e)
 
 	// Initialize Auth
@@ -43,8 +48,15 @@ func main() {
 	authService := authService.NewAuthService(authRepo, authJwt)
 	authController := authController.NewAuthController(authService)
 
+	// Initialize Event
+	eventRepo := eventRepo.NewEventRepo(db)
+	eventService := eventService.NewEventService(eventRepo)
+	eventController := event.NewEventController(eventService)
+
+	// Initialize Routes
 	routeController := routes.RouteController{
-		AuthController: authController,
+		AuthController:   authController,
+		EventController:  eventController, 
 	}
 	routeController.InitRoute(e)
 

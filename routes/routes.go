@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"lokajatim/controllers/auth"
+	"lokajatim/controllers/event"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -15,6 +16,7 @@ import (
 
 type RouteController struct {
 	AuthController *auth.AuthController
+	EventController *event.EventController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -35,4 +37,11 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 			return new(middleware.JwtCustomClaims)
 		},
 	}))
+
+	// Event routes
+	e.GET("/events", rc.EventController.GetAllEvents)
+	e.GET("/events/:id", rc.EventController.GetEventByID)
+	e.POST("/events", rc.EventController.CreateEvent)
+	e.PUT("/events/:id", rc.EventController.UpdateEvent)
+	e.DELETE("/events/:id", rc.EventController.DeleteEvent)
 }
