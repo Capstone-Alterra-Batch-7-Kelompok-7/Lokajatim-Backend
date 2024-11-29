@@ -24,8 +24,8 @@ func NewEventController(service event.EventService) *EventController {
 // @Tags Event
 // @Accept json
 // @Produce json
-// @Success 200 {object} responses.BaseResponse{data=[]responses.EventResponse}
-// @Failure 400 {object} responses.BaseResponse
+// @Success 200 {object} base.BaseResponse{data=[]response.EventResponse}
+// @Failure 400 {object} base.BaseResponse
 // @Router /events [get]
 func (c *EventController) GetAllEvents(ctx echo.Context) error {
 	events, err := c.service.GetAll()
@@ -47,9 +47,9 @@ func (c *EventController) GetAllEvents(ctx echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "Event ID"
-// @Success 200 {object} responses.BaseResponse{data=responses.EventResponse}
-// @Failure 404 {object} responses.BaseResponse
-// @Failure 400 {object} responses.BaseResponse
+// @Success 200 {object} base.BaseResponse{data=response.EventResponse}
+// @Failure 404 {object} base.BaseResponse
+// @Failure 400 {object} base.BaseResponse
 // @Router /events/{id} [get]
 func (c *EventController) GetEventByID(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
@@ -65,9 +65,9 @@ func (c *EventController) GetEventByID(ctx echo.Context) error {
 // @Tags Event
 // @Accept json
 // @Produce json
-// @Param request body requests.EventRequest true "Event data"
-// @Success 200 {object} responses.BaseResponse{data=responses.EventResponse}
-// @Failure 400 {object} responses.BaseResponse
+// @Param request body request.EventRequest true "Event data"
+// @Success 200 {object} base.BaseResponse{data=response.EventResponse}
+// @Failure 400 {object} base.BaseResponse
 // @Router /events [post]
 func (c *EventController) CreateEvent(ctx echo.Context) error {
 	var eventRequest request.EventRequest
@@ -90,10 +90,10 @@ func (c *EventController) CreateEvent(ctx echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "Event ID"
-// @Param request body requests.EventRequest true "Updated event data"
-// @Success 200 {object} responses.BaseResponse{data=responses.EventResponse}
-// @Failure 400 {object} responses.BaseResponse
-// @Failure 404 {object} responses.BaseResponse
+// @Param request body request.EventRequest true "Updated event data"
+// @Success 200 {object} base.BaseResponse{data=response.EventResponse}
+// @Failure 400 {object} base.BaseResponse
+// @Failure 404 {object} base.BaseResponse
 // @Router /events/{id} [put]
 func (c *EventController) UpdateEvent(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
@@ -118,9 +118,9 @@ func (c *EventController) UpdateEvent(ctx echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "Event ID"
-// @Success 200 {object} responses.BaseResponse{data=string}
-// @Failure 400 {object} responses.BaseResponse
-// @Failure 404 {object} responses.BaseResponse
+// @Success 200 {object} base.BaseResponse{data=string}
+// @Failure 400 {object} base.BaseResponse
+// @Failure 404 {object} base.BaseResponse
 // @Router /events/{id} [delete]
 func (c *EventController) DeleteEvent(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
