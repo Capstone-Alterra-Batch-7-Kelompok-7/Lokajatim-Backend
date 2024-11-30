@@ -21,8 +21,15 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	_ "lokajatim/docs"
 )
 
+// @title Lokajatim API
+// @version 1.0
+// @description This is the API documentation for Lokajatim.
+
+// @host localhost:8000
+// @BasePath /
 func main() {
 	// Load environment variables
 	if err := loadEnv(); err != nil {

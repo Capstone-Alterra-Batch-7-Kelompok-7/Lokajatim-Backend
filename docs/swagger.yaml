@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   base.BaseResponse:
     properties:
@@ -46,7 +47,28 @@ definitions:
       token:
         type: string
     type: object
+  request.ArticleRequest:
+    description: ArticleRequest is the request for the Article endpoint
+    properties:
+      content:
+        type: string
+      photo:
+        type: string
+      title:
+        type: string
+    type: object
+  request.CommentRequest:
+    description: CommentRequest is the request for the Comment endpoint
+    properties:
+      article_id:
+        type: integer
+      comment:
+        type: string
+      user_id:
+        type: integer
+    type: object
   request.LikeRequest:
+    description: LikeRequest is the request for the Like endpoint
     properties:
       article_id:
         type: integer
@@ -72,6 +94,36 @@ definitions:
         type: string
       role:
         type: string
+    type: object
+  response.ArticleResponse:
+    description: ArticleResponse is the response for the Article controller
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.CommentResponse:
+    description: CommentResponse is the response for the Comment controller
+    properties:
+      article:
+        $ref: '#/definitions/entities.Article'
+      comment:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/entities.User'
     type: object
   response.CountLikesResponse:
     properties:
@@ -124,9 +176,194 @@ definitions:
       nama:
         type: string
     type: object
+host: localhost:8000
 info:
   contact: {}
+  description: This is the API documentation for Lokajatim.
+  title: Lokajatim API
+  version: "1.0"
 paths:
+  /articles:
+    get:
+      consumes:
+      - application/json
+      description: Get all articles
+      parameters:
+      - description: Article Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all articles
+      tags:
+      - Article
+    post:
+      consumes:
+      - application/json
+      description: Create article
+      parameters:
+      - description: Article Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create article
+      tags:
+      - Article
+  /articles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete article
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete article
+      tags:
+      - Article
+    get:
+      consumes:
+      - application/json
+      description: Get article by ID
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get article by ID
+      tags:
+      - Article
+    put:
+      consumes:
+      - application/json
+      description: Update article
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Article Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update article
+      tags:
+      - Article
+  /comments:
+    post:
+      consumes:
+      - application/json
+      description: Create comment
+      parameters:
+      - description: Comment Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create comment
+      tags:
+      - Comment
+  /comments/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get comment by ID
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get comment by ID
+      tags:
+      - Comment
   /likes:
     post:
       consumes:

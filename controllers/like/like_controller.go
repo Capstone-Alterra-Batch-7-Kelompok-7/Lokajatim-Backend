@@ -38,7 +38,7 @@ func (c *LikeController) LikeArticle(ctx echo.Context) error {
 	if err != nil {
 		return base.ErrorResponse(ctx, err, map[string]string{
 			"error": "Invalid request payload",
-	})
+		})
 	}
 
 	created, err := c.likeService.LikeArticle(likeEntity.ArticleID, likeEntity.UserID)
@@ -53,8 +53,6 @@ func (c *LikeController) LikeArticle(ctx echo.Context) error {
 
 // @Summary Unlike an article
 // @Tags Likes
-// @Param article_id path int true "Article ID"
-// @Param user_id path int true "User ID"
 // @Success 200 {object} base.BaseResponse
 // @Failure 400 {object} base.BaseResponse
 // @Router /likes/{article_id}/{user_id} [delete]
@@ -68,7 +66,7 @@ func (c *LikeController) UnlikeArticle(ctx echo.Context) error {
 
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err,	map[string]string{
+		return base.ErrorResponse(ctx, err, map[string]string{
 			"error": "Invalid user ID",
 		})
 	}
@@ -86,10 +84,9 @@ func (c *LikeController) UnlikeArticle(ctx echo.Context) error {
 // @Summary Get all likes for an article
 // @Tags Likes
 // @Produce json
-// @Param article_id path int true "Article ID"
 // @Success 200 {array} response.LikeResponse
 // @Failure 400 {object} base.BaseResponse
-// @Router /likes/{article_id} [get]
+// @Router /likes/articles/{article_id} [get]
 func (c *LikeController) GetLikesByArticle(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {
@@ -116,10 +113,9 @@ func (c *LikeController) GetLikesByArticle(ctx echo.Context) error {
 // @Summary Count likes for an article
 // @Tags Likes
 // @Produce json
-// @Param article_id path int true "Article ID"
 // @Success 200 {object} response.CountLikesResponse
 // @Failure 400 {object} base.BaseResponse
-// @Router /likes/count/{article_id} [get]
+// @Router /likes/articles/{article_id}/count [get]
 func (c *LikeController) CountLikes(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {
@@ -144,11 +140,9 @@ func (c *LikeController) CountLikes(ctx echo.Context) error {
 // @Summary Check if a user liked an article
 // @Tags Likes
 // @Produce json
-// @Param article_id path int true "Article ID"
-// @Param user_id path int true "User ID"
 // @Success 200 {object} response.IsLikedResponse
 // @Failure 400 {object} base.BaseResponse
-// @Router /likes/{article_id}/{user_id}/status [get]
+// @Router /likes/{article_id}/users/{user_id}/status [get]
 func (c *LikeController) IsUserLikedArticle(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {

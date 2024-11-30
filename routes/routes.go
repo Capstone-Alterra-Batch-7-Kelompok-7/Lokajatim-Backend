@@ -51,7 +51,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.DELETE("/articles/:id", rc.ArticleController.Delete)
 
 	// Comments Routes
-	eJWT.GET("comments/articles/:article_id", rc.CommentController.GetCommentsByArticleID)
+	eJWT.GET("comments/article/:article_id", rc.CommentController.GetCommentsByArticleID)
 	eJWT.GET("/comments/:id", rc.CommentController.GetCommentByID)
 	eJWT.POST("/comments", rc.CommentController.Create)
 	eJWT.DELETE("/comments/:id", rc.CommentController.Delete)

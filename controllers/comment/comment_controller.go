@@ -24,7 +24,7 @@ func NewCommentController(service comment.CommentService) *CommentController {
 // @Tags Comment
 // @Accept json
 // @Produce json
-// @Param id path int true "ID of the article"
+// @Param id path int true "ID of the comment"
 // @Success 200 {object} response.CommentResponse
 // @Failure 400 {object} base.BaseResponse
 // @Router /comments/{id} [get]
@@ -46,6 +46,14 @@ func (h *CommentController) GetCommentByID(c echo.Context) error {
 	return base.SuccesResponse(c, response.CommentFromEntities(comment))
 
 }
+// @Summary Get comments by article ID
+// @Description Get comments by article ID
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.CommentResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /comments/article/{article_id} [get]
 func (h *CommentController) GetCommentsByArticleID(c echo.Context) error {
 	articleID, err := strconv.Atoi(c.Param("article_id"))
 	if err != nil {
@@ -103,6 +111,8 @@ func (h *CommentController) Create(c echo.Context) error {
 // @Produce json
 // @Param id path int true "ID of the comment"
 // @Success 200 {object} base.BaseResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /comments/{id} [delete]
 func (h *CommentController) Delete(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     if err := h.CommentService.DeleteComment(id); err != nil {
