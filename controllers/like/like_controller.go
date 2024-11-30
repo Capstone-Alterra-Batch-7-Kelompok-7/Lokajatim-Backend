@@ -29,17 +29,23 @@ func NewLikeController(service like.LikeService) *LikeController {
 func (c *LikeController) LikeArticle(ctx echo.Context) error {
 	req := new(request.LikeRequest)
 	if err := ctx.Bind(req); err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid request payload",
+		})
 	}
 
 	likeEntity, err := req.ToEntities()
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid request payload",
+	})
 	}
 
 	created, err := c.likeService.LikeArticle(likeEntity.ArticleID, likeEntity.UserID)
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Failed to like article",
+		})
 	}
 
 	return base.SuccesResponse(ctx, response.FromLikeEntity(created))
@@ -55,17 +61,23 @@ func (c *LikeController) LikeArticle(ctx echo.Context) error {
 func (c *LikeController) UnlikeArticle(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid article ID",
+		})
 	}
 
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err,	map[string]string{
+			"error": "Invalid user ID",
+		})
 	}
 
 	err = c.likeService.UnlikeArticle(articleID, userID)
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Failed to unlike article",
+		})
 	}
 
 	return base.SuccesResponse(ctx, map[string]string{"message": "unliked successfully"})
@@ -81,12 +93,16 @@ func (c *LikeController) UnlikeArticle(ctx echo.Context) error {
 func (c *LikeController) GetLikesByArticle(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid article ID",
+		})
 	}
 
 	likes, err := c.likeService.GetLikesByArticle(articleID)
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Failed to get likes",
+		})
 	}
 
 	likeResponses := make([]response.LikeResponse, len(likes))
@@ -107,12 +123,16 @@ func (c *LikeController) GetLikesByArticle(ctx echo.Context) error {
 func (c *LikeController) CountLikes(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid article ID",
+		})
 	}
 
 	count, err := c.likeService.CountLikes(articleID)
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Failed to count likes",
+		})
 	}
 
 	return base.SuccesResponse(ctx, response.CountLikesResponse{
@@ -132,17 +152,23 @@ func (c *LikeController) CountLikes(ctx echo.Context) error {
 func (c *LikeController) IsUserLikedArticle(ctx echo.Context) error {
 	articleID, err := strconv.Atoi(ctx.Param("article_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid article ID",
+		})
 	}
 
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Invalid user ID",
+		})
 	}
 
 	isLiked, err := c.likeService.IsUserLikedArticle(articleID, userID)
 	if err != nil {
-		return base.ErrorResponse(ctx, err)
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Failed to check if user liked article",
+		})
 	}
 
 	return base.SuccesResponse(ctx, response.IsLikedResponse{
