@@ -3,20 +3,20 @@ package main
 import (
 	"log"
 	"lokajatim/config"
-	authController "lokajatim/controllers/auth"
 	articleController "lokajatim/controllers/article"
+	authController "lokajatim/controllers/auth"
 	commentController "lokajatim/controllers/comment"
-    likeController "lokajatim/controllers/like"
+	likeController "lokajatim/controllers/like"
 	"lokajatim/middleware"
-	authRepo "lokajatim/repositories/auth"
 	articleRepo "lokajatim/repositories/article"
+	authRepo "lokajatim/repositories/auth"
 	commentRepo "lokajatim/repositories/comment"
-    likeRepo "lokajatim/repositories/like"
+	likeRepo "lokajatim/repositories/like"
 	"lokajatim/routes"
-	authService "lokajatim/services/auth"
 	articleService "lokajatim/services/article"
+	authService "lokajatim/services/auth"
 	commentService "lokajatim/services/comment"
-    likeService "lokajatim/services/like"
+	likeService "lokajatim/services/like"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -54,17 +54,17 @@ func main() {
 	commentService := commentService.NewCommentService(commentRepo)
 	commentController := commentController.NewCommentController(*commentService)
 
-    // Initialize Like components
-    likeRepo := likeRepo.NewLikeRepository(db)
-    likeService := likeService.NewLikeService(likeRepo)
-    likeController := likeController.NewLikeController(*likeService)
+	// Initialize Like components
+	likeRepo := likeRepo.NewLikeRepository(db)
+	likeService := likeService.NewLikeService(likeRepo)
+	likeController := likeController.NewLikeController(*likeService)
 
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
 		AuthController:    authController,
 		ArticleController: articleController,
 		CommentController: commentController,
-        LikeController:   likeController,
+		LikeController:    likeController,
 	}
 
 	// Setup routes
@@ -83,4 +83,3 @@ func loadEnv() error {
 	}
 	return nil
 }
-	
