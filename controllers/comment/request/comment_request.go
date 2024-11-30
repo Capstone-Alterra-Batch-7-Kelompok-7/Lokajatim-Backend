@@ -2,6 +2,11 @@ package request
 
 import "lokajatim/entities"
 
+// CommentRequest is the request for the Comment endpoint
+// @Description CommentRequest is the request for the Comment endpoint
+// @Param UserID int true "ID of the user"
+// @Param ArticleID int true "ID of the article"
+// @Param Comment string true "Comment of the article"
 type CommentRequest struct {
 	UserID  	int    	`json:"user_id"`
 	ArticleID 	int 	`json:"article_id"`

@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   base.BaseResponse:
     properties:
@@ -10,6 +9,49 @@ definitions:
         type: string
       status:
         type: boolean
+    type: object
+  entities.Article:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id_user:
+        type: integer
+      name:
+        type: string
+      nik:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+    type: object
+  request.LikeRequest:
+    properties:
+      article_id:
+        type: integer
+      user_id:
+        type: integer
     type: object
   request.LoginRequest:
     description: LoginRequest is the request for the login endpoint
@@ -30,6 +72,35 @@ definitions:
         type: string
       role:
         type: string
+    type: object
+  response.CountLikesResponse:
+    properties:
+      article_id:
+        type: integer
+      count:
+        type: integer
+    type: object
+  response.IsLikedResponse:
+    properties:
+      article_id:
+        type: integer
+      is_liked:
+        type: boolean
+      user_id:
+        type: integer
+    type: object
+  response.LikeResponse:
+    properties:
+      Article:
+        $ref: '#/definitions/entities.Article'
+      User:
+        $ref: '#/definitions/entities.User'
+      article_id:
+        type: integer
+      id:
+        type: integer
+      user_id:
+        type: integer
     type: object
   response.LoginResponse:
     description: LoginResponse is the response for the Login controller
@@ -53,13 +124,132 @@ definitions:
       nama:
         type: string
     type: object
-host: localhost:8000
 info:
   contact: {}
-  description: This is the API documentation for Lokajatim.
-  title: Lokajatim API
-  version: "1.0"
 paths:
+  /likes:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Like Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LikeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.LikeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Like an article
+      tags:
+      - Likes
+  /likes/{article_id}:
+    get:
+      parameters:
+      - description: Article ID
+        in: path
+        name: article_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.LikeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all likes for an article
+      tags:
+      - Likes
+  /likes/{article_id}/{user_id}:
+    delete:
+      parameters:
+      - description: Article ID
+        in: path
+        name: article_id
+        required: true
+        type: integer
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Unlike an article
+      tags:
+      - Likes
+  /likes/{article_id}/{user_id}/status:
+    get:
+      parameters:
+      - description: Article ID
+        in: path
+        name: article_id
+        required: true
+        type: integer
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IsLikedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Check if a user liked an article
+      tags:
+      - Likes
+  /likes/count/{article_id}:
+    get:
+      parameters:
+      - description: Article ID
+        in: path
+        name: article_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CountLikesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Count likes for an article
+      tags:
+      - Likes
   /login:
     post:
       consumes:

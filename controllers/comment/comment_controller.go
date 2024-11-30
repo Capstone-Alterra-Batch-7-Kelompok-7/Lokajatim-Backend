@@ -19,7 +19,15 @@ func NewCommentController(service comment.CommentService) *CommentController {
     return &CommentController{CommentService: service}
 }
 
-
+// @Summary Get comment by ID
+// @Description Get comment by ID
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the article"
+// @Success 200 {object} response.CommentResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /comments/{id} [get]
 func (h *CommentController) GetCommentByID(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -55,6 +63,15 @@ func (h *CommentController) GetCommentsByArticleID(c echo.Context) error {
 	return pagination.SuccessPaginatedResponse(c, comments, 1, 10, int64(len(comments)))
 }
 
+// @Summary Create comment
+// @Description Create comment
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param request body request.CommentRequest true "Comment Request"
+// @Success 201 {object} response.CommentResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /comments [post]
 func (h *CommentController) Create(c echo.Context) error {
     req := new(request.CommentRequest)
     if err := c.Bind(&req); err != nil {
@@ -79,6 +96,13 @@ func (h *CommentController) Create(c echo.Context) error {
     return base.SuccesResponse(c, created)
 }
 
+// @Summary Delete comment
+// @Description Delete comment
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the comment"
+// @Success 200 {object} base.BaseResponse
 func (h *CommentController) Delete(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     if err := h.CommentService.DeleteComment(id); err != nil {

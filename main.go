@@ -20,6 +20,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
@@ -69,6 +70,9 @@ func main() {
 
 	// Setup routes
 	routeController.InitRoute(e)
+
+	// Swagger endpoint
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// Start the Echo server
 	if err := e.Start(":8000"); err != nil {

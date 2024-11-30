@@ -19,6 +19,15 @@ func NewArticleController(service article.ArticleService) *ArticleController {
 	return &ArticleController{ArticleService: service}
 }
 
+// @Summary Get all articles
+// @Description Get all articles
+// @Tags Article
+// @Accept json
+// @Produce json
+// @Param request body request.ArticleRequest true "Article Request"
+// @Success 200 {object} response.ArticleResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /articles [get]
 func (h *ArticleController) GetAll(c echo.Context) error {
 	articles, err := h.ArticleService.GetAllArticles()
 	if err != nil {
@@ -29,6 +38,15 @@ func (h *ArticleController) GetAll(c echo.Context) error {
 	return pagination.SuccessPaginatedResponse(c, articles, 1, 10, int64(len(articles)))
 }
 
+// @Summary Get article by ID
+// @Description Get article by ID
+// @Tags Article
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the article"
+// @Success 200 {object} response.ArticleResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /articles/{id} [get]
 func (h *ArticleController) GetByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	article, err := h.ArticleService.GetArticleByID(id)
@@ -40,6 +58,15 @@ func (h *ArticleController) GetByID(c echo.Context) error {
 	return base.SuccesResponse(c, article)
 }
 
+// @Summary Create article
+// @Description Create article
+// @Tags Article
+// @Accept json
+// @Produce json
+// @Param request body request.ArticleRequest true "Article Request"
+// @Success 201 {object} response.ArticleResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /articles [post]
 func (h *ArticleController) Create(c echo.Context) error {
 	req := new(request.ArticleRequest)
 	if err := c.Bind(req); err != nil {
@@ -62,6 +89,16 @@ func (h *ArticleController) Create(c echo.Context) error {
 	return base.SuccesResponse(c, created)
 }
 
+// @Summary Update article
+// @Description Update article
+// @Tags Article
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the article"
+// @Param request body request.ArticleRequest true "Article Request"
+// @Success 200 {object} response.ArticleResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /articles/{id} [put]
 func (h *ArticleController) Update(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	req := new(request.ArticleRequest)
@@ -85,6 +122,15 @@ func (h *ArticleController) Update(c echo.Context) error {
 	return base.SuccesResponse(c, response.ArticleFromEntities(updated))
 }
 
+// @Summary Delete article
+// @Description Delete article
+// @Tags Article
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the article"
+// @Success 200 {object} base.BaseResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /articles/{id} [delete]
 func (h *ArticleController) Delete(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	err := h.ArticleService.DeleteArticle(id)
