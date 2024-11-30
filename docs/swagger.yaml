@@ -1,0 +1,115 @@
+basePath: /
+definitions:
+  base.BaseResponse:
+    properties:
+      data:
+        description: Response data for success
+      error_data:
+        description: Detailed error data for failure
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  request.LoginRequest:
+    description: LoginRequest is the request for the login endpoint
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  request.RegisterRequest:
+    description: RegisterRequest is the request for the register endpoint
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  response.LoginResponse:
+    description: LoginResponse is the response for the Login controller
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+      token:
+        type: string
+    type: object
+  response.RegisterResponse:
+    description: RegisterResponse is the response for the Register controller
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: This is the API documentation for Lokajatim.
+  title: Lokajatim API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: User login endpoint
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Login
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: User registration endpoint
+      parameters:
+      - description: Register Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Register
+      tags:
+      - Auth
+swagger: "2.0"
