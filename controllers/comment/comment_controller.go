@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"lokajatim/controllers/comment/response"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/comment/request"
 	"lokajatim/controllers/pagination"
@@ -30,7 +31,7 @@ func (h *CommentController) GetCommentByID(c echo.Context) error {
 		return base.ErrorResponse(c, err)
 	}
 
-	return base.SuccesResponse(c, comment)
+	return base.SuccesResponse(c, response.CommentFromEntities(comment))
 
 }
 func (h *CommentController) GetCommentsByArticleID(c echo.Context) error {

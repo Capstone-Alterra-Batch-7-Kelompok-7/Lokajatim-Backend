@@ -2,9 +2,9 @@ package article
 
 import (
 	"lokajatim/controllers/article/request"
+	"lokajatim/controllers/article/response"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/pagination"
-	"lokajatim/entities"
 	"lokajatim/services/article"
 	"strconv"
 
@@ -45,7 +45,7 @@ func (h *ArticleController) Create(c echo.Context) error {
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
-	created, err := h.ArticleService.CreateArticle(&article)
+	created, err := h.ArticleService.CreateArticle(article)
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
@@ -54,15 +54,19 @@ func (h *ArticleController) Create(c echo.Context) error {
 
 func (h *ArticleController) Update(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	article := new(entities.Article)
-	if err := c.Bind(article); err != nil {
+	req := new(request.ArticleRequest)
+	if err := c.Bind(req); err != nil {
 		return base.ErrorResponse(c, err)
 	}
-	updatedArticle, err := h.ArticleService.UpdateArticle(id, article)
+	article, err := req.ToEntities()
 	if err != nil {
 		return base.ErrorResponse(c, err)
 	}
-	return base.SuccesResponse(c, updatedArticle)
+	updated, err := h.ArticleService.UpdateArticle(id, article)
+	if err != nil {
+		return base.ErrorResponse(c, err)
+	}
+	return base.SuccesResponse(c, response.ArticleFromEntities(updated))
 }
 
 func (h *ArticleController) Delete(c echo.Context) error {

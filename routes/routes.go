@@ -53,9 +53,8 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 
 	// Like Routes
 	eJWT.POST("/likes", rc.LikeController.LikeArticle)
-	eJWT.DELETE("/likes/:id", rc.LikeController.UnlikeArticle)
+	eJWT.DELETE("/likes/:article_id/:user_id", rc.LikeController.UnlikeArticle)
 	eJWT.GET("/likes/articles/:article_id", rc.LikeController.GetLikesByArticle)
-	eJWT.GET("/likes/users/:user_id", rc.LikeController.CountLikes)
-	eJWT.GET("/likes", rc.LikeController.IsUserLikedArticle)
-
+	eJWT.GET("/likes/articles/:article_id/count", rc.LikeController.CountLikes)
+	eJWT.GET("/likes/articles/:article_id/users/:user_id/status", rc.LikeController.IsUserLikedArticle)
 }

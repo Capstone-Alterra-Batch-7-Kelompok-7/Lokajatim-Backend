@@ -57,7 +57,7 @@ func main() {
     // Initialize Like components
     likeRepo := likeRepo.NewLikeRepository(db)
     likeService := likeService.NewLikeService(likeRepo)
-    likeController := likeController.NewLikeController(likeService)
+    likeController := likeController.NewLikeController(*likeService)
 
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{

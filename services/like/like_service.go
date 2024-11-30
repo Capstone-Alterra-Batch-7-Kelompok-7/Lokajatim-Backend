@@ -10,15 +10,7 @@ type LikeService struct {
 	likeRepo like.LikeRepoInterface
 }
 
-type LikeServiceInterface interface {
-    LikeArticle(articleID, userID int) (entities.Like, error)
-    UnlikeArticle(articleID, userID int) error
-    GetLikesByArticle(articleID int) ([]entities.Like, error)
-    CountLikes(articleID int) (int, error)
-    IsUserLikedArticle(articleID, userID int) (bool, error)
-}
-
-func NewLikeService(repo like.LikeRepoInterface) LikeServiceInterface {
+func NewLikeService(repo like.LikeRepoInterface) *LikeService {
 	return &LikeService{likeRepo: repo}
 }
 

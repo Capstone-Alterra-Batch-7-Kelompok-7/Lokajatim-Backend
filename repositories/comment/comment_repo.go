@@ -10,13 +10,13 @@ type commentRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func NewCommentRepository(db *gorm.DB) CommentRepository {
+func NewCommentRepository(db *gorm.DB) CommentRepositoryInterface {
 	return &commentRepositoryImpl{db: db}
 }
 
 func (r *commentRepositoryImpl) GetCommentByID(id int) (entities.Comment, error) {
 	var comment entities.Comment
-	result := r.db.Preload("Article").First(&comment, id)
+	result := r.db.Preload("User").Preload("Article").First(&comment, id)
 	if result.Error != nil {
 		return entities.Comment{}, result.Error
 	}
@@ -25,7 +25,7 @@ func (r *commentRepositoryImpl) GetCommentByID(id int) (entities.Comment, error)
 
 func (r *commentRepositoryImpl) GetCommentsByArticleID(articleID int) ([]entities.Comment, error) {
 	var comments []entities.Comment
-	result := r.db.Preload("Article").Where("article_id = ?", articleID).Find(&comments)
+	result := r.db.Preload("User").Preload("Article").Where("article_id = ?", articleID).Find(&comments)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -38,7 +38,7 @@ func (r *commentRepositoryImpl) CreateComment(comment entities.Comment) (entitie
 	}
 
 	var createdComment entities.Comment
-	result := r.db.Preload("Article").First(&createdComment, comment.ID)
+	result := r.db.Preload("User").Preload("Article").First(&createdComment, comment.ID)
 	if result.Error != nil {
 		return entities.Comment{}, result.Error
 	}

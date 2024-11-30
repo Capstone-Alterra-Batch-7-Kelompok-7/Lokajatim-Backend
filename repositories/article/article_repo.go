@@ -31,18 +31,24 @@ func (r *articleRepositoryImpl) GetByID(id int) (entities.Article, error) {
 	return article, nil
 }
 
-func (r *articleRepositoryImpl) Create(article entities.Article) (*entities.Article, error) {
+func (r *articleRepositoryImpl) Create(article entities.Article) (entities.Article, error) {
 	if err := r.db.Create(&article).Error; err != nil {
-		return nil, err
+		return entities.Article{}, err
 	}
-	return &article, nil
+	return article, nil
 }
 
-func (r *articleRepositoryImpl) Update(id int, article entities.Article) (*entities.Article, error) {
+func (r *articleRepositoryImpl) Update(id int, article entities.Article) (entities.Article, error) {
 	if err := r.db.Model(&entities.Article{}).Where("id = ?", id).Updates(article).Error; err != nil {
-		return nil, err
-	}
-	return &article, nil
+        return entities.Article{}, err
+    }
+
+    var updatedArticle entities.Article
+    if err := r.db.First(&updatedArticle, id).Error; err != nil {
+        return entities.Article{}, err
+    }
+
+    return updatedArticle, nil
 }
 
 func (r *articleRepositoryImpl) Delete(id int) error {
