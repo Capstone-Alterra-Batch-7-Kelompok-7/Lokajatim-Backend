@@ -11,6 +11,25 @@ definitions:
       status:
         type: boolean
     type: object
+  entities.Ticket:
+    properties:
+      created_at:
+        type: string
+      events_id:
+        type: integer
+      id:
+        type: integer
+      payment_method:
+        type: string
+      status:
+        type: string
+      total_amount:
+        type: integer
+      updated_at:
+        type: string
+      users_id:
+        type: integer
+    type: object
   request.EventRequest:
     description: EventRequest is the request for creating or updating an event
     properties:
@@ -312,4 +331,118 @@ paths:
       summary: Register
       tags:
       - Auth
+  /tickets:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Ticket'
+                  type: array
+              type: object
+      summary: Get All Tickets
+      tags:
+      - Ticket
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create Ticket
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Create Ticket
+      tags:
+      - Ticket
+  /tickets/{id}:
+    delete:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete Ticket
+      tags:
+      - Ticket
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Get Ticket By ID
+      tags:
+      - Ticket
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Ticket
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Update Ticket
+      tags:
+      - Ticket
 swagger: "2.0"

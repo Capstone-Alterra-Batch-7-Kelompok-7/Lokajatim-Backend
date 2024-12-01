@@ -5,14 +5,17 @@ import (
 	"lokajatim/config"
 	authController "lokajatim/controllers/auth"
 	"lokajatim/controllers/event"
+	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
 	authRepo "lokajatim/repositories/auth"
 	eventRepo "lokajatim/repositories/event"
 	"lokajatim/routes"
 	authService "lokajatim/services/auth"
 	eventService "lokajatim/services/event"
-
+	ticketRepo "lokajatim/repositories/ticket"
+	ticketService "lokajatim/services/ticket"
 	_ "lokajatim/docs"
+
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	"github.com/joho/godotenv"
@@ -53,10 +56,16 @@ func main() {
 	eventService := eventService.NewEventService(eventRepo)
 	eventController := event.NewEventController(eventService)
 
+	// Initialize Ticket
+	ticketRepo := ticketRepo.NewTicketRepository(db)
+	ticketService := ticketService.NewTicketService(ticketRepo)
+	ticketController := ticket.NewTicketController(ticketService, authService, eventService)	
+
 	// Initialize Routes
 	routeController := routes.RouteController{
 		AuthController:   authController,
 		EventController:  eventController, 
+		TicketController: ticketController,
 	}
 	routeController.InitRoute(e)
 

@@ -1,10 +1,12 @@
 package auth
 
 import (
+	"errors"
 	"lokajatim/controllers/auth/request"
 	"lokajatim/controllers/auth/response"
 	"lokajatim/controllers/base"
 	services "lokajatim/services/auth"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -71,4 +73,19 @@ func (userController AuthController) RegisterController(c echo.Context) error {
 	}
 
 	return base.SuccesResponse(c, response.RegisterFromEntities(user))
+}
+
+func (authController AuthController) GetUserByID(c echo.Context) error {
+    userID, err := strconv.Atoi(c.Param("id"))
+    if err != nil || userID <= 0 {
+        return base.ErrorResponse(c, errors.New("invalid user ID"), nil)
+    }
+
+    user, err := authController.authService.GetUserByID(userID)
+    if err != nil {
+        return base.ErrorResponse(c, err, nil)
+    }
+
+    response := response.RegisterFromEntities(user)
+    return base.SuccesResponse(c, response)
 }

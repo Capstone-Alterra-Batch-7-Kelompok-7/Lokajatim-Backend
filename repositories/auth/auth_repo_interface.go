@@ -7,4 +7,5 @@ type AuthRepoInterface interface {
 	Register(user entities.User) (entities.User, error)
 	GetUserByEmail(email string) (entities.User, error)
 	GetLastUserID() (int, error)
+	GetUserByID(userID int) (entities.User, error)
 }

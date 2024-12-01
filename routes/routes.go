@@ -6,6 +6,7 @@ import (
 
 	"lokajatim/controllers/auth"
 	"lokajatim/controllers/event"
+	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -17,6 +18,7 @@ import (
 type RouteController struct {
 	AuthController *auth.AuthController
 	EventController *event.EventController
+	TicketController *ticket.TicketController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -39,9 +41,16 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	}))
 
 	// Event routes
-	e.GET("/events", rc.EventController.GetAllEvents)
-	e.GET("/events/:id", rc.EventController.GetEventByID)
-	e.POST("/events", rc.EventController.CreateEvent)
-	e.PUT("/events/:id", rc.EventController.UpdateEvent)
-	e.DELETE("/events/:id", rc.EventController.DeleteEvent)
+	eJWT.GET("/events", rc.EventController.GetAllEvents)
+	eJWT.GET("/events/:id", rc.EventController.GetEventByID)
+	eJWT.POST("/events", rc.EventController.CreateEvent)
+	eJWT.PUT("/events/:id", rc.EventController.UpdateEvent)
+	eJWT.DELETE("/events/:id", rc.EventController.DeleteEvent)
+
+	// Ticket routes
+	eJWT.GET("/tickets", rc.TicketController.GetAllTickets)
+	eJWT.GET("/tickets/:id", rc.TicketController.GetTicketByID)
+	eJWT.POST("/tickets", rc.TicketController.CreateTicket)
+	eJWT.PUT("/tickets/:id", rc.TicketController.UpdateTicket)
+	eJWT.DELETE("/tickets/:id", rc.TicketController.DeleteTicket)
 }

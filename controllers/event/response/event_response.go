@@ -2,7 +2,6 @@ package response
 
 import (
 	"lokajatim/entities"
-	"time"
 )
 
 // EventResponse is the response for the event controller
@@ -19,7 +18,7 @@ type EventResponse struct {
 	ID          uint      `json:"id"`
 	Name        string    `json:"name"`
 	Location    string    `json:"location"`
-	DateTime    time.Time `json:"date_time"`
+	DateTime    string `json:"date_time"`
 	Capacity    int       `json:"capacity"`
 	Price       int       `json:"price"`
 	Description string    `json:"description,omitempty"`

@@ -2,7 +2,6 @@ package request
 
 import (
 	"lokajatim/entities"
-	"time"
 )
 
 // EventRequest is the request for the event endpoint
@@ -17,7 +16,7 @@ import (
 type EventRequest struct {
 	Name        string    `json:"name"`
 	Location    string    `json:"location"`
-	DateTime    time.Time `json:"date_time"`
+	DateTime    string `json:"date_time"`
 	Capacity    int       `json:"capacity"`
 	Price       int   	  `json:"price"`
 	Description string    `json:"description,omitempty"`
