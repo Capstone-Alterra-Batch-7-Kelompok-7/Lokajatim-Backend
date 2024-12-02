@@ -7,16 +7,22 @@ import (
 	authController "lokajatim/controllers/auth"
 	commentController "lokajatim/controllers/comment"
 	likeController "lokajatim/controllers/like"
+	"lokajatim/controllers/event"
+	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
 	articleRepo "lokajatim/repositories/article"
 	authRepo "lokajatim/repositories/auth"
 	commentRepo "lokajatim/repositories/comment"
 	likeRepo "lokajatim/repositories/like"
+	eventRepo "lokajatim/repositories/event"
 	"lokajatim/routes"
 	articleService "lokajatim/services/article"
 	authService "lokajatim/services/auth"
 	commentService "lokajatim/services/comment"
 	likeService "lokajatim/services/like"
+	eventService "lokajatim/services/event"
+	ticketRepo "lokajatim/repositories/ticket"
+	ticketService "lokajatim/services/ticket"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -36,7 +42,7 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	// Initialize the database connection
+	// Initialize Database
 	db, err := config.InitDatabase()
 	if err != nil {
 		log.Fatalf("Database initialization failed: %v", err)
@@ -46,7 +52,10 @@ func main() {
 	// Initialize Echo
 	e := echo.New()
 
-	// Initialize Auth components
+	// Initialize CORS middleware
+	middleware.InitCors(e)
+
+	// Initialize Auth
 	authJwt := middleware.JwtLokajatim{}
 	authRepo := authRepo.NewAuthRepo(db)
 	authService := authService.NewAuthService(authRepo, authJwt)
@@ -67,14 +76,26 @@ func main() {
 	likeService := likeService.NewLikeService(likeRepo)
 	likeController := likeController.NewLikeController(*likeService)
 
+	// Initialize Event
+	eventRepo := eventRepo.NewEventRepo(db)
+	eventService := eventService.NewEventService(eventRepo)
+	eventController := event.NewEventController(eventService)
+
+	// Initialize Ticket
+	ticketRepo := ticketRepo.NewTicketRepository(db)
+	ticketService := ticketService.NewTicketService(ticketRepo)
+	ticketController := ticket.NewTicketController(ticketService, authService, eventService)	
+
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
 		AuthController:    authController,
 		ArticleController: articleController,
 		CommentController: commentController,
 		LikeController:    likeController,
+		EventController:  eventController, 
+		TicketController: ticketController,
 	}
-
+	
 	// Setup routes
 	routeController.InitRoute(e)
 

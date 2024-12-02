@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"lokajatim/entities"
 
 	"gorm.io/gorm"
@@ -42,13 +43,27 @@ func (authRepo AuthRepo) GetUserByEmail(email string) (entities.User, error) {
 }
 
 func (authRepo AuthRepo) GetLastUserID() (int, error) {
-    var user entities.User
-    err := authRepo.db.Last(&user).Error
-    if err != nil {
-        if errors.Is(err, gorm.ErrRecordNotFound) {
-            return 1, nil
-        }
-        return 0, err
-    }
-    return user.ID, nil
+	var user entities.User
+	err := authRepo.db.Last(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 1, nil
+		}
+		return 0, err
+	}
+	return user.ID, nil
+}
+
+func (r *AuthRepo) GetUserByID(userID int) (entities.User, error) {
+	var user entities.User
+	result := r.db.First(&user, userID)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return entities.User{}, fmt.Errorf("user not found")
+	}
+	if result.Error != nil {
+		return entities.User{}, result.Error
+	}
+
+	return user, nil
 }
