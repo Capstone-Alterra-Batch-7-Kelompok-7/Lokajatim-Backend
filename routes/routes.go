@@ -9,6 +9,8 @@ import (
 	"lokajatim/controllers/comment"
 	"lokajatim/controllers/like"
 
+	"lokajatim/controllers/event"
+	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -19,6 +21,8 @@ import (
 
 type RouteController struct {
 	AuthController    *auth.AuthController
+	EventController *event.EventController
+	TicketController *ticket.TicketController
 	CommentController *comment.CommentController
 	ArticleController *article.ArticleController
 	LikeController    *like.LikeController
@@ -42,6 +46,20 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 			return new(middleware.JwtCustomClaims)
 		},
 	}))
+
+	// Event routes
+	eJWT.GET("/events", rc.EventController.GetAllEvents)
+	eJWT.GET("/events/:id", rc.EventController.GetEventByID)
+	eJWT.POST("/events", rc.EventController.CreateEvent)
+	eJWT.PUT("/events/:id", rc.EventController.UpdateEvent)
+	eJWT.DELETE("/events/:id", rc.EventController.DeleteEvent)
+
+	// Ticket routes
+	eJWT.GET("/tickets", rc.TicketController.GetAllTickets)
+	eJWT.GET("/tickets/:id", rc.TicketController.GetTicketByID)
+	eJWT.POST("/tickets", rc.TicketController.CreateTicket)
+	eJWT.PUT("/tickets/:id", rc.TicketController.UpdateTicket)
+	eJWT.DELETE("/tickets/:id", rc.TicketController.DeleteTicket)
 
 	// Article Routes
 	eJWT.GET("/articles", rc.ArticleController.GetAll)

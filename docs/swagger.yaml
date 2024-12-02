@@ -26,6 +26,25 @@ definitions:
       updated_at:
         type: string
     type: object
+  entities.Ticket:
+    properties:
+      created_at:
+        type: string
+      events_id:
+        type: integer
+      id:
+        type: integer
+      payment_method:
+        type: string
+      status:
+        type: string
+      total_amount:
+        type: integer
+      updated_at:
+        type: string
+      users_id:
+        type: integer
+    type: object
   entities.User:
     properties:
       address:
@@ -66,6 +85,24 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  request.EventRequest:
+    description: EventRequest is the request for creating or updating an event
+    properties:
+      capacity:
+        type: integer
+      date_time:
+        type: string
+      description:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      url_photo:
+        type: string
     type: object
   request.LikeRequest:
     description: LikeRequest is the request for the Like endpoint
@@ -131,6 +168,26 @@ definitions:
         type: integer
       count:
         type: integer
+    type: object
+  response.EventResponse:
+    description: EventResponse is the response for event data retrieval
+    properties:
+      capacity:
+        type: integer
+      date_time:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      url_photo:
+        type: string
     type: object
   response.IsLikedResponse:
     properties:
@@ -407,6 +464,168 @@ paths:
       summary: Get comments by article ID
       tags:
       - Comment
+  /events:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all events
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/response.EventResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get All Events
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: Create a new event
+      parameters:
+      - description: Event data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create Event
+      tags:
+      - Event
+  /events/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an event by ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete Event
+      tags:
+      - Event
+    get:
+      consumes:
+      - application/json
+      description: Get details of an event by ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get Event by ID
+      tags:
+      - Event
+    put:
+      consumes:
+      - application/json
+      description: Update an existing event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated event data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update Event
+      tags:
+      - Event
   /likes:
     post:
       consumes:
@@ -548,4 +767,118 @@ paths:
       summary: Register
       tags:
       - Auth
+  /tickets:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Ticket'
+                  type: array
+              type: object
+      summary: Get All Tickets
+      tags:
+      - Ticket
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create Ticket
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Create Ticket
+      tags:
+      - Ticket
+  /tickets/{id}:
+    delete:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete Ticket
+      tags:
+      - Ticket
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Get Ticket By ID
+      tags:
+      - Ticket
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Ticket
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Update Ticket
+      tags:
+      - Ticket
 swagger: "2.0"
