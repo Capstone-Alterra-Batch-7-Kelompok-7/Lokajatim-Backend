@@ -78,6 +78,9 @@ func main() {
 	// Setup routes
 	routeController.InitRoute(e)
 
+	// CORS middleware
+	middleware.InitCors(e)
+
 	// Swagger endpoint
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
