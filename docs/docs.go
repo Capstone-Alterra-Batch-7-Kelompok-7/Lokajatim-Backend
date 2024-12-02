@@ -252,6 +252,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/comments/article/{article_id}": {
+            "get": {
+                "description": "Get comments by article ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comment"
+                ],
+                "summary": "Get comments by article ID",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CommentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/comments/{id}": {
             "get": {
                 "description": "Get comment by ID",
@@ -268,7 +297,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID of the article",
+                        "description": "ID of the comment",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -279,6 +308,42 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.CommentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete comment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comment"
+                ],
+                "summary": "Delete comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the comment",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
                         }
                     },
                     "400": {
@@ -329,41 +394,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/likes/count/{article_id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Likes"
-                ],
-                "summary": "Count likes for an article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Article ID",
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CountLikesResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/base.BaseResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/likes/{article_id}": {
+        "/likes/articles/{article_id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -372,15 +403,6 @@ const docTemplate = `{
                     "Likes"
                 ],
                 "summary": "Get all likes for an article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Article ID",
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -400,33 +422,20 @@ const docTemplate = `{
                 }
             }
         },
-        "/likes/{article_id}/{user_id}": {
-            "delete": {
+        "/likes/articles/{article_id}/count": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "Likes"
                 ],
-                "summary": "Unlike an article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Article ID",
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Count likes for an article",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.BaseResponse"
+                            "$ref": "#/definitions/response.CountLikesResponse"
                         }
                     },
                     "400": {
@@ -438,7 +447,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/likes/{article_id}/{user_id}/status": {
+        "/likes/{article_id}/users/{user_id}/status": {
             "get": {
                 "produces": [
                     "application/json"
@@ -447,27 +456,33 @@ const docTemplate = `{
                     "Likes"
                 ],
                 "summary": "Check if a user liked an article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Article ID",
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.IsLikedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/likes/{article_id}/{user_id}": {
+            "delete": {
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Unlike an article",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
                         }
                     },
                     "400": {

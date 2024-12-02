@@ -340,12 +340,36 @@ paths:
       tags:
       - Comment
   /comments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete comment
+      parameters:
+      - description: ID of the comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete comment
+      tags:
+      - Comment
     get:
       consumes:
       - application/json
       description: Get comment by ID
       parameters:
-      - description: ID of the article
+      - description: ID of the comment
         in: path
         name: id
         required: true
@@ -362,6 +386,25 @@ paths:
           schema:
             $ref: '#/definitions/base.BaseResponse'
       summary: Get comment by ID
+      tags:
+      - Comment
+  /comments/article/{article_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get comments by article ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get comments by article ID
       tags:
       - Comment
   /likes:
@@ -389,14 +432,38 @@ paths:
       summary: Like an article
       tags:
       - Likes
-  /likes/{article_id}:
+  /likes/{article_id}/{user_id}:
+    delete:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Unlike an article
+      tags:
+      - Likes
+  /likes/{article_id}/users/{user_id}/status:
     get:
-      parameters:
-      - description: Article ID
-        in: path
-        name: article_id
-        required: true
-        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IsLikedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Check if a user liked an article
+      tags:
+      - Likes
+  /likes/articles/{article_id}:
+    get:
       produces:
       - application/json
       responses:
@@ -413,66 +480,8 @@ paths:
       summary: Get all likes for an article
       tags:
       - Likes
-  /likes/{article_id}/{user_id}:
-    delete:
-      parameters:
-      - description: Article ID
-        in: path
-        name: article_id
-        required: true
-        type: integer
-      - description: User ID
-        in: path
-        name: user_id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/base.BaseResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/base.BaseResponse'
-      summary: Unlike an article
-      tags:
-      - Likes
-  /likes/{article_id}/{user_id}/status:
+  /likes/articles/{article_id}/count:
     get:
-      parameters:
-      - description: Article ID
-        in: path
-        name: article_id
-        required: true
-        type: integer
-      - description: User ID
-        in: path
-        name: user_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.IsLikedResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/base.BaseResponse'
-      summary: Check if a user liked an article
-      tags:
-      - Likes
-  /likes/count/{article_id}:
-    get:
-      parameters:
-      - description: Article ID
-        in: path
-        name: article_id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
