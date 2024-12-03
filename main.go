@@ -7,6 +7,7 @@ import (
 	authController "lokajatim/controllers/auth"
 	commentController "lokajatim/controllers/comment"
 	likeController "lokajatim/controllers/like"
+	categoryController "lokajatim/controllers/category"
 	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
@@ -15,6 +16,7 @@ import (
 	commentRepo "lokajatim/repositories/comment"
 	likeRepo "lokajatim/repositories/like"
 	eventRepo "lokajatim/repositories/event"
+	categoryRepo "lokajatim/repositories/category" 
 	"lokajatim/routes"
 	articleService "lokajatim/services/article"
 	authService "lokajatim/services/auth"
@@ -23,6 +25,7 @@ import (
 	eventService "lokajatim/services/event"
 	ticketRepo "lokajatim/repositories/ticket"
 	ticketService "lokajatim/services/ticket"
+	categoryService "lokajatim/services/category"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -84,7 +87,12 @@ func main() {
 	// Initialize Ticket
 	ticketRepo := ticketRepo.NewTicketRepository(db)
 	ticketService := ticketService.NewTicketService(ticketRepo)
-	ticketController := ticket.NewTicketController(ticketService, authService, eventService)	
+	ticketController := ticket.NewTicketController(ticketService, authService, eventService)
+	
+	// Initialize Category components
+	categoryRepo := categoryRepo.NewCategoryRepository(db)
+	categoryService := categoryService.NewCategoryService(categoryRepo)
+	categoryController := categoryController.NewCategoryController(*categoryService)
 
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
@@ -94,6 +102,7 @@ func main() {
 		LikeController:    likeController,
 		EventController:  eventController, 
 		TicketController: ticketController,
+		CategoryController: categoryController,
 	}
 	
 	// Setup routes

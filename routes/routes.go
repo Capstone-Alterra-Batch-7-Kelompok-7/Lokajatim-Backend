@@ -11,6 +11,7 @@ import (
 
 	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
+	"lokajatim/controllers/category"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -26,6 +27,7 @@ type RouteController struct {
 	CommentController *comment.CommentController
 	ArticleController *article.ArticleController
 	LikeController    *like.LikeController
+	CategoryController *category.CategoryController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -80,4 +82,11 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.GET("/likes/articles/:article_id", rc.LikeController.GetLikesByArticle)
 	eJWT.GET("/likes/articles/:article_id/count", rc.LikeController.CountLikes)
 	eJWT.GET("/likes/articles/:article_id/users/:user_id/status", rc.LikeController.IsUserLikedArticle)
+
+	// Category Routes
+	eJWT.GET("/categories", rc.CategoryController.GetCategories)
+	eJWT.GET("/categories/:id", rc.CategoryController.GetCategoryByID)
+	eJWT.POST("/categories", rc.CategoryController.CreateCategory)
+	eJWT.PUT("/categories/:id", rc.CategoryController.UpdateCategory)
+	eJWT.DELETE("/categories/:id", rc.CategoryController.DeleteCategory)
 }
