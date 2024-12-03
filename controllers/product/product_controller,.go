@@ -127,7 +127,7 @@ func (h *ProductController) UpdateProduct(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID of the product"
-// @Success 200 {object} "Product deleted successfully"
+// @Success 200 "Product deleted successfully"
 // @Failure 400 {object} base.BaseResponse
 // @Router /products/{id} [delete]
 func (h *ProductController) DeleteProduct(c echo.Context) error {
