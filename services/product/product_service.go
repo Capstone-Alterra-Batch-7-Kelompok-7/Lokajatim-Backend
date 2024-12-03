@@ -25,8 +25,8 @@ func (s *ProductService) CreateProduct(product entities.Product) (entities.Produ
 	return s.productRepository.CreateProduct(product)
 }
 
-func (s *ProductService) UpdateProduct(product entities.Product) (entities.Product, error) {
-	return s.productRepository.UpdateProduct(product)
+func (s *ProductService) UpdateProduct(id int, product entities.Product) (entities.Product, error) {
+	return s.productRepository.UpdateProduct(id, product)
 }
 
 func (s *ProductService) DeleteProduct(id int) error {

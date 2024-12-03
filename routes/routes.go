@@ -12,6 +12,7 @@ import (
 	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
 	"lokajatim/controllers/category"
+	"lokajatim/controllers/product"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -28,6 +29,7 @@ type RouteController struct {
 	ArticleController *article.ArticleController
 	LikeController    *like.LikeController
 	CategoryController *category.CategoryController
+	ProductController *product.ProductController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -89,4 +91,11 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.POST("/categories", rc.CategoryController.CreateCategory)
 	eJWT.PUT("/categories/:id", rc.CategoryController.UpdateCategory)
 	eJWT.DELETE("/categories/:id", rc.CategoryController.DeleteCategory)
+
+	// Product Routes
+	eJWT.GET("/products", rc.ProductController.GetAllProducts)
+	eJWT.GET("/products/:id", rc.ProductController.GetProductByID)
+	eJWT.POST("/products", rc.ProductController.CreateProduct)
+	eJWT.PUT("/products/:id", rc.ProductController.UpdateProduct)
+	eJWT.DELETE("/products/:id", rc.ProductController.DeleteProduct)
 }

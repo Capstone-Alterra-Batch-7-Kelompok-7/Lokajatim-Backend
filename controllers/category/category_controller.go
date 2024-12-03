@@ -24,7 +24,6 @@ func NewCategoryController(service category.CategoryService) *CategoryController
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param request body request.CategoryRequest true "Category Request"
 // @Success 200 {object} response.CategoryResponse
 // @Failure 400 {object} base.BaseResponse
 // @Router /categories [get]
