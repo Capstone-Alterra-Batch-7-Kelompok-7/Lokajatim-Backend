@@ -32,6 +32,11 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	// Authentication routes
 	e.POST("/login", rc.AuthController.LoginController)
 	e.POST("/register", rc.AuthController.RegisterController)
+	// Route untuk forgot password (mengirim OTP)
+	e.POST("/forgot-password", rc.AuthController.SendOTPController)
+
+	// Route untuk reset password
+	e.POST("/reset-password", rc.AuthController.ResetPasswordController)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, CORS with Clean Architecture!")

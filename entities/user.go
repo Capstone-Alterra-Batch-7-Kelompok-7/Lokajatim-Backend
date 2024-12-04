@@ -10,4 +10,5 @@ type User struct {
 	NIK         string `json:"nik" gorm:"null"`
 	Token       string `json:"token"`
 	Role        string `json:"role"`
+	OTP         string `json:"otp"`
 }

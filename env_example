@@ -7,3 +7,7 @@ JWT_SECRET_KEY=""
 GEMINI_API_KEY=""
 WEATHER_API_KEY=""
 WEATHER_API_URL=""
+SMTP_EMAIL=lokajatimalterra@gmail.com
+SMTP_PASSWORD=""
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587

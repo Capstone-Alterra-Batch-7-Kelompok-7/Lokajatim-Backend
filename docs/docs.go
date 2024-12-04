@@ -622,6 +622,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/forgot-password": {
+            "post": {
+                "description": "This endpoint sends an OTP to the provided email address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Send OTP to the user's email",
+                "parameters": [
+                    {
+                        "description": "Request to send OTP",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SendOTPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OTP sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response.SendOTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid email address",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/likes": {
             "post": {
                 "consumes": [
@@ -834,6 +880,52 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/reset-password": {
+            "post": {
+                "description": "This endpoint resets the password after validating the OTP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset the user's password",
+                "parameters": [
+                    {
+                        "description": "Request to reset password",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ResetPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResetPasswordResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid OTP or email",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/base.BaseResponse"
                         }
@@ -1123,6 +1215,9 @@ const docTemplate = `{
                 "nik": {
                     "type": "string"
                 },
+                "otp": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -1232,6 +1327,33 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ResetPasswordRequest": {
+            "description": "ResetPasswordRequest is the request for the reset password endpoint",
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                },
+                "otp": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.SendOTPRequest": {
+            "description": "SendOTPRequest is the request for sending an OTP to the user's email",
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
                     "type": "string"
                 }
             }
@@ -1385,6 +1507,24 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "nama": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ResetPasswordResponse": {
+            "description": "ResetPasswordResponse contains the message confirming the result of the password reset action",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SendOTPResponse": {
+            "description": "SendOTPResponse contains the message confirming the result of sending an OTP",
+            "type": "object",
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }
