@@ -67,3 +67,33 @@ func (r *AuthRepo) GetUserByID(userID int) (entities.User, error) {
 
 	return user, nil
 }
+
+func (authRepo *AuthRepo) StoreOTP(email string, otp string) error {
+	var user entities.User
+	if err := authRepo.db.First(&user, "email = ?", email).Error; err != nil {
+		return err
+	}
+	user.OTP = otp
+	if err := authRepo.db.Save(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (authRepo *AuthRepo) VerifyOTP(email string, otp string) (bool, error) {
+	var user entities.User
+	if err := authRepo.db.First(&user, "email = ?", email).Error; err != nil {
+		return false, err
+	}
+	if user.OTP != otp {
+		return false, fmt.Errorf("invalid OTP")
+	}
+	return true, nil
+}
+
+func (authRepo *AuthRepo) UpdatePassword(user entities.User) error {
+	if err := authRepo.db.Save(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}

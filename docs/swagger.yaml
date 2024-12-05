@@ -68,6 +68,8 @@ definitions:
         type: string
       nik:
         type: string
+      otp:
+        type: string
       password:
         type: string
       phone_number:
@@ -173,6 +175,24 @@ definitions:
         type: string
       role:
         type: string
+    type: object
+  request.ResetPasswordRequest:
+    description: ResetPasswordRequest is the request for the reset password endpoint
+    properties:
+      email:
+        type: string
+      new_password:
+        type: string
+      otp:
+        type: string
+    type: object
+  request.SendOTPRequest:
+    description: SendOTPRequest is the request for sending an OTP to the user's email
+    properties:
+      email:
+        type: string
+    required:
+    - email
     type: object
   response.ArticleResponse:
     description: ArticleResponse is the response for the Article controller
@@ -309,6 +329,20 @@ definitions:
       id:
         type: integer
       nama:
+        type: string
+    type: object
+  response.ResetPasswordResponse:
+    description: ResetPasswordResponse contains the message confirming the result
+      of the password reset action
+    properties:
+      message:
+        type: string
+    type: object
+  response.SendOTPResponse:
+    description: SendOTPResponse contains the message confirming the result of sending
+      an OTP
+    properties:
+      message:
         type: string
     type: object
 host: localhost:8000
@@ -820,6 +854,36 @@ paths:
       summary: Update Event
       tags:
       - Event
+  /forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint sends an OTP to the provided email address
+      parameters:
+      - description: Request to send OTP
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.SendOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP sent successfully
+          schema:
+            $ref: '#/definitions/response.SendOTPResponse'
+        "400":
+          description: Invalid email address
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Send OTP to the user's email
+      tags:
+      - Auth
   /likes:
     post:
       consumes:
@@ -1080,6 +1144,36 @@ paths:
           schema:
             $ref: '#/definitions/base.BaseResponse'
       summary: Register
+      tags:
+      - Auth
+  /reset-password:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint resets the password after validating the OTP
+      parameters:
+      - description: Request to reset password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset successfully
+          schema:
+            $ref: '#/definitions/response.ResetPasswordResponse'
+        "400":
+          description: Invalid OTP or email
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Reset the user's password
       tags:
       - Auth
   /tickets:

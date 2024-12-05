@@ -35,6 +35,11 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	// Public Authentication Routes
 	e.POST("/login", rc.AuthController.LoginController)
 	e.POST("/register", rc.AuthController.RegisterController)
+	// Route untuk forgot password (mengirim OTP)
+	e.POST("/forgot-password", rc.AuthController.SendOTPController)
+
+	// Route untuk reset password
+	e.POST("/reset-password", rc.AuthController.ResetPasswordController)
 
 	// Basic route to check if API is up and running
 	e.GET("/", func(c echo.Context) error {

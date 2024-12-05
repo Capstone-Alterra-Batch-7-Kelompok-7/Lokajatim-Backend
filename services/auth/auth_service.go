@@ -2,10 +2,12 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"lokajatim/constant"
 	"lokajatim/entities"
 	"lokajatim/middleware"
 	"lokajatim/repositories/auth"
+	"lokajatim/utils"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -103,15 +105,62 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 func (authService AuthService) GetUserByID(userID int) (entities.User, error) {
-    if userID <= 0 {
-        return entities.User{}, errors.New("invalid user ID")
-    }
+	if userID <= 0 {
+		return entities.User{}, errors.New("invalid user ID")
+	}
 
-    // Ambil user dari database menggunakan authRepoInterface
-    user, err := authService.authRepoInterface.GetUserByID(userID)
-    if err != nil {
-        return entities.User{}, err
-    }
+	// Ambil user dari database menggunakan authRepoInterface
+	user, err := authService.authRepoInterface.GetUserByID(userID)
+	if err != nil {
+		return entities.User{}, err
+	}
 
-    return user, nil
+	return user, nil
+}
+
+func (authService *AuthService) SendOTPToEmail(email string) (string, error) {
+	// Cek apakah email ada
+	_, err := authService.authRepoInterface.GetUserByEmail(email)
+	if err != nil {
+		return "", fmt.Errorf("email tidak ditemukan")
+	}
+
+	// Generate OTP
+	otp := utils.GenerateOTP()
+
+	// Simpan OTP ke database
+	if err := authService.authRepoInterface.StoreOTP(email, otp); err != nil {
+		return "", err
+	}
+
+	// Kirim OTP via email
+	if err := utils.SendOTPEmail(email, otp); err != nil {
+		return "", err
+	}
+
+	return "OTP berhasil dikirim", nil
+}
+
+func (authService *AuthService) ResetPassword(email string, otp string, newPassword string) (string, error) {
+	// Verifikasi OTP
+	valid, err := authService.authRepoInterface.VerifyOTP(email, otp)
+	if err != nil || !valid {
+		return "", fmt.Errorf("OTP tidak valid")
+	}
+
+	// Hash password baru
+	hashedPassword, err := HashPassword(newPassword)
+	if err != nil {
+		return "", err
+	}
+
+	// Update password user
+	user, _ := authService.authRepoInterface.GetUserByEmail(email)
+	user.Password = hashedPassword
+
+	if err := authService.authRepoInterface.UpdatePassword(user); err != nil {
+		return "", err
+	}
+
+	return "Password berhasil diperbarui", nil
 }

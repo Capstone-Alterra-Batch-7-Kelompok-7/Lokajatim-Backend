@@ -5,6 +5,7 @@ go 1.22.0
 toolchain go1.23.0
 
 require (
+	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/swaggo/swag v1.16.4
 	gorm.io/driver/mysql v1.5.7
 )
@@ -22,6 +23,8 @@ require (
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.27.0 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/mail.v2 v2.3.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
