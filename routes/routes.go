@@ -8,7 +8,6 @@ import (
 	"lokajatim/controllers/auth"
 	"lokajatim/controllers/comment"
 	"lokajatim/controllers/like"
-
 	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
 	"lokajatim/controllers/category"
@@ -22,26 +21,27 @@ import (
 )
 
 type RouteController struct {
-	AuthController    *auth.AuthController
-	EventController *event.EventController
-	TicketController *ticket.TicketController
-	CommentController *comment.CommentController
-	ArticleController *article.ArticleController
-	LikeController    *like.LikeController
-	CategoryController *category.CategoryController
-	ProductController *product.ProductController
+	AuthController      *auth.AuthController
+	EventController     *event.EventController
+	TicketController    *ticket.TicketController
+	CommentController   *comment.CommentController
+	ArticleController   *article.ArticleController
+	LikeController      *like.LikeController
+	CategoryController  *category.CategoryController
+	ProductController   *product.ProductController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
-	// Authentication routes
+	// Public Authentication Routes
 	e.POST("/login", rc.AuthController.LoginController)
 	e.POST("/register", rc.AuthController.RegisterController)
 
+	// Basic route to check if API is up and running
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, CORS with Clean Architecture!")
 	})
 
-	// Protected routes with JWT
+	// Grouped routes with JWT authentication
 	eJWT := e.Group("")
 	eJWT.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte(os.Getenv("JWT_SECRET_KEY")),
@@ -51,14 +51,14 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 		},
 	}))
 
-	// Event routes
+	// Event Routes
 	eJWT.GET("/events", rc.EventController.GetAllEvents)
 	eJWT.GET("/events/:id", rc.EventController.GetEventByID)
 	eJWT.POST("/events", rc.EventController.CreateEvent)
 	eJWT.PUT("/events/:id", rc.EventController.UpdateEvent)
 	eJWT.DELETE("/events/:id", rc.EventController.DeleteEvent)
 
-	// Ticket routes
+	// Ticket Routes
 	eJWT.GET("/tickets", rc.TicketController.GetAllTickets)
 	eJWT.GET("/tickets/:id", rc.TicketController.GetTicketByID)
 	eJWT.POST("/tickets", rc.TicketController.CreateTicket)
@@ -72,8 +72,8 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.PUT("/articles/:id", rc.ArticleController.Update)
 	eJWT.DELETE("/articles/:id", rc.ArticleController.Delete)
 
-	// Comments Routes
-	eJWT.GET("comments/article/:article_id", rc.CommentController.GetCommentsByArticleID)
+	// Comment Routes
+	eJWT.GET("/comments/article/:article_id", rc.CommentController.GetCommentsByArticleID)
 	eJWT.GET("/comments/:id", rc.CommentController.GetCommentByID)
 	eJWT.POST("/comments", rc.CommentController.Create)
 	eJWT.DELETE("/comments/:id", rc.CommentController.Delete)

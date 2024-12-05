@@ -10,4 +10,8 @@ type ProductRepositoryInterface interface {
 	CreateProduct(product entities.Product) (entities.Product, error)
 	UpdateProduct(id int, product entities.Product) (entities.Product, error)
 	DeleteProduct(id int) error
+	CreateProductPhotos(photos []entities.ProductPhoto) error
+	GetProductPhotos(productID int) ([]entities.ProductPhoto, error)
+	UpdateProductPhotos(productID int, photos []entities.ProductPhoto) error
+	DeleteProductPhotos(productID int) error
 }

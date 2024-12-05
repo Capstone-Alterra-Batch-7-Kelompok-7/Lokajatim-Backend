@@ -54,7 +54,13 @@ func (h *ProductController) GetProductByID(c echo.Context) error {
 			"error": "Failed to get product",
 		})
 	}
-	return base.SuccesResponse(c, product)
+	photos, err := h.ProductService.GetProductPhotos(id)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to get product photos",
+		})
+	}
+	return base.SuccesResponse(c, response.ProductFromEntities(product, photos))
 }
 
 // @Summary Create product
@@ -73,19 +79,40 @@ func (h *ProductController) CreateProduct(c echo.Context) error {
 			"error": "Failed to bind request",
 		})
 	}
+
+	// Convert to entity
 	product, err := req.ToEntities()
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to convert request to entities",
 		})
 	}
-	created, err := h.ProductService.CreateProduct(product)
+
+	// Create the product
+	createdProduct, err := h.ProductService.CreateProduct(product)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to create product",
 		})
 	}
-	return base.SuccesResponse(c, created)
+
+	// Create product photos
+	photos, err := req.ToProductPhotos(createdProduct.ID)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to convert photos to entities",
+		})
+	}
+
+	// Save photos
+	err = h.ProductService.CreateProductPhotos(photos)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to save product photos",
+		})
+	}
+
+	return base.SuccesResponse(c, response.ProductFromEntities(createdProduct, photos))
 }
 
 // @Summary Update product
@@ -106,19 +133,40 @@ func (h *ProductController) UpdateProduct(c echo.Context) error {
 			"error": "Failed to bind request",
 		})
 	}
+
+	// Convert to entity
 	product, err := req.ToEntities()
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to convert request to entities",
 		})
 	}
-	updated, err := h.ProductService.UpdateProduct(id, product)
+
+	// Update the product
+	updatedProduct, err := h.ProductService.UpdateProduct(id, product)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to update product",
 		})
 	}
-	return base.SuccesResponse(c, response.ProductFromEntities(updated))
+
+	// Handle product photos
+	photos, err := req.ToProductPhotos(updatedProduct.ID)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to convert photos to entities",
+		})
+	}
+
+	// Delete old photos before adding new ones (if applicable)
+	err = h.ProductService.UpdateProductPhotos(updatedProduct.ID, photos)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to update product photos",
+		})
+	}
+
+	return base.SuccesResponse(c, response.ProductFromEntities(updatedProduct, photos))
 }
 
 // @Summary Delete product

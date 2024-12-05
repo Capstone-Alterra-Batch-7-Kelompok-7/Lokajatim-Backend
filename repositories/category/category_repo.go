@@ -43,12 +43,12 @@ func (r *CategoryRepositoryImpl) CreateCategory(category entities.Category) (ent
 }
 
 func (r *CategoryRepositoryImpl) UpdateCategory(id int, category entities.Category) (entities.Category, error) {
-	if err := r.db.Model(&entities.Category{}).Where("id = ?", category.ID).Updates(category).Error; err != nil {
+	if err := r.db.Model(&entities.Category{}).Where("id = ?", id).Updates(category).Error; err != nil {
 		return entities.Category{}, err
 	}
 
 	var updatedCategory entities.Category
-	if err := r.db.First(&updatedCategory, category.ID).Error; err != nil {
+	if err := r.db.First(&updatedCategory, id).Error; err != nil {
 		return entities.Category{}, err
 	}
 	return updatedCategory, nil

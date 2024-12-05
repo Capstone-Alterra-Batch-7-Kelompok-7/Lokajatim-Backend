@@ -32,3 +32,19 @@ func (s *ProductService) UpdateProduct(id int, product entities.Product) (entiti
 func (s *ProductService) DeleteProduct(id int) error {
 	return s.productRepository.DeleteProduct(id)
 }
+
+func (s *ProductService) CreateProductPhotos(photos []entities.ProductPhoto) error {
+	return s.productRepository.CreateProductPhotos(photos)
+}
+
+func (s *ProductService) GetProductPhotos(productID int) ([]entities.ProductPhoto, error) {
+	return s.productRepository.GetProductPhotos(productID)
+}
+
+func (s *ProductService) UpdateProductPhotos(productID int, photos []entities.ProductPhoto) error {
+	return s.productRepository.UpdateProductPhotos(productID, photos)
+}
+
+func (s *ProductService) DeleteProductPhotos(productID int) error {
+	return s.productRepository.DeleteProductPhotos(productID)
+}

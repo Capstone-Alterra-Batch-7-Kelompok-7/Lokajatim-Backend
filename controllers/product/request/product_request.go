@@ -11,21 +11,36 @@ import "lokajatim/entities"
 // @Param Photo string true "URL Photo of the product"
 // @Param CategoryID int true "Category ID of the product"
 type ProductRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Price 	 int    `json:"price" validate:"required"`
-	Stock 	 int    `json:"stock" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Photo       string `json:"photo" validate:"required"`
-	CategoryID  int    `json:"category_id" validate:"required"`
+	Name        string   `json:"name" validate:"required"`
+	Price       int      `json:"price" validate:"required"`
+	Stock       int      `json:"stock" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	CategoryID  int      `json:"category_id" validate:"required"`
+	Photos      []string `json:"photos" validate:"required"`
+}
+
+type PhotoRequest struct {
+	UrlPhoto  string `json:"url_photo" validate:"required"`
 }
 
 func (productRequest ProductRequest) ToEntities() (entities.Product, error) {
-	return entities.Product{
+	product := entities.Product{
 		Name:        productRequest.Name,
 		Price:       productRequest.Price,
 		Stock:       productRequest.Stock,
 		Description: productRequest.Description,
-		Photo:       productRequest.Photo,
 		CategoryID:  productRequest.CategoryID,
-	}, nil
+	}
+	return product, nil
+}
+
+func (productRequest ProductRequest) ToProductPhotos(productID int) ([]entities.ProductPhoto, error) {
+	photos := make([]entities.ProductPhoto, len(productRequest.Photos))
+	for i, url := range productRequest.Photos {
+		photos[i] = entities.ProductPhoto{
+			UrlPhoto:  url,
+			ProductID: productID,
+		}
+	}
+	return photos, nil
 }
