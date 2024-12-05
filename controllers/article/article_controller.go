@@ -24,7 +24,6 @@ func NewArticleController(service article.ArticleService) *ArticleController {
 // @Tags Article
 // @Accept json
 // @Produce json
-// @Param request body request.ArticleRequest true "Article Request"
 // @Success 200 {object} response.ArticleResponse
 // @Failure 400 {object} base.BaseResponse
 // @Router /articles [get]
