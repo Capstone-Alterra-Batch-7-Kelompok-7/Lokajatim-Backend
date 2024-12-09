@@ -72,23 +72,23 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 
 	// Article Routes
 	e.GET("/articles", rc.ArticleController.GetAll)
-	eJWT.GET("/articles/:id", rc.ArticleController.GetByID)
-	eJWT.POST("/articles", rc.ArticleController.Create)
-	eJWT.PUT("/articles/:id", rc.ArticleController.Update)
-	eJWT.DELETE("/articles/:id", rc.ArticleController.Delete)
+	e.GET("/articles/:id", rc.ArticleController.GetByID)
+	e.POST("/articles", rc.ArticleController.Create)
+	e.PUT("/articles/:id", rc.ArticleController.Update)
+	e.DELETE("/articles/:id", rc.ArticleController.Delete)
 
 	// Comment Routes
 	e.GET("/comments/article/:article_id", rc.CommentController.GetCommentsByArticleID)
-	eJWT.GET("/comments/:id", rc.CommentController.GetCommentByID)
-	eJWT.POST("/comments", rc.CommentController.Create)
-	eJWT.DELETE("/comments/:id", rc.CommentController.Delete)
+	e.GET("/comments/:id", rc.CommentController.GetCommentByID)
+	e.POST("/comments", rc.CommentController.Create)
+	e.DELETE("/comments/:id", rc.CommentController.Delete)
 
 	// Like Routes
-	eJWT.POST("/likes", rc.LikeController.LikeArticle)
-	eJWT.DELETE("/likes/:article_id/:user_id", rc.LikeController.UnlikeArticle)
+	e.POST("/likes", rc.LikeController.LikeArticle)
+	e.DELETE("/likes/:article_id/:user_id", rc.LikeController.UnlikeArticle)
 	e.GET("/likes/articles/:article_id", rc.LikeController.GetLikesByArticle)
 	e.GET("/likes/articles/:article_id/count", rc.LikeController.CountLikes)
-	eJWT.GET("/likes/articles/:article_id/users/:user_id/status", rc.LikeController.IsUserLikedArticle)
+	e.GET("/likes/articles/:article_id/users/:user_id/status", rc.LikeController.IsUserLikedArticle)
 
 	// Category Routes
 	eJWT.GET("/categories", rc.CategoryController.GetCategories)
@@ -99,7 +99,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 
 	// Product Routes
 	e.GET("/products", rc.ProductController.GetAllProducts)
-	eJWT.GET("/products/:id", rc.ProductController.GetProductByID)
+	e.GET("/products/:id", rc.ProductController.GetProductByID)
 	eJWT.POST("/products", rc.ProductController.CreateProduct)
 	eJWT.PUT("/products/:id", rc.ProductController.UpdateProduct)
 	eJWT.DELETE("/products/:id", rc.ProductController.DeleteProduct)
