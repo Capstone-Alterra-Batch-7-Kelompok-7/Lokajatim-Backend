@@ -75,13 +75,13 @@ func (userController AuthController) RegisterController(c echo.Context) error {
 	return base.SuccesResponse(c, response.RegisterFromEntities(user))
 }
 
-func (authController AuthController) GetUserByID(c echo.Context) error {
+func (userController AuthController) GetUserByID(c echo.Context) error {
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil || userID <= 0 {
 		return base.ErrorResponse(c, errors.New("invalid user ID"), nil)
 	}
 
-	user, err := authController.authService.GetUserByID(userID)
+	user, err := userController.authService.GetUserByID(userID)
 	if err != nil {
 		return base.ErrorResponse(c, err, nil)
 	}
@@ -101,14 +101,14 @@ func (authController AuthController) GetUserByID(c echo.Context) error {
 // @Failure 400 {object} base.BaseResponse "Invalid email address"
 // @Failure 500 {object} base.BaseResponse "Internal server error"
 // @Router /forgot-password [post]
-func (ac *AuthController) SendOTPController(c echo.Context) error {
+func (userController *AuthController) SendOTPController(c echo.Context) error {
 	var request request.SendOTPRequest
 	if err := c.Bind(&request); err != nil {
 		return base.ErrorResponse(c, err, "Failed to bind request parameters")
 	}
 
 	// Call service to send OTP
-	message, err := ac.authService.SendOTPToEmail(request.Email)
+	message, err := userController.authService.SendOTPToEmail(request.Email)
 	if err != nil {
 		return base.ErrorResponse(c, err, "Failed to send OTP to email adress")
 	}
@@ -129,14 +129,14 @@ func (ac *AuthController) SendOTPController(c echo.Context) error {
 // @Failure 400 {object} base.BaseResponse "Invalid OTP or email"
 // @Failure 500 {object} base.BaseResponse "Internal server error"
 // @Router /reset-password [post]
-func (ac *AuthController) ResetPasswordController(c echo.Context) error {
+func (userController *AuthController) ResetPasswordController(c echo.Context) error {
 	var request request.ResetPasswordRequest
 	if err := c.Bind(&request); err != nil {
 		return base.ErrorResponse(c, err, nil)
 	}
 
 	// Call service to reset password
-	message, err := ac.authService.ResetPassword(request.Email, request.OTP, request.NewPassword)
+	message, err := userController.authService.ResetPassword(request.Email, request.OTP, request.NewPassword)
 	if err != nil {
 		return base.ErrorResponse(c, err, nil)
 	}
@@ -145,3 +145,84 @@ func (ac *AuthController) ResetPasswordController(c echo.Context) error {
 	response := response.ResetPasswordResponse{Message: message}
 	return base.SuccesResponse(c, response)
 }
+
+// GetAllUsersController handles fetching all users
+// @Summary Get All Users
+// @Description Fetch a list of all users
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {array} response.RegisterResponse "List of users"
+// @Failure 500 {object} base.BaseResponse "Internal server error"
+// @Router /users [get]
+func (userController *AuthController) GetAllUsersController(c echo.Context) error {
+	users, err := userController.authService.GetAllUsers()
+	if err != nil {
+		return base.ErrorResponse(c, err, nil)
+	}
+
+	var userResponses []response.UpdateUserResponse
+	for _, user := range users {
+		userResponses = append(userResponses, response.UpdateFromEntities(user))
+	}
+
+	return base.SuccesResponse(c, userResponses)
+}
+
+// UpdateUserController handles updating a user's data
+// @Summary Update User
+// @Description Update a user's information by ID
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param request body request.UpdateUserRequest true "Update User Request"
+// @Success 200 {object} response.RegisterResponse "User updated successfully"
+// @Failure 400 {object} base.BaseResponse "Invalid input or user not found"
+// @Failure 500 {object} base.BaseResponse "Internal server error"
+// @Router /users/{id} [put]
+func (userController *AuthController) UpdateUserController(c echo.Context) error {
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || userID <= 0 {
+		return base.ErrorResponse(c, errors.New("invalid user ID"), nil)
+	}
+
+	var updateRequest request.UpdateUserRequest
+	if err := c.Bind(&updateRequest); err != nil {
+		return base.ErrorResponse(c, err, "Failed to bind request parameters")
+	}
+
+	updatedUser, err := userController.authService.UpdateUser(userID, updateRequest.ToEntities())
+	if err != nil {
+		return base.ErrorResponse(c, err, nil)
+	}
+
+	response := response.UpdateFromEntities(updatedUser)
+	return base.SuccesResponse(c, response)
+}
+
+// DeleteUserController handles deleting a user
+// @Summary Delete User
+// @Description Delete a user by ID
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} base.BaseResponse "User deleted successfully"
+// @Failure 400 {object} base.BaseResponse "Invalid user ID"
+// @Failure 500 {object} base.BaseResponse "Internal server error"
+// @Router /users/{id} [delete]
+func (ac *AuthController) DeleteUserController(c echo.Context) error {
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || userID <= 0 {
+		return base.ErrorResponse(c, errors.New("invalid user ID"), nil)
+	}
+
+	err = ac.authService.DeleteUser(userID)
+	if err != nil {
+		return base.ErrorResponse(c, err, nil)
+	}
+
+	return base.SuccesResponse(c, map[string]string{"message": "User deleted successfully"})
+}
+

@@ -6,9 +6,9 @@ type UpdateUserResponse struct {
 	ID          int    `json:"id_user"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
-	Address     string `json:"address,omitempty"`
-	PhoneNumber string `json:"phone_number,omitempty"`
-	NIK         string `json:"nik,omitempty"`
+	Address     string `json:"address"`
+	PhoneNumber string `json:"phone_number"`
+	NIK         string `json:"nik"`
 }
 
 func UpdateFromEntities(user entities.User) UpdateUserResponse {

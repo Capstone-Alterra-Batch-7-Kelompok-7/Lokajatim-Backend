@@ -164,3 +164,39 @@ func (authService *AuthService) ResetPassword(email string, otp string, newPassw
 
 	return "Password berhasil diperbarui", nil
 }
+
+func (authService *AuthService) GetAllUsers() ([]entities.User, error) {
+	return authService.authRepoInterface.GetAllUsers()
+}
+
+func (authService *AuthService) UpdateUser(userID int, updatedData entities.User) (entities.User, error) {
+	existingUser, err := authService.authRepoInterface.GetUserByID(userID)
+	if err != nil {
+		return entities.User{}, errors.New("user not found")
+	}
+
+	if updatedData.Name != "" {
+		existingUser.Name = updatedData.Name
+	}
+	if updatedData.Address != "" {
+		existingUser.Address = updatedData.Address
+	}
+	if updatedData.PhoneNumber != "" {
+		existingUser.PhoneNumber = updatedData.PhoneNumber
+	}
+	if updatedData.NIK != "" {
+		existingUser.NIK = updatedData.NIK
+	}
+
+	// Save the updated user in the database
+	updatedUser, err := authService.authRepoInterface.UpdateUser(existingUser)
+	if err != nil {
+		return entities.User{}, errors.New("failed to update user")
+	}
+
+	return updatedUser, nil
+}
+
+func (authService *AuthService) DeleteUser(userID int) error {
+	return authService.authRepoInterface.DeleteUser(userID)
+}

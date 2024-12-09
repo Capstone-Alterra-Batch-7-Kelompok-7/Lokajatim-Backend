@@ -97,3 +97,19 @@ func (authRepo *AuthRepo) UpdatePassword(user entities.User) error {
 	}
 	return nil
 }
+
+func (authRepo *AuthRepo) GetAllUsers() ([]entities.User, error) {
+	var users []entities.User
+	err := authRepo.db.Find(&users).Error
+	return users, err
+}
+
+func (authRepo *AuthRepo) UpdateUser(user entities.User) (entities.User, error) {
+	err := authRepo.db.Model(&entities.User{}).Where("id = ?", user.ID).Updates(&user).Error
+	return user, err
+}
+
+func (authRepo *AuthRepo) DeleteUser(userID int) error {
+	err := authRepo.db.Delete(&entities.User{}, userID).Error
+	return err
+}
