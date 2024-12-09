@@ -12,7 +12,7 @@ func InitCors(e *echo.Echo) {
 			"https://testingcapstone1.vercel.app",
 			"https://capstoneprojecttest.vercel.app/",
 			"https://fixtesting.vercel.app",
-			"https://lokajatim-frontend.vercel.app/",
+			"https://lokajatim-frontend.vercel.app",
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
