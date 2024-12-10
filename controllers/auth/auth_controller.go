@@ -97,7 +97,7 @@ func (userController AuthController) GetUserByID(c echo.Context) error {
 		return base.ErrorResponse(c, err, nil)
 	}
 
-	response := response.RegisterFromEntities(user)
+	response := response.UpdateFromEntities(user)
 	return base.SuccesResponse(c, response)
 }
 
