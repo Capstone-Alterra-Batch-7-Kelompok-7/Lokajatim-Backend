@@ -75,6 +75,17 @@ func (userController AuthController) RegisterController(c echo.Context) error {
 	return base.SuccesResponse(c, response.RegisterFromEntities(user))
 }
 
+// GetUserByID handles the request to retrieve a user by their ID.
+// @Summary Get User by ID
+// @Description Retrieve details of a user by their ID
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} base.BaseResponse{data=response.UserResponse}
+// @Failure 400 {object} base.BaseResponse
+// @Failure 404 {object} base.BaseResponse
+// @Router /users/{id} [get]
 func (userController AuthController) GetUserByID(c echo.Context) error {
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil || userID <= 0 {

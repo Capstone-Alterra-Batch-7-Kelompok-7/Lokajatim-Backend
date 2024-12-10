@@ -58,6 +58,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 
 	// Auth Routes
 	eJWT.GET("/users", rc.AuthController.GetAllUsersController)
+	eJWT.GET("/users/:id", rc.AuthController.GetUserByID)
 	eJWT.PUT("/users/:id", rc.AuthController.UpdateUserController)
 	eJWT.DELETE("/users/:id", rc.AuthController.DeleteUserController)
 
