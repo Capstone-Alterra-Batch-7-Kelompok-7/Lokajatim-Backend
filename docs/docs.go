@@ -201,6 +201,212 @@ const docTemplate = `{
                 }
             }
         },
+        "/carts": {
+            "post": {
+                "description": "Add item to cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Add item to cart",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the user",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Cart Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CartResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/{cart_id}/clear": {
+            "delete": {
+                "description": "Clear cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Clear cart",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the cart",
+                        "name": "cart_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/{cart_item_id}": {
+            "put": {
+                "description": "Update item quantity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Update item quantity",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the cart item",
+                        "name": "cart_item_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Quantity Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.QuantityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CartItemResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove item from cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Remove item from cart",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the cart item",
+                        "name": "cart_item_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/{user_id}": {
+            "get": {
+                "description": "Get cart by user ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Get cart by user ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the user",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CartResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/categories": {
             "get": {
                 "description": "Get all categories",
@@ -1039,7 +1245,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ProductResponse"
+                            "$ref": "#/definitions/lokajatim_controllers_product_response.ProductResponse"
                         }
                     },
                     "400": {
@@ -1077,7 +1283,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/response.ProductResponse"
+                            "$ref": "#/definitions/lokajatim_controllers_product_response.ProductResponse"
                         }
                     },
                     "400": {
@@ -1115,7 +1321,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ProductResponse"
+                            "$ref": "#/definitions/lokajatim_controllers_product_response.ProductResponse"
                         }
                     },
                     "400": {
@@ -1160,7 +1366,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ProductResponse"
+                            "$ref": "#/definitions/lokajatim_controllers_product_response.ProductResponse"
                         }
                     },
                     "400": {
@@ -1607,6 +1813,75 @@ const docTemplate = `{
                 }
             }
         },
+        "lokajatim_controllers_cart_response.ProductResponse": {
+            "description": "ProductResponse is the response for product data retrieval",
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "lokajatim_controllers_product_response.ProductResponse": {
+            "description": "ProductResponse is the response for product data retrieval",
+            "type": "object",
+            "properties": {
+                "category": {
+                    "$ref": "#/definitions/entities.Category"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "request.ArticleRequest": {
             "description": "ArticleRequest is the request for the Article endpoint",
             "type": "object",
@@ -1619,6 +1894,41 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "request.CartItemRequest": {
+            "description": "CartItemRequest is the request for the CartItem endpoint",
+            "type": "object",
+            "required": [
+                "product_id",
+                "quantity"
+            ],
+            "properties": {
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.CartRequest": {
+            "description": "CartRequest is the request for the Cart endpoint",
+            "type": "object",
+            "required": [
+                "cart_items",
+                "user_id"
+            ],
+            "properties": {
+                "cart_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.CartItemRequest"
+                    }
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -1707,8 +2017,9 @@ const docTemplate = `{
                 "category_id",
                 "description",
                 "name",
-                "photo",
+                "photos",
                 "price",
+                "rating",
                 "stock"
             ],
             "properties": {
@@ -1721,13 +2032,31 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "photo": {
-                    "type": "string"
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "price": {
                     "type": "integer"
                 },
+                "rating": {
+                    "type": "number"
+                },
                 "stock": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.QuantityRequest": {
+            "description": "QuantityRequest is the request for the Quantity endpoint",
+            "type": "object",
+            "required": [
+                "quantity"
+            ],
+            "properties": {
+                "quantity": {
                     "type": "integer"
                 }
             }
@@ -1801,6 +2130,63 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CartItemResponse": {
+            "description": "CartItemResponse is the response for cart item data retrieval",
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product": {
+                    "$ref": "#/definitions/lokajatim_controllers_cart_response.ProductResponse"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.CartResponse": {
+            "description": "CartResponse is the response for cart data retrieval",
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CartItemResponse"
+                    }
+                },
+                "total_price": {
+                    "type": "number"
+                },
+                "total_price_after_transaction": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/response.UserResponse"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.CategoryResponse": {
             "description": "CategoryResponse is the response for the Category controller",
             "type": "object",
@@ -1841,6 +2227,7 @@ const docTemplate = `{
             }
         },
         "response.CountLikesResponse": {
+            "description": "CountLikesResponse is the response for the CountLikes endpoint",
             "type": "object",
             "properties": {
                 "article_id": {
@@ -1882,6 +2269,7 @@ const docTemplate = `{
             }
         },
         "response.IsLikedResponse": {
+            "description": "IsLikedResponse is the response for the IsLiked endpoint",
             "type": "object",
             "properties": {
                 "article_id": {
@@ -1896,6 +2284,7 @@ const docTemplate = `{
             }
         },
         "response.LikeResponse": {
+            "description": "LikeResponse is the response for the Like endpoint",
             "type": "object",
             "properties": {
                 "Article": {
@@ -1933,42 +2322,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ProductResponse": {
-            "description": "ProductResponse is the response for the Product controller",
-            "type": "object",
-            "properties": {
-                "Category": {
-                    "$ref": "#/definitions/entities.Category"
-                },
-                "category_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "photo": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "stock": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "response.RegisterResponse": {
             "description": "RegisterResponse is the response for the Register controller",
             "type": "object",
@@ -1998,6 +2351,27 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.UserResponse": {
+            "description": "UserResponse is the response for user data retrieval",
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone_number": {
                     "type": "string"
                 }
             }
