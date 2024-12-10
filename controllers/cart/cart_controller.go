@@ -18,6 +18,15 @@ func NewCartController(service cart.CartService) *CartController {
 	return &CartController{CartService: service}
 }
 
+// @Summary Get cart by user ID
+// @Description Get cart by user ID
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param user_id path int true "ID of the user"
+// @Success 200 {object} response.CartResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /carts/{user_id} [get]
 func (h *CartController) GetCartByUserID(c echo.Context) error {
 	userID, _ := strconv.Atoi(c.Param("user_id"))
 	cart, err := h.CartService.FindByUserID(userID)
@@ -34,6 +43,16 @@ func (h *CartController) GetCartByUserID(c echo.Context) error {
 	return base.SuccesResponse(c, response.CartFromEntities(cart))
 }
 
+// @Summary Add item to cart
+// @Description Add item to cart
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param user_id path int true "ID of the user"
+// @Param request body request.CartRequest true "Cart Request"
+// @Success 200 {object} response.CartResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /carts [post]
 func (h *CartController) AddItemToCart(c echo.Context) error {
 	req := new(request.CartRequest)
 	if err := c.Bind(req); err != nil {
@@ -49,7 +68,6 @@ func (h *CartController) AddItemToCart(c echo.Context) error {
 		})
 	}
 
-	// Add items to the cart
 	for _, cartItem := range cartItems {
 		_, err = h.CartService.AddItemToCart(cart.UserID, cartItem)
 		if err != nil {
@@ -59,7 +77,6 @@ func (h *CartController) AddItemToCart(c echo.Context) error {
 		}
 	}
 
-	// Retrieve updated cart
 	cart, err = h.CartService.FindByUserID(cart.UserID)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
@@ -69,6 +86,16 @@ func (h *CartController) AddItemToCart(c echo.Context) error {
 	return base.SuccesResponse(c, response.CartFromEntities(cart))
 }
 
+// @Summary Update item quantity
+// @Description Update item quantity
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param cart_item_id path int true "ID of the cart item"
+// @Param request body request.QuantityRequest true "Quantity Request"
+// @Success 200 {object} response.CartItemResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /carts/{cart_item_id} [put]
 func (h *CartController) UpdateItemQuantity(c echo.Context) error {
 	cartItemID, _ := strconv.Atoi(c.Param("cart_item_id"))
 	var quantity request.QuantityRequest
@@ -103,6 +130,15 @@ func (h *CartController) UpdateItemQuantity(c echo.Context) error {
 	})
 }
 
+// @Summary Remove item from cart
+// @Description Remove item from cart
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param cart_item_id path int true "ID of the cart item"
+// @Success 200 {object} base.BaseResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /carts/{cart_item_id} [delete]
 func (h *CartController) RemoveItemFromCart(c echo.Context) error {
 	cartItemID, _ := strconv.Atoi(c.Param("cart_item_id"))
 	err := h.CartService.RemoveItemFromCart(cartItemID)
@@ -114,6 +150,15 @@ func (h *CartController) RemoveItemFromCart(c echo.Context) error {
 	return base.SuccesResponse(c, "Item removed from cart successfully")
 }
 
+// @Summary Clear cart
+// @Description Clear cart
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param cart_id path int true "ID of the cart"
+// @Success 200 {object} base.BaseResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /carts/{cart_id}/clear [delete]
 func (h *CartController) ClearCart(c echo.Context) error {
 	cartID, _ := strconv.Atoi(c.Param("cart_id"))
 	err := h.CartService.ClearCart(cartID)
