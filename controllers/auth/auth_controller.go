@@ -82,7 +82,7 @@ func (userController AuthController) RegisterController(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} base.BaseResponse{data=response.UserResponse}
+// @Success 200 {object} base.BaseResponse{data=response.UpdateUserResponse}
 // @Failure 400 {object} base.BaseResponse
 // @Failure 404 {object} base.BaseResponse
 // @Router /users/{id} [get]

@@ -363,6 +363,21 @@ definitions:
       message:
         type: string
     type: object
+  response.UpdateUserResponse:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id_user:
+        type: integer
+      name:
+        type: string
+      nik:
+        type: string
+      phone_number:
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact: {}
@@ -1358,6 +1373,39 @@ paths:
       summary: Delete User
       tags:
       - Auth
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.UpdateUserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get User by ID
+      tags:
+      - Users
     put:
       consumes:
       - application/json
