@@ -20,73 +20,87 @@ func NewCartController(service cart.CartService) *CartController {
 
 func (h *CartController) GetCartByUserID(c echo.Context) error {
 	userID, _ := strconv.Atoi(c.Param("user_id"))
-	cart, err := h.CartService.GetCartbyUserID(userID)
+	cart, err := h.CartService.FindByUserID(userID)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to get cart",
+		})
+	}
+	if cart.ID == 0 {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Cart not found",
 		})
 	}
 	return base.SuccesResponse(c, response.CartFromEntities(cart))
 }
 
 func (h *CartController) AddItemToCart(c echo.Context) error {
-	req := new(request.CartItemRequest)
+	req := new(request.CartRequest)
 	if err := c.Bind(req); err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to bind request",
 		})
 	}
 
-	cartItem, err := req.ToEntities()
+	cart, cartItems, err := req.ToEntities()
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to convert request to entities",
 		})
 	}
 
-	// Retrieve user ID from context
-	userID := c.Get("user_id").(int) // Assumes user_id is stored in the context
-
-	// Add the item to the cart using the service, handle both return values (CartItem, error)
-	_, err = h.CartService.AddItemToCart(cartItem) 
-	if err != nil {
-		return base.ErrorResponse(c, err, map[string]string{
-			"error": "Failed to add item to cart",
-		})
+	// Add items to the cart
+	for _, cartItem := range cartItems {
+		_, err = h.CartService.AddItemToCart(cart.UserID, cartItem)
+		if err != nil {
+			return base.ErrorResponse(c, err, map[string]string{
+				"error": "Failed to add item to cart",
+			})
+		}
 	}
 
-	// Fetch the updated cart for the user
-	updatedCart, err := h.CartService.GetCartbyUserID(userID)
+	// Retrieve updated cart
+	cart, err = h.CartService.FindByUserID(cart.UserID)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to fetch updated cart",
 		})
 	}
-
-	// Return success response with updated cart
-	return base.SuccesResponse(c, response.CartFromEntities(updatedCart))
+	return base.SuccesResponse(c, response.CartFromEntities(cart))
 }
-
 
 func (h *CartController) UpdateItemQuantity(c echo.Context) error {
 	cartItemID, _ := strconv.Atoi(c.Param("cart_item_id"))
-	var quantity struct {
-		Quantity int `json:"quantity" validate:"required"`
-	}
+	var quantity request.QuantityRequest
 	if err := c.Bind(&quantity); err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to bind quantity",
 		})
 	}
 
-	err := h.CartService.UpdateItemQuantity(cartItemID, quantity.Quantity)
+	cartItem, err := h.CartService.UpdateItemQuantity(cartItemID, quantity.Quantity)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
-			"error": "Failed to add item quantity",
+			"error": "Failed to update item quantity",
 		})
 	}
 
-	return base.SuccesResponse(c, "Item quantity added successfully")
+	return base.SuccesResponse(c, response.CartItemResponse{
+		ID:        cartItem.ID,
+		ProductID: cartItem.ProductID,
+		Product: response.ProductResponse{
+			ID:          cartItem.Product.ID,
+			Name:        cartItem.Product.Name,
+			Price:       cartItem.Product.Price,
+			Stock:       cartItem.Product.Stock,
+			Description: cartItem.Product.Description,
+			CreatedAt:   cartItem.Product.CreatedAt,
+			UpdatedAt:   cartItem.Product.UpdatedAt,
+		},
+		Quantity:  cartItem.Quantity,
+		CreatedAt: cartItem.CreatedAt,
+		UpdatedAt: cartItem.UpdatedAt,
+	})
 }
 
 func (h *CartController) RemoveItemFromCart(c echo.Context) error {

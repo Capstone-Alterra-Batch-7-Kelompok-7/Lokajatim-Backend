@@ -6,56 +6,106 @@ import (
 	"gorm.io/gorm"
 )
 
-type CartRepositoryImpl struct {
+type cartRepository struct {
 	db *gorm.DB
 }
 
 func NewCartRepository(db *gorm.DB) CartRepositoryInterface {
-	return &CartRepositoryImpl{db: db}
+	return &cartRepository{db: db}
 }
 
-func (r *CartRepositoryImpl) GetCartbyUserID(userID int) (entities.Cart, error) {
+func (r *cartRepository) FindByUserID(userID int) (entities.Cart, error) {
 	var cart entities.Cart
-	err := r.db.Preload("Items.Product").Where("user_id = ?", userID).Find(&cart).Error
-	if err != nil {
-		return entities.Cart{}, err
+	result := r.db.Preload("Items.Product").Preload("User").First(&cart, "user_id = ?", userID)
+	if result.Error != nil {
+		return entities.Cart{}, result.Error
 	}
-	cart.CalculateTotalPrice()
-
 	return cart, nil
 }
 
-func (r *CartRepositoryImpl) AddItemToCart(cartItem entities.CartItem) (entities.CartItem, error) {
-	var existingItem entities.CartItem
-	err := r.db.Where("cart_id = ? AND product_id = ?", cartItem.CartID, cartItem.ProductID).First(&existingItem).Error
-	if err == nil {
-		existingItem.Quantity += cartItem.Quantity
-		if updateErr := r.db.Save(&existingItem).Error; updateErr != nil {
-			return entities.CartItem{}, updateErr
+// FindByID finds a cart by its ID
+func (r *cartRepository) FindByID(cartID int) (entities.Cart, error) {
+	var cart entities.Cart
+	result := r.db.Preload("Items.Product").Preload("User").First(&cart, cartID)
+	if result.Error != nil {
+		return entities.Cart{}, result.Error
+	}
+	return cart, nil
+}
+
+// Create creates a new cart in the database
+func (r *cartRepository) Create(cart entities.Cart) (entities.Cart, error) {
+	if err := r.db.Create(&cart).Error; err != nil {
+		return entities.Cart{}, err
+	}
+	return cart, nil
+}
+
+// AddItemToCart adds a CartItem to the Cart
+func (r *cartRepository) AddItemToCart(userID int, cartItem entities.CartItem) (entities.CartItem, error) {
+	var cart entities.Cart
+	result := r.db.Preload("Items.Product").Preload("User").First(&cart, "user_id = ?", userID)
+
+	if result.Error != nil {
+		cart = entities.Cart{UserID: userID}
+		if err := r.db.Create(&cart).Error; err != nil {
+			return entities.CartItem{}, err
 		}
-		return existingItem, nil
 	}
 
+	cartItem.CartID = cart.ID
 	if err := r.db.Create(&cartItem).Error; err != nil {
+		return entities.CartItem{}, err
+	}
+	cart.CalculateTotalPrice()
+	if err := r.db.Save(&cart).Error; err != nil {
+		return entities.CartItem{}, err
+	}
+
+	return cartItem, nil
+}
+
+// UpdateItemQuantity updates the quantity of a CartItem
+func (r *cartRepository) UpdateItemQuantity(cartItemID int, quantity int) (entities.CartItem, error) {
+	var cartItem entities.CartItem
+	if err := r.db.Preload("Product").First(&cartItem, cartItemID).Error; err != nil {
+		return entities.CartItem{}, err
+	}
+	cartItem.Quantity = quantity
+	if err := r.db.Save(&cartItem).Error; err != nil {
 		return entities.CartItem{}, err
 	}
 	return cartItem, nil
 }
 
-func (r *CartRepositoryImpl) UpdateItemQuantity(cartItemID, quantity int) error {
+// RemoveItemFromCart removes a CartItem from the Cart
+func (r *cartRepository) RemoveItemFromCart(cartItemID int) error {
 	var cartItem entities.CartItem
 	if err := r.db.First(&cartItem, cartItemID).Error; err != nil {
 		return err
 	}
-	cartItem.Quantity += quantity
-
-	return r.db.Model(&cartItem).Update("quantity", quantity).Error
+	if err := r.db.Delete(&cartItem).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func (r *CartRepositoryImpl) RemoveItemFromCart(cartItemID int) error {
-	return r.db.Delete(&entities.CartItem{}, cartItemID).Error
-}
+// ClearCart removes all items in the Cart
+func (r *cartRepository) ClearCart(cartID int) error {
+	var cart entities.Cart
 
-func (r *CartRepositoryImpl) ClearCart(cartID int) error {
-	return r.db.Where("cart_id = ?", cartID).Delete(&entities.CartItem{}).Error
+	if err := r.db.First(&cart, cartID).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.Where("cart_id = ?", cartID).Delete(&entities.CartItem{}).Error; err != nil {
+		return err
+	}
+
+	cart.CalculateTotalPrice()
+	if err := r.db.Save(&cart).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

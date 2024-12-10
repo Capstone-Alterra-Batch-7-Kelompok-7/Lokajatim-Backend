@@ -5,15 +5,15 @@ import (
 	"time"
 )
 
-// CartResponse is the response for the Cart controller
-
 type CartResponse struct {
-	ID        int                `json:"id"`
-	UserID    int                `json:"user_id"`
-	User      UserResponse       `json:"user"`
-	Items     []CartItemResponse `json:"items"`
-	CreatedAt time.Time          `json:"created_at"`
-	UpdatedAt time.Time          `json:"updated_at"`
+	ID                         int                `json:"id"`
+	UserID                     int                `json:"user_id"`
+	User                       UserResponse       `json:"user"`
+	Items                      []CartItemResponse `json:"items"`
+	TotalPrice                 float64            `json:"total_price"`
+	TotalPriceAfterTransaction float64            `json:"total_price_after_transaction"`
+	CreatedAt                  time.Time          `json:"created_at"`
+	UpdatedAt                  time.Time          `json:"updated_at"`
 }
 
 type CartItemResponse struct {
@@ -26,8 +26,11 @@ type CartItemResponse struct {
 }
 
 type UserResponse struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Address     string `json:"address"`
+	PhoneNumber string `json:"phone_number"`
 }
 
 type ProductResponse struct {
@@ -41,10 +44,12 @@ type ProductResponse struct {
 }
 
 func CartFromEntities(cart entities.Cart) CartResponse {
-
 	userResponse := UserResponse{
-		ID:   cart.User.ID,
-		Name: cart.User.Name,
+		ID:          cart.User.ID,
+		Name:        cart.User.Name,
+		Email:       cart.User.Email,
+		Address:     cart.User.Address,
+		PhoneNumber: cart.User.PhoneNumber,
 	}
 
 	var itemResponses []CartItemResponse
@@ -60,12 +65,14 @@ func CartFromEntities(cart entities.Cart) CartResponse {
 	}
 
 	return CartResponse{
-		ID:        cart.ID,
-		UserID:    cart.UserID,
-		User:      userResponse,
-		Items:     itemResponses,
-		CreatedAt: cart.CreatedAt,
-		UpdatedAt: cart.UpdatedAt,
+		ID:                         cart.ID,
+		UserID:                     cart.UserID,
+		User:                       userResponse,
+		Items:                      itemResponses,
+		TotalPrice:                 cart.TotalPrice,
+		TotalPriceAfterTransaction: cart.TotalPriceAfterTransaction,
+		CreatedAt:                  cart.CreatedAt,
+		UpdatedAt:                  cart.UpdatedAt,
 	}
 }
 
