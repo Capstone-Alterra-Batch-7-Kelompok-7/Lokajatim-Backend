@@ -1405,7 +1405,7 @@ paths:
             $ref: '#/definitions/base.BaseResponse'
       summary: Get User by ID
       tags:
-      - Users
+      - Auth
     put:
       consumes:
       - application/json

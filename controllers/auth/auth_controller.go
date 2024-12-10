@@ -78,7 +78,7 @@ func (userController AuthController) RegisterController(c echo.Context) error {
 // GetUserByID handles the request to retrieve a user by their ID.
 // @Summary Get User by ID
 // @Description Retrieve details of a user by their ID
-// @Tags Users
+// @Tags Auth
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
