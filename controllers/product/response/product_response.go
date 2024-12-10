@@ -5,6 +5,19 @@ import (
 	"time"
 )
 
+// ProductResponse is the response for the product controller
+// @Description ProductResponse is the response for product data retrieval
+// @Param ID int true "ID of the product"
+// @Param Name string true "Name of the product"
+// @Param Price int true "Price of the product"
+// @Param Stock int true "Stock of the product"
+// @Param Description string true "Description of the product"
+// @Param Rating float64 true "Rating of the product"
+// @Param Photos []string true "Photos of the product"
+// @Param CategoryID int true "Category ID of the product"
+// @Param Category Category true "Category of the product"
+// @Param CreatedAt string true "Created at of the product"
+// @Param UpdatedAt string true "Updated at of the product"
 type ProductResponse struct {
 	ID          int               `json:"id"`
 	Name        string            `json:"name"`
