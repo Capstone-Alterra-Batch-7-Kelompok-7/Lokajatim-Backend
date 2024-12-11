@@ -10,6 +10,8 @@ import (
 	categoryController "lokajatim/controllers/category"
 	productController "lokajatim/controllers/product"
 	cartController "lokajatim/controllers/cart"
+	TransactionController "lokajatim/controllers/transaction"
+	PaymentController "lokajatim/controllers/payment"
 	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
@@ -21,6 +23,8 @@ import (
 	categoryRepo "lokajatim/repositories/category"
 	productRepo "lokajatim/repositories/product"
 	cartRepo "lokajatim/repositories/cart"
+	TransactionRepo "lokajatim/repositories/transaction"
+	PaymentRepo "lokajatim/repositories/payment"
 	"lokajatim/routes"
 	articleService "lokajatim/services/article"
 	authService "lokajatim/services/auth"
@@ -32,6 +36,8 @@ import (
 	categoryService "lokajatim/services/category"
 	productService "lokajatim/services/product"
 	cartService "lokajatim/services/cart"
+	TransactionService "lokajatim/services/transaction"
+	PaymentService "lokajatim/services/payment"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -109,6 +115,16 @@ func main() {
 	cartService := cartService.NewCartService(cartRepo)
 	cartController := cartController.NewCartController(*cartService)
 
+	// Initialize Transaction components
+	transactionRepo := TransactionRepo.NewTransactionRepository(db)
+	transactionService := TransactionService.NewTransactionService(transactionRepo)
+	transactionController := TransactionController.NewTransactionController(transactionService)
+
+	// Initialize Payment components
+	paymentRepo := PaymentRepo.NewPaymentRepository(db)
+	paymentService := PaymentService.NewPaymentService(paymentRepo, transactionRepo)
+	paymentController := PaymentController.NewPaymentController(paymentService)
+
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
 		AuthController:    authController,
@@ -120,6 +136,8 @@ func main() {
 		CategoryController: categoryController,
 		ProductController: productController,
 		CartController: cartController,
+		TransactionController: transactionController,
+		PaymentController: paymentController,
 	}
 
 	// Set up all routes using the routeController
