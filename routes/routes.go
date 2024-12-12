@@ -61,8 +61,14 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 		},
 	}))
 
+	// Auth Routes
+	eJWT.GET("/users", rc.AuthController.GetAllUsersController)
+	eJWT.GET("/users/:id", rc.AuthController.GetUserByID)
+	eJWT.PUT("/users/:id", rc.AuthController.UpdateUserController)
+	eJWT.DELETE("/users/:id", rc.AuthController.DeleteUserController)
+
 	// Event Routes
-	eJWT.GET("/events", rc.EventController.GetAllEvents)
+	e.GET("/events", rc.EventController.GetAllEvents)
 	eJWT.GET("/events/:id", rc.EventController.GetEventByID)
 	eJWT.POST("/events", rc.EventController.CreateEvent)
 	eJWT.PUT("/events/:id", rc.EventController.UpdateEvent)
@@ -76,24 +82,24 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.DELETE("/tickets/:id", rc.TicketController.DeleteTicket)
 
 	// Article Routes
-	eJWT.GET("/articles", rc.ArticleController.GetAll)
-	eJWT.GET("/articles/:id", rc.ArticleController.GetByID)
-	eJWT.POST("/articles", rc.ArticleController.Create)
-	eJWT.PUT("/articles/:id", rc.ArticleController.Update)
-	eJWT.DELETE("/articles/:id", rc.ArticleController.Delete)
+	e.GET("/articles", rc.ArticleController.GetAll)
+	e.GET("/articles/:id", rc.ArticleController.GetByID)
+	e.POST("/articles", rc.ArticleController.Create)
+	e.PUT("/articles/:id", rc.ArticleController.Update)
+	e.DELETE("/articles/:id", rc.ArticleController.Delete)
 
 	// Comment Routes
-	eJWT.GET("/comments/article/:article_id", rc.CommentController.GetCommentsByArticleID)
-	eJWT.GET("/comments/:id", rc.CommentController.GetCommentByID)
-	eJWT.POST("/comments", rc.CommentController.Create)
-	eJWT.DELETE("/comments/:id", rc.CommentController.Delete)
+	e.GET("/comments/article/:article_id", rc.CommentController.GetCommentsByArticleID)
+	e.GET("/comments/:id", rc.CommentController.GetCommentByID)
+	e.POST("/comments", rc.CommentController.Create)
+	e.DELETE("/comments/:id", rc.CommentController.Delete)
 
 	// Like Routes
-	eJWT.POST("/likes", rc.LikeController.LikeArticle)
-	eJWT.DELETE("/likes/:article_id/:user_id", rc.LikeController.UnlikeArticle)
-	eJWT.GET("/likes/articles/:article_id", rc.LikeController.GetLikesByArticle)
-	eJWT.GET("/likes/articles/:article_id/count", rc.LikeController.CountLikes)
-	eJWT.GET("/likes/articles/:article_id/users/:user_id/status", rc.LikeController.IsUserLikedArticle)
+	e.POST("/likes", rc.LikeController.LikeArticle)
+	e.DELETE("/likes/:article_id/:user_id", rc.LikeController.UnlikeArticle)
+	e.GET("/likes/articles/:article_id", rc.LikeController.GetLikesByArticle)
+	e.GET("/likes/articles/:article_id/count", rc.LikeController.CountLikes)
+	e.GET("/likes/articles/:article_id/users/:user_id/status", rc.LikeController.IsUserLikedArticle)
 
 	// Category Routes
 	eJWT.GET("/categories", rc.CategoryController.GetCategories)
@@ -103,8 +109,8 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.DELETE("/categories/:id", rc.CategoryController.DeleteCategory)
 
 	// Product Routes
-	eJWT.GET("/products", rc.ProductController.GetAllProducts)
-	eJWT.GET("/products/:id", rc.ProductController.GetProductByID)
+	e.GET("/products", rc.ProductController.GetAllProducts)
+	e.GET("/products/:id", rc.ProductController.GetProductByID)
 	eJWT.POST("/products", rc.ProductController.CreateProduct)
 	eJWT.PUT("/products/:id", rc.ProductController.UpdateProduct)
 	eJWT.DELETE("/products/:id", rc.ProductController.DeleteProduct)

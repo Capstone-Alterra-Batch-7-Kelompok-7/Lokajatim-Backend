@@ -249,8 +249,9 @@ definitions:
       name:
         type: string
       photos:
+        itemss:
         items:
-          type: string
+            type: string
         type: array
       price:
         type: integer
@@ -304,6 +305,21 @@ definitions:
         type: string
     required:
     - email
+    type: object
+  request.UpdateUserRequest:
+    properties:
+      address:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      nik:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - name
     type: object
   request.TransactionRequest:
     description: TransactionRequest is the request for transaction data retrieval
@@ -457,6 +473,31 @@ definitions:
       token:
         type: string
     type: object
+  response.ProductResponse:
+    properties:
+      category:
+        $ref: '#/definitions/entities.Category'
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   response.RegisterResponse:
     description: RegisterResponse is the response for the Register controller
     properties:
@@ -479,6 +520,21 @@ definitions:
       an OTP
     properties:
       message:
+        type: string
+    type: object
+  response.UpdateUserResponse:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id_user:
+        type: integer
+      name:
+        type: string
+      nik:
+        type: string
+      phone_number:
         type: string
     type: object
   response.TransactionResponse:
@@ -1584,6 +1640,123 @@ paths:
       summary: Update Ticket
       tags:
       - Ticket
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Fetch a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/response.RegisterResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get All Users
+      tags:
+      - Auth
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete User
+      tags:
+      - Auth
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.UpdateUserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get User by ID
+      tags:
+      - Auth
+    put:
+      consumes:
+      - application/json
+      description: Update a user's information by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update User Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            $ref: '#/definitions/response.RegisterResponse'
+        "400":
+          description: Invalid input or user not found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update User
+      tags:
+      - Auth
   /transactions:
     get:
       consumes:
