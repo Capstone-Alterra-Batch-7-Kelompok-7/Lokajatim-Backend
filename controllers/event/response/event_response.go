@@ -15,14 +15,14 @@ import (
 // @Param Description string false "Description of the event"
 // @Param UrlPhoto string false "URL of the event photo"
 type EventResponse struct {
-	ID          uint      `json:"id"`
-	Name        string    `json:"name"`
-	Location    string    `json:"location"`
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	Location    string `json:"location"`
 	DateTime    string `json:"date_time"`
-	Capacity    int       `json:"capacity"`
-	Price       int       `json:"price"`
-	Description string    `json:"description,omitempty"`
-	UrlPhoto    string    `json:"url_photo,omitempty"`
+	Capacity    int    `json:"capacity"`
+	Price       int    `json:"price"`
+	Description string `json:"description,omitempty"`
+	UrlPhoto    string `json:"url_photo,omitempty"`
 }
 
 // EventFromEntities maps Event entity to EventResponse

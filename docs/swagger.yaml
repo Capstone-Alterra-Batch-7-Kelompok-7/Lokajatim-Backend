@@ -79,6 +79,80 @@ definitions:
       token:
         type: string
     type: object
+  lokajatim_controllers_cart_response.ProductResponse:
+    description: ProductResponse is the response for product data retrieval
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  lokajatim_controllers_cart_response.UserResponse:
+    description: UserResponse is the response for user data retrieval
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  lokajatim_controllers_product_response.ProductResponse:
+    description: ProductResponse is the response for product data retrieval
+    properties:
+      category:
+        $ref: '#/definitions/entities.Category'
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      rating:
+        type: number
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  lokajatim_controllers_transaction_response.UserResponse:
+    description: UserResponse is the response for user data retrieval
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
   request.ArticleRequest:
     description: ArticleRequest is the request for the Article endpoint
     properties:
@@ -88,6 +162,30 @@ definitions:
         type: string
       title:
         type: string
+    type: object
+  request.CartItemRequest:
+    description: CartItemRequest is the request for the CartItem endpoint
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  request.CartRequest:
+    description: CartRequest is the request for the Cart endpoint
+    properties:
+      cart_items:
+        items:
+          $ref: '#/definitions/request.CartItemRequest'
+        type: array
+      user_id:
+        type: integer
+    required:
+    - cart_items
+    - user_id
     type: object
   request.CategoryRequest:
     description: CategoryRequest is the request for the Category endpoint
@@ -151,11 +249,14 @@ definitions:
       name:
         type: string
       photos:
+        itemss:
         items:
-          type: string
+            type: string
         type: array
       price:
         type: integer
+      rating:
+        type: number
       stock:
         type: integer
     required:
@@ -164,7 +265,16 @@ definitions:
     - name
     - photos
     - price
+    - rating
     - stock
+    type: object
+  request.QuantityRequest:
+    description: QuantityRequest is the request for the Quantity endpoint
+    properties:
+      quantity:
+        type: integer
+    required:
+    - quantity
     type: object
   request.RegisterRequest:
     description: RegisterRequest is the request for the register endpoint
@@ -211,6 +321,14 @@ definitions:
     required:
     - name
     type: object
+  request.TransactionRequest:
+    description: TransactionRequest is the request for transaction data retrieval
+    properties:
+      cart_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   response.ArticleResponse:
     description: ArticleResponse is the response for the Article controller
     properties:
@@ -226,6 +344,44 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  response.CartItemResponse:
+    description: CartItemResponse is the response for cart item data retrieval
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/lokajatim_controllers_cart_response.ProductResponse'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  response.CartResponse:
+    description: CartResponse is the response for cart data retrieval
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/response.CartItemResponse'
+        type: array
+      total_price:
+        type: number
+      total_price_after_transaction:
+        type: number
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/lokajatim_controllers_cart_response.UserResponse'
+      user_id:
+        type: integer
     type: object
   response.CategoryResponse:
     description: CategoryResponse is the response for the Category controller
@@ -254,6 +410,7 @@ definitions:
         $ref: '#/definitions/entities.User'
     type: object
   response.CountLikesResponse:
+    description: CountLikesResponse is the response for the CountLikes endpoint
     properties:
       article_id:
         type: integer
@@ -281,6 +438,7 @@ definitions:
         type: string
     type: object
   response.IsLikedResponse:
+    description: IsLikedResponse is the response for the IsLiked endpoint
     properties:
       article_id:
         type: integer
@@ -290,6 +448,7 @@ definitions:
         type: integer
     type: object
   response.LikeResponse:
+    description: LikeResponse is the response for the Like endpoint
     properties:
       Article:
         $ref: '#/definitions/entities.Article'
@@ -377,6 +536,28 @@ definitions:
         type: string
       phone_number:
         type: string
+    type: object
+  response.TransactionResponse:
+    description: TransactionResponse is the response for transaction data retrieval
+    properties:
+      cart_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      payment_url:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: number
+      transaction_id:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/lokajatim_controllers_transaction_response.UserResponse'
     type: object
 host: localhost:8000
 info:
@@ -508,6 +689,142 @@ paths:
       summary: Update article
       tags:
       - Article
+  /carts:
+    post:
+      consumes:
+      - application/json
+      description: Add item to cart
+      parameters:
+      - description: ID of the user
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: Cart Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Add item to cart
+      tags:
+      - Cart
+  /carts/{cart_id}/clear:
+    delete:
+      consumes:
+      - application/json
+      description: Clear cart
+      parameters:
+      - description: ID of the cart
+        in: path
+        name: cart_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Clear cart
+      tags:
+      - Cart
+  /carts/{cart_item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove item from cart
+      parameters:
+      - description: ID of the cart item
+        in: path
+        name: cart_item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Remove item from cart
+      tags:
+      - Cart
+    put:
+      consumes:
+      - application/json
+      description: Update item quantity
+      parameters:
+      - description: ID of the cart item
+        in: path
+        name: cart_item_id
+        required: true
+        type: integer
+      - description: Quantity Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.QuantityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CartItemResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update item quantity
+      tags:
+      - Cart
+  /carts/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get cart by user ID
+      parameters:
+      - description: ID of the user
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get cart by user ID
+      tags:
+      - Cart
   /categories:
     get:
       consumes:
@@ -1043,7 +1360,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ProductResponse'
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -1068,7 +1385,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/response.ProductResponse'
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -1115,7 +1432,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ProductResponse'
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -1145,7 +1462,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ProductResponse'
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -1440,4 +1757,139 @@ paths:
       summary: Update User
       tags:
       - Auth
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.TransactionResponse'
+            type: array
+      summary: Get All Transactions
+      tags:
+      - Transaction
+    post:
+      consumes:
+      - application/json
+      description: Create new transaction
+      parameters:
+      - description: Transaction data
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/request.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+      summary: Create Transaction
+      tags:
+      - Transaction
+  /transactions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete Transaction
+      tags:
+      - Transaction
+    get:
+      consumes:
+      - application/json
+      description: Get transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Transaction by ID
+      tags:
+      - Transaction
+    put:
+      consumes:
+      - application/json
+      description: Update transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+      summary: Update Transaction
+      tags:
+      - Transaction
+  /transactions/{id}/status/{status}:
+    put:
+      consumes:
+      - application/json
+      description: Update transaction status by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Transaction status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update Transaction Status
+      tags:
+      - Transaction
 swagger: "2.0"

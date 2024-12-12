@@ -6,6 +6,7 @@ toolchain go1.23.0
 
 require (
 	github.com/go-mail/mail v2.3.1+incompatible
+	github.com/midtrans/midtrans-go v1.3.8
 	github.com/swaggo/swag v1.16.4
 	gorm.io/driver/mysql v1.5.7
 )
