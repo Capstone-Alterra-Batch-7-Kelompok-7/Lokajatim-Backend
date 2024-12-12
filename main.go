@@ -5,44 +5,43 @@ import (
 	"lokajatim/config"
 	articleController "lokajatim/controllers/article"
 	authController "lokajatim/controllers/auth"
-	commentController "lokajatim/controllers/comment"
-	likeController "lokajatim/controllers/like"
-	categoryController "lokajatim/controllers/category"
-	productController "lokajatim/controllers/product"
 	cartController "lokajatim/controllers/cart"
-	TransactionController "lokajatim/controllers/transaction"
-	PaymentController "lokajatim/controllers/payment"
+	categoryController "lokajatim/controllers/category"
+	commentController "lokajatim/controllers/comment"
 	"lokajatim/controllers/event"
+	likeController "lokajatim/controllers/like"
+	productController "lokajatim/controllers/product"
 	"lokajatim/controllers/ticket"
+	TransactionController "lokajatim/controllers/transaction"
 	"lokajatim/middleware"
 	articleRepo "lokajatim/repositories/article"
 	authRepo "lokajatim/repositories/auth"
-	commentRepo "lokajatim/repositories/comment"
-	likeRepo "lokajatim/repositories/like"
-	eventRepo "lokajatim/repositories/event"
-	categoryRepo "lokajatim/repositories/category"
-	productRepo "lokajatim/repositories/product"
 	cartRepo "lokajatim/repositories/cart"
+	categoryRepo "lokajatim/repositories/category"
+	commentRepo "lokajatim/repositories/comment"
+	eventRepo "lokajatim/repositories/event"
+	likeRepo "lokajatim/repositories/like"
+	productRepo "lokajatim/repositories/product"
+	ticketRepo "lokajatim/repositories/ticket"
 	TransactionRepo "lokajatim/repositories/transaction"
-	PaymentRepo "lokajatim/repositories/payment"
 	"lokajatim/routes"
 	articleService "lokajatim/services/article"
 	authService "lokajatim/services/auth"
-	commentService "lokajatim/services/comment"
-	likeService "lokajatim/services/like"
-	eventService "lokajatim/services/event"
-	ticketRepo "lokajatim/repositories/ticket"
-	ticketService "lokajatim/services/ticket"
-	categoryService "lokajatim/services/category"
-	productService "lokajatim/services/product"
 	cartService "lokajatim/services/cart"
+	categoryService "lokajatim/services/category"
+	commentService "lokajatim/services/comment"
+	eventService "lokajatim/services/event"
+	likeService "lokajatim/services/like"
+	productService "lokajatim/services/product"
+	ticketService "lokajatim/services/ticket"
 	TransactionService "lokajatim/services/transaction"
-	PaymentService "lokajatim/services/payment"
+	"lokajatim/utils"
+
+	_ "lokajatim/docs"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	_ "lokajatim/docs"
 )
 
 // @title Lokajatim API
@@ -68,6 +67,9 @@ func main() {
 
 	// Initialize CORS middleware
 	middleware.InitCors(e)
+
+	// Initialize Midtrans
+	utils.InitMidtrans()
 
 	// Initialize Auth components
 	authJwt := middleware.JwtLokajatim{}
@@ -117,27 +119,21 @@ func main() {
 
 	// Initialize Transaction components
 	transactionRepo := TransactionRepo.NewTransactionRepository(db)
-	transactionService := TransactionService.NewTransactionService(transactionRepo)
+	transactionService := TransactionService.NewTransactionService(transactionRepo, cartRepo)
 	transactionController := TransactionController.NewTransactionController(transactionService)
-
-	// Initialize Payment components
-	paymentRepo := PaymentRepo.NewPaymentRepository(db)
-	paymentService := PaymentService.NewPaymentService(paymentRepo, transactionRepo)
-	paymentController := PaymentController.NewPaymentController(paymentService)
 
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
-		AuthController:    authController,
-		ArticleController: articleController,
-		CommentController: commentController,
-		LikeController:    likeController,
-		EventController:   eventController,
-		TicketController:  ticketController,
-		CategoryController: categoryController,
-		ProductController: productController,
-		CartController: cartController,
+		AuthController:        authController,
+		ArticleController:     articleController,
+		CommentController:     commentController,
+		LikeController:        likeController,
+		EventController:       eventController,
+		TicketController:      ticketController,
+		CategoryController:    categoryController,
+		ProductController:     productController,
+		CartController:        cartController,
 		TransactionController: transactionController,
-		PaymentController: paymentController,
 	}
 
 	// Set up all routes using the routeController

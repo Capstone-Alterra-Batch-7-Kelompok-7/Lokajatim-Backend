@@ -3,20 +3,14 @@ package request
 import "lokajatim/entities"
 
 type TransactionRequest struct {
-	UserID      int     `json:"user_id"`
-	CartID      int     `json:"cart_id"`
-	TotalPrice  float64 `json:"total_price"`
-	Status      string  `json:"status"`
-	PaymentType string  `json:"payment_type"`
+	UserID     int     `json:"user_id"`
+	CartID     int     `json:"cart_id"`
 }
 
 func (transactionRequest TransactionRequest) ToEntities() (entities.Transaction, error) {
 	transaction := entities.Transaction{
-		UserID:      transactionRequest.UserID,
-		CartID:      transactionRequest.CartID,
-		TotalPrice:  transactionRequest.TotalPrice,
-		Status:      transactionRequest.Status,
-		PaymentType: transactionRequest.PaymentType,
+		UserID:     transactionRequest.UserID,
+		CartID:     transactionRequest.CartID,
 	}
 	return transaction, nil
 }

@@ -6,6 +6,7 @@ toolchain go1.23.0
 
 require (
 	github.com/go-mail/mail v2.3.1+incompatible
+	github.com/midtrans/midtrans-go v1.3.8
 	github.com/swaggo/swag v1.16.4
 	gorm.io/driver/mysql v1.5.7
 )
@@ -20,7 +21,6 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/midtrans/midtrans-go v1.3.8 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.27.0 // indirect

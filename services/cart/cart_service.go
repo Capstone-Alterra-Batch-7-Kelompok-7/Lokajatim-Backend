@@ -40,11 +40,3 @@ func (s *CartService) RemoveItemFromCart(cartItemID int) error {
 func (s *CartService) ClearCart(cartID int) error {
 	return s.cartRepository.ClearCart(cartID)
 }
-
-// FindByUserID(userID int) (entities.Cart, error)
-// 	FindByID(cartID int) (entities.Cart, error)
-// 	Create(cart entities.Cart) (entities.Cart, error)
-// 	AddItemToCart(cart entities.Cart, cartItem entities.CartItem) (entities.CartItem, error)
-// 	UpdateItemQuantity(cartItemID int, quantity int) (entities.CartItem, error)
-// 	RemoveItemFromCart(cartItemID int) error
-// 	ClearCart(cartID int) error

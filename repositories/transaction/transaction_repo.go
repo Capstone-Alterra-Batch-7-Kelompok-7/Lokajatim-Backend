@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"errors"
 	"lokajatim/entities"
 
 	"gorm.io/gorm"
@@ -15,12 +16,15 @@ func NewTransactionRepository(db *gorm.DB) TransactionRepositoryInterface {
 }
 
 func (r *TransactionRepositoryImpl) CreateTransaction(transaction entities.Transaction) (entities.Transaction, error) {
+	if transaction.UserID == 0 || transaction.CartID == 0 {
+		return entities.Transaction{}, errors.New("user_id or cart_id is missing")
+	}
 	if err := r.db.Create(&transaction).Error; err != nil {
 		return entities.Transaction{}, err
 	}
 
 	var createdTransaction entities.Transaction
-	result := r.db.Preload("User").Preload("Cart").First(&createdTransaction, transaction.ID)
+	result := r.db.Preload("User").First(&createdTransaction, transaction.ID)
 	if result.Error != nil {
 		return entities.Transaction{}, result.Error
 	}
@@ -29,7 +33,7 @@ func (r *TransactionRepositoryImpl) CreateTransaction(transaction entities.Trans
 
 func (r *TransactionRepositoryImpl) GetTransactionByID(transactionID int) (entities.Transaction, error) {
 	var transaction entities.Transaction
-	result := r.db.Preload("User").Preload("Cart").First(&transaction, transactionID)
+	result := r.db.Preload("User").First(&transaction, transactionID)
 	if result.Error != nil {
 		return entities.Transaction{}, result.Error
 	}
@@ -38,20 +42,20 @@ func (r *TransactionRepositoryImpl) GetTransactionByID(transactionID int) (entit
 
 func (r *TransactionRepositoryImpl) GetAllTransactions() ([]entities.Transaction, error) {
 	var transactions []entities.Transaction
-	result := r.db.Preload("User").Preload("Cart").Find(&transactions)
+	result := r.db.Preload("User").Find(&transactions)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return transactions, nil
 }
 
-func (r *TransactionRepositoryImpl) UpdateTransaction(transactionID int, transaction entities.Transaction) (entities.Transaction, error) {
-	if err := r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Updates(transaction).Error; err != nil {
+func (r *TransactionRepositoryImpl) UpdateTransaction(transactionID int, updates map[string]interface{}) (entities.Transaction, error) {
+	if err := r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Updates(updates).Error; err != nil {
 		return entities.Transaction{}, err
 	}
 
 	var updatedTransaction entities.Transaction
-	result := r.db.Preload("User").Preload("Cart").First(&updatedTransaction, transactionID)
+	result := r.db.Preload("User").First(&updatedTransaction, transactionID)
 	if result.Error != nil {
 		return entities.Transaction{}, result.Error
 	}
@@ -66,8 +70,12 @@ func (r *TransactionRepositoryImpl) UpdateTransactionStatus(transactionID int, s
 }
 
 func (r *TransactionRepositoryImpl) DeleteTransaction(transactionID int) error {
-	if err := r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Delete(&entities.Transaction{}).Error; err != nil {
-		return err
+	result := r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Delete(&entities.Transaction{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("transaction not found")
 	}
 	return nil
 }

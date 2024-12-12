@@ -12,10 +12,10 @@ import (
 )
 
 type TransactionController struct {
-	TransactionService transaction.TransactionService
+	TransactionService *transaction.TransactionService
 }
 
-func NewTransactionController(transactionService transaction.TransactionService) *TransactionController {
+func NewTransactionController(transactionService *transaction.TransactionService) *TransactionController {
 	return &TransactionController{TransactionService: transactionService}
 }
 
@@ -27,14 +27,9 @@ func (controller *TransactionController) CreateTransaction(c echo.Context) error
 		})
 	}
 
-	transaction, err := req.ToEntities()
-	if err != nil {
-		return base.ErrorResponse(c, err, map[string]string{
-			"error": "Invalid request", 
-		})
-	}
+	transaction, _ := req.ToEntities()
 
-	created, err := controller.TransactionService.CreateTransaction(transaction)
+	created, err := controller.TransactionService.CreateTransaction(transaction.UserID, transaction.CartID)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to create transaction",
@@ -61,32 +56,40 @@ func (controller *TransactionController) GetAllTransactions(c echo.Context) erro
 			"error": "Failed to get transactions",
 		})
 	}
-	return pagination.SuccessPaginatedResponse(c, transactions, 1, 10, int64(len(transactions)))
+
+	transactionResponses := make([]response.TransactionResponse, 0)
+	for _, transaction := range transactions {
+		transactionResponses = append(transactionResponses, response.TransactionFromEntity(transaction))
+	}
+
+	return pagination.SuccessPaginatedResponse(c, transactionResponses, 1, 10, int64(len(transactionResponses)))
 }
 
 func (controller *TransactionController) UpdateTransaction(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	req := new(request.TransactionRequest)
+
 	if err := c.Bind(req); err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to bind request",
 		})
 	}
 
-	transaction, err := req.ToEntities()
+	updatedTransaction, err := req.ToEntities()
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
-			"error": "Invalid request",
+			"error": "Invalid request data",
 		})
 	}
 
-	updated, err := controller.TransactionService.UpdateTransaction(id, transaction)
+	transaction, err := controller.TransactionService.UpdateTransaction(id, updatedTransaction)
 	if err != nil {
 		return base.ErrorResponse(c, err, map[string]string{
 			"error": "Failed to update transaction",
 		})
 	}
-	return base.SuccesResponse(c, response.TransactionFromEntity(updated))
+
+	return base.SuccesResponse(c, response.TransactionFromEntity(transaction))
 }
 
 func (controller *TransactionController) UpdateTransactionStatus(c echo.Context) error {
@@ -98,9 +101,9 @@ func (controller *TransactionController) UpdateTransactionStatus(c echo.Context)
 			"error": "Failed to update transaction status",
 		})
 	}
-	return base.SuccesResponse(c, response.TransactionResponse{
-		TransactionID: strconv.Itoa(id),
-		Status: status,
+	return base.SuccesResponse(c, map[string]string{
+		"transaction_id": strconv.Itoa(id),
+		"status":         status,
 	})
 }
 

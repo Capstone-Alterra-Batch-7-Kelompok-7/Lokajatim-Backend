@@ -1,131 +1,96 @@
 package utils
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
+	"lokajatim/entities"
+	"math/rand"
 	"os"
+	"strconv"
+	"time"
+
+	"github.com/joho/godotenv"
+	"github.com/midtrans/midtrans-go"
+	"github.com/midtrans/midtrans-go/snap"
 )
 
-type MidtransClient struct {
-	ServerKey  string
-	ClientKey  string
-	APIBaseURL string
-}
+var MidtransClient snap.Client
 
-type NotificationRequest struct {
-	TransactionID     string `json:"transaction_id"`
-	PaymentMethod     string `json:"payment_method"`
-	TransactionStatus string `json:"transaction_status"`
-	PaymentURL        string `json:"payment_url"`
-}
+func InitMidtrans() {
 
-func NewMidtransClient() *MidtransClient {
-	return &MidtransClient{
-		ServerKey:  os.Getenv("MIDTRANS_SERVER_KEY"),
-		ClientKey:  os.Getenv("MIDTRANS_CLIENT_KEY"),
-		APIBaseURL: "https://api.sandbox.midtrans.com/v2/",
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
 	}
+
+	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
+	if serverKey == "" {
+		log.Fatal("MIDTRANS_SERVER_KEY not set in environment")
+	}
+
+	isProduction := false
+	env := midtrans.Sandbox
+	if isProduction {
+		env = midtrans.Production
+	}
+
+	MidtransClient.New(serverKey, env)
+	log.Println("Midtrans initialized with server key from environment")
 }
 
-type CreateTransactionRequest struct {
-	PaymentType        string             `json:"payment_type"`
-	Amount             float64            `json:"amount"`
-	TransactionDetails TransactionDetails `json:"transaction_details"`
-}
-
-type TransactionDetails struct {
-	OrderID  string  `json:"order_id"`
-	GrossAmt float64 `json:"gross_amount"`
-}
-
-type CreateTransactionResponse struct {
-	PaymentURL string `json:"redirect_url"`
-}
-
-func (m *MidtransClient) CreatePayment(orderID string, paymentType string, amount float64) (string, error) {
-	url := m.APIBaseURL + "charge"
-	requestData := CreateTransactionRequest{
-		PaymentType: paymentType,
-		Amount:      amount,
-		TransactionDetails: TransactionDetails{
+func CreateTransaction(orderID string, grossAmount int64, Name, Email, PhoneNumber, Address string, cartItems []entities.CartItem) (string, error) {
+	req := &snap.Request{
+		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  orderID,
-			GrossAmt: amount,
+			GrossAmt: grossAmount,
+		},
+		CustomerDetail: &midtrans.CustomerDetails{
+			FName: Name,
+			Email:     Email,
+			Phone:     PhoneNumber,
+			BillAddr: &midtrans.CustomerAddress{
+				Address: Address,
+			},
+		},
+		Items: convertCartItemsToSnapItems(cartItems),
+		CreditCard: &snap.CreditCardDetails{
+			Secure: true,
 		},
 	}
-
-	requestBody, err := json.Marshal(requestData)
+	resp, err := MidtransClient.CreateTransaction(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal request: %v", err)
+		return "", err
 	}
-
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return "", fmt.Errorf("failed to create request: %v", err)
-	}
-
-	req.Header.Set("Authorization", "Basic "+m.ServerKey)
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed to read response: %v", err)
-	}
-
-	var createResp CreateTransactionResponse
-	if err := json.Unmarshal(respBody, &createResp); err != nil {
-		return "", fmt.Errorf("failed to unmarshal response: %v", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		log.Println("Midtrans API error: ", string(respBody))
-		return "", fmt.Errorf("failed to create payment: %v", string(respBody))
-	}
-
-	return createResp.PaymentURL, nil
+	return resp.RedirectURL, nil
 }
 
-func (m *MidtransClient) VerifyTransactionStatus(orderID string) (string, error) {
-	url := m.APIBaseURL + orderID + "/status"
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return "", fmt.Errorf("failed to create request: %v", err)
+func convertCartItemsToSnapItems(cartItems []entities.CartItem) *[]midtrans.ItemDetails {
+	items := make([]midtrans.ItemDetails, len(cartItems))
+	for i, item := range cartItems {
+		items[i] = midtrans.ItemDetails{
+			ID:       strconv.Itoa(item.ProductID),
+			Name:     item.Product.Name,
+			Price:    int64(item.Product.Price),
+			Qty:      int32(item.Quantity),
+		}
 	}
+	return &items
+}
 
-	req.Header.Set("Authorization", "Basic "+m.ServerKey)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("request failed: %v", err)
+func GenerateUniqueID() string {
+	rand.Seed(time.Now().UnixNano())
+	return time.Now().Format("20060102150405") + "-" + randomString(6)
+}
+
+func randomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
 	}
-	defer resp.Body.Close()
+	return string(b)
+}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed to read response: %v", err)
-	}
-
-	var notification NotificationRequest
-	if err := json.Unmarshal(respBody, &notification); err != nil {
-		return "", fmt.Errorf("failed to unmarshal response: %v", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		log.Println("Midtrans API error: ", string(respBody))
-		return "", fmt.Errorf("failed to verify payment status: %v", string(respBody))
-	}
-
-	return notification.TransactionStatus, nil
+func GetCurrentTime() time.Time {
+	return time.Now().UTC()
 }

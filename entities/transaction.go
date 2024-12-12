@@ -8,10 +8,9 @@ type Transaction struct {
 	UserID        int       `json:"user_id"`
 	User          User      `json:"user"`
 	CartID        int       `json:"cart_id"`
-	Cart          Cart      `json:"cart"`
 	TotalPrice    float64   `json:"total_price"`
 	Status        string    `json:"status"`
-	PaymentType   string    `json:"payment_type"`
+	PaymentURL    string    `json:"payment_url"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }

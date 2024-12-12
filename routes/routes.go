@@ -14,7 +14,6 @@ import (
 	"lokajatim/controllers/product"
 	"lokajatim/controllers/ticket"
 	"lokajatim/controllers/transaction"
-	"lokajatim/controllers/payment"
 
 	"lokajatim/middleware"
 
@@ -25,17 +24,16 @@ import (
 )
 
 type RouteController struct {
-	AuthController     *auth.AuthController
-	EventController    *event.EventController
-	TicketController   *ticket.TicketController
-	CommentController  *comment.CommentController
-	ArticleController  *article.ArticleController
-	LikeController     *like.LikeController
-	CategoryController *category.CategoryController
-	ProductController  *product.ProductController
-	CartController     *cart.CartController
+	AuthController        *auth.AuthController
+	EventController       *event.EventController
+	TicketController      *ticket.TicketController
+	CommentController     *comment.CommentController
+	ArticleController     *article.ArticleController
+	LikeController        *like.LikeController
+	CategoryController    *category.CategoryController
+	ProductController     *product.ProductController
+	CartController        *cart.CartController
 	TransactionController *transaction.TransactionController
-	PaymentController *payment.PaymentController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -125,12 +123,4 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.PUT("/transactions/:id", rc.TransactionController.UpdateTransaction)
 	eJWT.PUT("/transactions/:id/status", rc.TransactionController.UpdateTransactionStatus)
 	eJWT.DELETE("/transactions/:id", rc.TransactionController.DeleteTransaction)
-
-	// Payment Routes
-	eJWT.POST("/payments", rc.PaymentController.CreatePayment)
-	eJWT.GET("/payments/:id", rc.PaymentController.GetPaymentByID)
-	eJWT.PUT("/payments/:id", rc.PaymentController.UpdatePaymentStatus)
-	eJWT.PUT("/payments/:id/status/:status", rc.PaymentController.UpdatePaymentStatus)
-	eJWT.DELETE("/payments/:id", rc.PaymentController.DeletePayment)
-	eJWT.POST("/payments/notification", rc.PaymentController.ProcessMidtransNotification)
 }

@@ -9,8 +9,8 @@ type Cart struct {
 	UserID                     int        `json:"user_id"`
 	User                       User       `json:"user"`
 	Items                      []CartItem `json:"items" gorm:"foreignKey:CartID;constraint:OnDelete:CASCADE;"`
-	TotalPrice                 float64    `json:"total_price" gorm:"-"`
-	TotalPriceAfterTransaction float64    `json:"total_price_after_transaction" gorm:"-"`
+	TotalPrice                 float64    `json:"total_price" gorm:"column:total_price"`
+	TotalPriceAfterTransaction float64    `json:"total_price_after_transaction" gorm:"column:total_price_after_transaction"`
 	CreatedAt                  time.Time  `json:"created_at"`
 	UpdatedAt                  time.Time  `json:"updated_at"`
 }
