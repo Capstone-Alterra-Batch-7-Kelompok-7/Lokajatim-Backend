@@ -19,6 +19,14 @@ func NewTransactionController(transactionService *transaction.TransactionService
 	return &TransactionController{TransactionService: transactionService}
 }
 
+// @Summary Create Transaction
+// @Description Create new transaction
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param transaction body request.TransactionRequest true "Transaction data"
+// @Success 200 {object} response.TransactionResponse
+// @Router /transactions [post]
 func (controller *TransactionController) CreateTransaction(c echo.Context) error {
 	req := new(request.TransactionRequest)
 	if err := c.Bind(req); err != nil {
@@ -38,6 +46,15 @@ func (controller *TransactionController) CreateTransaction(c echo.Context) error
 	return base.SuccesResponse(c, response.TransactionFromEntity(created))
 }
 
+// @Summary Get Transaction by ID
+// @Description Get transaction by ID
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param id path int true "Transaction ID"
+// @Success 200 {object} response.TransactionResponse
+// @Failure 404 {object} map[string]string
+// @Router /transactions/{id} [get]
 func (controller *TransactionController) GetTransactionByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	transaction, err := controller.TransactionService.GetTransactionByID(id)
@@ -49,6 +66,13 @@ func (controller *TransactionController) GetTransactionByID(c echo.Context) erro
 	return base.SuccesResponse(c, response.TransactionFromEntity(transaction))
 }
 
+// @Summary Get All Transactions
+// @Description Get all transactions
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Success 200 {object} []response.TransactionResponse
+// @Router /transactions [get]
 func (controller *TransactionController) GetAllTransactions(c echo.Context) error {
 	transactions, err := controller.TransactionService.GetAllTransactions()
 	if err != nil {
@@ -65,6 +89,14 @@ func (controller *TransactionController) GetAllTransactions(c echo.Context) erro
 	return pagination.SuccessPaginatedResponse(c, transactionResponses, 1, 10, int64(len(transactionResponses)))
 }
 
+// @Summary Update Transaction
+// @Description Update transaction by ID
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param id path int true "Transaction ID"
+// @Success 200 {object} response.TransactionResponse
+// @Router /transactions/{id} [put]
 func (controller *TransactionController) UpdateTransaction(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	req := new(request.TransactionRequest)
@@ -92,6 +124,15 @@ func (controller *TransactionController) UpdateTransaction(c echo.Context) error
 	return base.SuccesResponse(c, response.TransactionFromEntity(transaction))
 }
 
+// @Summary Update Transaction Status
+// @Description Update transaction status by ID
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param id path int true "Transaction ID"
+// @Param status path string true "Transaction status"
+// @Success 200 {object} map[string]string
+// @Router /transactions/{id}/status/{status} [put]
 func (controller *TransactionController) UpdateTransactionStatus(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	status := c.Param("status")
@@ -107,6 +148,14 @@ func (controller *TransactionController) UpdateTransactionStatus(c echo.Context)
 	})
 }
 
+// @Summary Delete Transaction
+// @Description Delete transaction by ID
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param id path int true "Transaction ID"
+// @Success 200 {object} map[string]string
+// @Router /transactions/{id} [delete]
 func (controller *TransactionController) DeleteTransaction(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	err := controller.TransactionService.DeleteTransaction(id)

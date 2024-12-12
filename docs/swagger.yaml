@@ -97,6 +97,20 @@ definitions:
       updated_at:
         type: string
     type: object
+  lokajatim_controllers_cart_response.UserResponse:
+    description: UserResponse is the response for user data retrieval
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
   lokajatim_controllers_product_response.ProductResponse:
     description: ProductResponse is the response for product data retrieval
     properties:
@@ -123,6 +137,20 @@ definitions:
       stock:
         type: integer
       updated_at:
+        type: string
+    type: object
+  lokajatim_controllers_transaction_response.UserResponse:
+    description: UserResponse is the response for user data retrieval
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
         type: string
     type: object
   request.ArticleRequest:
@@ -277,6 +305,14 @@ definitions:
     required:
     - email
     type: object
+  request.TransactionRequest:
+    description: TransactionRequest is the request for transaction data retrieval
+    properties:
+      cart_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   response.ArticleResponse:
     description: ArticleResponse is the response for the Article controller
     properties:
@@ -327,7 +363,7 @@ definitions:
       updated_at:
         type: string
       user:
-        $ref: '#/definitions/response.UserResponse'
+        $ref: '#/definitions/lokajatim_controllers_cart_response.UserResponse'
       user_id:
         type: integer
     type: object
@@ -445,19 +481,27 @@ definitions:
       message:
         type: string
     type: object
-  response.UserResponse:
-    description: UserResponse is the response for user data retrieval
+  response.TransactionResponse:
+    description: TransactionResponse is the response for transaction data retrieval
     properties:
-      address:
-        type: string
-      email:
+      cart_id:
+        type: integer
+      created_at:
         type: string
       id:
         type: integer
-      name:
+      payment_url:
         type: string
-      phone_number:
+      status:
         type: string
+      total_price:
+        type: number
+      transaction_id:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/lokajatim_controllers_transaction_response.UserResponse'
     type: object
 host: localhost:8000
 info:
@@ -1540,4 +1584,139 @@ paths:
       summary: Update Ticket
       tags:
       - Ticket
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.TransactionResponse'
+            type: array
+      summary: Get All Transactions
+      tags:
+      - Transaction
+    post:
+      consumes:
+      - application/json
+      description: Create new transaction
+      parameters:
+      - description: Transaction data
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/request.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+      summary: Create Transaction
+      tags:
+      - Transaction
+  /transactions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete Transaction
+      tags:
+      - Transaction
+    get:
+      consumes:
+      - application/json
+      description: Get transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Transaction by ID
+      tags:
+      - Transaction
+    put:
+      consumes:
+      - application/json
+      description: Update transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+      summary: Update Transaction
+      tags:
+      - Transaction
+  /transactions/{id}/status/{status}:
+    put:
+      consumes:
+      - application/json
+      description: Update transaction status by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Transaction status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update Transaction Status
+      tags:
+      - Transaction
 swagger: "2.0"
