@@ -9,6 +9,7 @@ import (
 	likeController "lokajatim/controllers/like"
 	categoryController "lokajatim/controllers/category"
 	productController "lokajatim/controllers/product"
+	chatbotController "lokajatim/controllers/chatbot"
 	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
@@ -29,12 +30,13 @@ import (
 	ticketService "lokajatim/services/ticket"
 	categoryService "lokajatim/services/category"
 	productService "lokajatim/services/product"
-
+	chatbotService "lokajatim/services/chatbot" 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	_ "lokajatim/docs"
 )
+
 
 // @title Lokajatim API
 // @version 1.0
@@ -101,6 +103,13 @@ func main() {
 	productService := productService.NewProductService(productRepo)
 	productController := productController.NewProductController(*productService)
 
+	// Initialize Chatbot components
+	chatbotService, err := chatbotService.NewChatbotService()
+	if err != nil {
+		log.Fatalf("Failed to initialize chatbot service: %v", err)
+	}
+	chatbotController := chatbotController.NewChatbotController(chatbotService)
+
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
 		AuthController:    authController,
@@ -111,6 +120,7 @@ func main() {
 		TicketController:  ticketController,
 		CategoryController: categoryController,
 		ProductController: productController,
+		ChatbotController: chatbotController,
 	}
 
 	// Set up all routes using the routeController

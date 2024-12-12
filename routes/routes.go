@@ -6,12 +6,13 @@ import (
 
 	"lokajatim/controllers/article"
 	"lokajatim/controllers/auth"
-	"lokajatim/controllers/comment"
-	"lokajatim/controllers/like"
-	"lokajatim/controllers/event"
-	"lokajatim/controllers/ticket"
 	"lokajatim/controllers/category"
+	"lokajatim/controllers/chatbot"
+	"lokajatim/controllers/comment"
+	"lokajatim/controllers/event"
+	"lokajatim/controllers/like"
 	"lokajatim/controllers/product"
+	"lokajatim/controllers/ticket"
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -29,6 +30,7 @@ type RouteController struct {
 	LikeController      *like.LikeController
 	CategoryController  *category.CategoryController
 	ProductController   *product.ProductController
+	ChatbotController	*chatbot.ChatbotController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -109,4 +111,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.POST("/products", rc.ProductController.CreateProduct)
 	eJWT.PUT("/products/:id", rc.ProductController.UpdateProduct)
 	eJWT.DELETE("/products/:id", rc.ProductController.DeleteProduct)
+
+	// Chatbot Routes
+	eJWT.POST("/chatbot", rc.ChatbotController.ChatbotController)
 }
