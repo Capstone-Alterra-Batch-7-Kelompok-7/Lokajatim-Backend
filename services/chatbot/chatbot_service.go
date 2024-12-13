@@ -32,17 +32,14 @@ func NewChatbotService() (*AIService, error) {
 	}, nil
 }
 
-func (s *AIService) GenerateResponse(ctx context.Context, message string) (string, error) {
-	// Tambahkan pesan pengguna ke sesi chat secara manual
-	s.cs.History = append(s.cs.History, genai.NewUserContent(genai.Text(message)))
+func (c *AIService) GenerateResponse(ctx context.Context, message string) (string, error) {
+	c.cs.History = append(c.cs.History, genai.NewUserContent(genai.Text(message)))
 
-	// Kirim pesan ke model
-	resp, err := s.cs.SendMessage(ctx, genai.Text(message))
+	resp, err := c.cs.SendMessage(ctx, genai.Text(message))
 	if err != nil {
 		return "", fmt.Errorf("failed to generate response: %w", err)
 	}
 
-	// Periksa respons dan ekstrak teks
 	if len(resp.Candidates) > 0 && resp.Candidates[0].Content != nil {
 		response := ""
 		for _, part := range resp.Candidates[0].Content.Parts {
