@@ -20,31 +20,34 @@ func NewChatbotController(aiService *services.AIService) *ChatbotController {
 	}
 }
 
+// @Summary Generate Chatbot Response
+// @Tags Chatbot
+// @Accept json
+// @Produce json
+// @Param request body request.ChatbotRequest true "Chatbot Request Body"
+// @Success 200 {object} base.BaseResponse{data=map[string]string} "Chatbot Response"
+// @Failure 400 {object} base.BaseResponse{data=map[string]string} "Invalid Request Body"
+// @Failure 500 {object} base.BaseResponse{data=map[string]string} "Internal Server Error"
+// @Router /chatbot [post]
 func (c *ChatbotController) ChatbotController(ctx echo.Context) error {
-	var requestBody request.RequestBody
+	var requestBody request.ChatbotRequest
 
-	// Bind the incoming JSON body to the struct
 	if err := ctx.Bind(&requestBody); err != nil {
-		// Log the error for debugging purposes
 		log.Printf("Failed to bind request body: %v", err)
 		return base.ErrorResponse(ctx, err, map[string]string{"error": "Invalid request body"})
 	}
 
-	// Ensure the message is not empty and sanitize input
 	requestBody.Message = strings.TrimSpace(requestBody.Message)
 	if requestBody.Message == "" {
 		return base.ErrorResponse(ctx, nil, map[string]string{"error": "message parameter is required"})
 	}
 
-	// Generate response from the service
 	response, err := c.AIService.GenerateResponse(ctx.Request().Context(), requestBody.Message)
 	if err != nil {
-		// Log the error for debugging purposes
 		log.Printf("Failed to generate response: %v", err)
 		return base.ErrorResponse(ctx, err, map[string]string{"error": "Failed to generate response"})
 	}
 
-	// Return the generated response in a structured format
 	return base.SuccesResponse(ctx, map[string]string{
 		"response": response,
 	})
