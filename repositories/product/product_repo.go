@@ -120,3 +120,10 @@ func (r *ProductRepositoryImpl) BulkInsert(products []entities.Product) error {
 	}
 	return nil
 }
+
+func (r *ProductRepositoryImpl) BulkInsertPhotos(photos []entities.ProductPhoto) error {
+	if err := r.db.Create(&photos).Error; err != nil {
+		return err
+	}
+	return nil
+}
