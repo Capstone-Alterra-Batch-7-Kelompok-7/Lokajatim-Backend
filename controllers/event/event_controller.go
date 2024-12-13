@@ -60,6 +60,25 @@ func (c *EventController) GetEventByID(ctx echo.Context) error {
 	return base.SuccesResponse(ctx, response.EventFromEntities(*event))
 }
 
+// @Summary Get Event by Best Price
+// @Description Get details of an event with the best price
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Success 200 {object} base.BaseResponse{data=[]response.EventResponse}
+// @Failure 400 {object} base.BaseResponse
+// @Router /events/best [get]
+func (c *EventController) GetByBestPrice(ctx echo.Context) error {
+	events, err := c.service.GetbyBestPrice()
+	if err != nil {
+		return base.ErrorResponse(ctx, err, map[string]string{
+			"error": "Failed to fetch events with the best price",
+		})
+	}
+
+	return base.SuccesResponse(ctx, events)
+}
+
 // @Summary Create Event
 // @Description Create a new event
 // @Tags Event

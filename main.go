@@ -5,36 +5,44 @@ import (
 	"lokajatim/config"
 	articleController "lokajatim/controllers/article"
 	authController "lokajatim/controllers/auth"
-	commentController "lokajatim/controllers/comment"
-	likeController "lokajatim/controllers/like"
+	cartController "lokajatim/controllers/cart"
 	categoryController "lokajatim/controllers/category"
+	commentController "lokajatim/controllers/comment"
+	"lokajatim/controllers/event"
+	likeController "lokajatim/controllers/like"
 	productController "lokajatim/controllers/product"
 	chatbotController "lokajatim/controllers/chatbot"
-	"lokajatim/controllers/event"
 	"lokajatim/controllers/ticket"
+	TransactionController "lokajatim/controllers/transaction"
 	"lokajatim/middleware"
 	articleRepo "lokajatim/repositories/article"
 	authRepo "lokajatim/repositories/auth"
-	commentRepo "lokajatim/repositories/comment"
-	likeRepo "lokajatim/repositories/like"
-	eventRepo "lokajatim/repositories/event"
+	cartRepo "lokajatim/repositories/cart"
 	categoryRepo "lokajatim/repositories/category"
+	commentRepo "lokajatim/repositories/comment"
+	eventRepo "lokajatim/repositories/event"
+	likeRepo "lokajatim/repositories/like"
 	productRepo "lokajatim/repositories/product"
+	ticketRepo "lokajatim/repositories/ticket"
+	TransactionRepo "lokajatim/repositories/transaction"
 	"lokajatim/routes"
 	articleService "lokajatim/services/article"
 	authService "lokajatim/services/auth"
-	commentService "lokajatim/services/comment"
-	likeService "lokajatim/services/like"
-	eventService "lokajatim/services/event"
-	ticketRepo "lokajatim/repositories/ticket"
-	ticketService "lokajatim/services/ticket"
+	cartService "lokajatim/services/cart"
 	categoryService "lokajatim/services/category"
+	commentService "lokajatim/services/comment"
+	eventService "lokajatim/services/event"
+	likeService "lokajatim/services/like"
 	productService "lokajatim/services/product"
+	ticketService "lokajatim/services/ticket"
+	TransactionService "lokajatim/services/transaction"
+	"lokajatim/utils"
+
+	_ "lokajatim/docs"
 	chatbotService "lokajatim/services/chatbot" 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	_ "lokajatim/docs"
 )
 
 
@@ -61,6 +69,9 @@ func main() {
 
 	// Initialize CORS middleware
 	middleware.InitCors(e)
+
+	// Initialize Midtrans
+	utils.InitMidtrans()
 
 	// Initialize Auth components
 	authJwt := middleware.JwtLokajatim{}
@@ -103,6 +114,16 @@ func main() {
 	productService := productService.NewProductService(productRepo)
 	productController := productController.NewProductController(*productService)
 
+	// Initialize Cart components
+	cartRepo := cartRepo.NewCartRepository(db)
+	cartService := cartService.NewCartService(cartRepo)
+	cartController := cartController.NewCartController(*cartService)
+
+	// Initialize Transaction components
+	transactionRepo := TransactionRepo.NewTransactionRepository(db)
+	transactionService := TransactionService.NewTransactionService(transactionRepo, cartRepo)
+	transactionController := TransactionController.NewTransactionController(transactionService)
+
 	// Initialize Chatbot components
 	chatbotService, err := chatbotService.NewChatbotService()
 	if err != nil {
@@ -112,14 +133,16 @@ func main() {
 
 	// Initialize RouteController with all controllers
 	routeController := routes.RouteController{
-		AuthController:    authController,
-		ArticleController: articleController,
-		CommentController: commentController,
-		LikeController:    likeController,
-		EventController:   eventController,
-		TicketController:  ticketController,
-		CategoryController: categoryController,
-		ProductController: productController,
+		AuthController:        authController,
+		ArticleController:     articleController,
+		CommentController:     commentController,
+		LikeController:        likeController,
+		EventController:       eventController,
+		TicketController:      ticketController,
+		CategoryController:    categoryController,
+		ProductController:     productController,
+		CartController:        cartController,
+		TransactionController: transactionController,
 		ChatbotController: chatbotController,
 	}
 

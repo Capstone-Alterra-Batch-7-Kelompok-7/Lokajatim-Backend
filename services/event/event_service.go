@@ -21,6 +21,10 @@ func (s *eventService) GetByID(id uint) (*entities.Event, error) {
 	return s.repo.GetByID(id)
 }
 
+func (s *eventService) GetbyBestPrice() ([]entities.Event, error) {
+	return s.repo.GetbyBestPrice()
+}
+
 func (s *eventService) Create(event *entities.Event) error {
 	return s.repo.Create(event)
 }

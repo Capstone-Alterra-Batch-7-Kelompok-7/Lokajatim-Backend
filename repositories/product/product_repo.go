@@ -45,6 +45,15 @@ func (r *ProductRepositoryImpl) CreateProduct(product entities.Product) (entitie
 	return createdProduct, nil
 }
 
+func (r *ProductRepositoryImpl) GetBestProductsPrice() ([]entities.Product, error) {
+	var products []entities.Product
+	result := r.db.Preload("Category").Preload("Photos").Order("price desc").Limit(5).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return products, nil
+}
+
 func (r *ProductRepositoryImpl) UpdateProduct(id int, product entities.Product) (entities.Product, error) {
 	if err := r.db.Model(&entities.Product{}).Where("id = ?", id).Updates(product).Error; err != nil {
 		return entities.Product{}, err
@@ -100,6 +109,20 @@ func (r *ProductRepositoryImpl) UpdateProductPhotos(productID int, photos []enti
 
 func (r *ProductRepositoryImpl) DeleteProductPhotos(productID int) error {
 	if err := r.db.Where("product_id = ?", productID).Delete(&entities.ProductPhoto{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ProductRepositoryImpl) BulkInsert(products []entities.Product) error {
+	if err := r.db.Create(&products).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ProductRepositoryImpl) BulkInsertPhotos(photos []entities.ProductPhoto) error {
+	if err := r.db.Create(&photos).Error; err != nil {
 		return err
 	}
 	return nil

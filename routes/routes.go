@@ -6,6 +6,7 @@ import (
 
 	"lokajatim/controllers/article"
 	"lokajatim/controllers/auth"
+	"lokajatim/controllers/cart"
 	"lokajatim/controllers/category"
 	"lokajatim/controllers/chatbot"
 	"lokajatim/controllers/comment"
@@ -13,6 +14,8 @@ import (
 	"lokajatim/controllers/like"
 	"lokajatim/controllers/product"
 	"lokajatim/controllers/ticket"
+	"lokajatim/controllers/transaction"
+
 	"lokajatim/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -22,14 +25,16 @@ import (
 )
 
 type RouteController struct {
-	AuthController      *auth.AuthController
-	EventController     *event.EventController
-	TicketController    *ticket.TicketController
-	CommentController   *comment.CommentController
-	ArticleController   *article.ArticleController
-	LikeController      *like.LikeController
-	CategoryController  *category.CategoryController
-	ProductController   *product.ProductController
+	AuthController        *auth.AuthController
+	EventController       *event.EventController
+	TicketController      *ticket.TicketController
+	CommentController     *comment.CommentController
+	ArticleController     *article.ArticleController
+	LikeController        *like.LikeController
+	CategoryController    *category.CategoryController
+	ProductController     *product.ProductController
+	CartController        *cart.CartController
+	TransactionController *transaction.TransactionController
 	ChatbotController	*chatbot.ChatbotController
 }
 
@@ -70,6 +75,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.POST("/events", rc.EventController.CreateEvent)
 	eJWT.PUT("/events/:id", rc.EventController.UpdateEvent)
 	eJWT.DELETE("/events/:id", rc.EventController.DeleteEvent)
+	e.GET("/events/best", rc.EventController.GetByBestPrice)
 
 	// Ticket Routes
 	eJWT.GET("/tickets", rc.TicketController.GetAllTickets)
@@ -111,6 +117,23 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.POST("/products", rc.ProductController.CreateProduct)
 	eJWT.PUT("/products/:id", rc.ProductController.UpdateProduct)
 	eJWT.DELETE("/products/:id", rc.ProductController.DeleteProduct)
+	e.GET("/products/best", rc.ProductController.GetBestProductsPrice)
+	eJWT.POST("/products/import", rc.ProductController.ImportProducts)
+
+	// Cart Routes
+	eJWT.GET("/carts/:user_id", rc.CartController.GetCartByUserID)
+	eJWT.POST("/carts", rc.CartController.AddItemToCart)
+	eJWT.PUT("/carts/:cart_item_id", rc.CartController.UpdateItemQuantity)
+	eJWT.DELETE("/carts/:cart_id/clear", rc.CartController.ClearCart)
+	eJWT.DELETE("/carts/:cart_item_id", rc.CartController.RemoveItemFromCart)
+
+	// Transaction Routes
+	eJWT.GET("/transactions", rc.TransactionController.GetAllTransactions)
+	eJWT.GET("/transactions/:id", rc.TransactionController.GetTransactionByID)
+	eJWT.POST("/transactions", rc.TransactionController.CreateTransaction)
+	eJWT.PUT("/transactions/:id", rc.TransactionController.UpdateTransaction)
+	eJWT.PUT("/transactions/:id/status", rc.TransactionController.UpdateTransactionStatus)
+	eJWT.DELETE("/transactions/:id", rc.TransactionController.DeleteTransaction)
 
 	// Chatbot Routes
 	eJWT.POST("/chatbot", rc.ChatbotController.ChatbotController)
