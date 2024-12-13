@@ -12,7 +12,6 @@ type Product struct {
 	Description string         `json:"description"`
 	CategoryID  int            `json:"category_id"`
 	Category    Category       `json:"category"`
-	Rating      float64        `json:"rating"`
 	Photos      []ProductPhoto `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE;" json:"photos"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`

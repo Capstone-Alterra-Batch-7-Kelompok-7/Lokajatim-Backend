@@ -15,7 +15,6 @@ type ProductRequest struct {
 	Price       int      `json:"price" validate:"required"`
 	Stock       int      `json:"stock" validate:"required"`
 	Description string   `json:"description" validate:"required"`
-	Rating      float64  `json:"rating" validate:"required"`
 	CategoryID  int      `json:"category_id" validate:"required"`
 	Photos      []string `json:"photos" validate:"required"`
 }
@@ -30,7 +29,6 @@ func (productRequest ProductRequest) ToEntities() (entities.Product, error) {
 		Price:       productRequest.Price,
 		Stock:       productRequest.Stock,
 		Description: productRequest.Description,
-		Rating:      productRequest.Rating,
 		CategoryID:  productRequest.CategoryID,
 	}
 	return product, nil

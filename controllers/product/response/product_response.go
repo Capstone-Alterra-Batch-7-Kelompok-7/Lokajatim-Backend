@@ -24,7 +24,6 @@ type ProductResponse struct {
 	Price       int               `json:"price"`
 	Stock       int               `json:"stock"`
 	Description string            `json:"description"`
-	Rating      float64           `json:"rating"`
 	Photos      []string          `json:"photos"`
 	CategoryID  int               `json:"category_id"`
 	Category    entities.Category `json:"category"`
@@ -45,7 +44,6 @@ func ProductFromEntities(product entities.Product, photos []entities.ProductPhot
 		Price:       product.Price,
 		Stock:       product.Stock,
 		Description: product.Description,
-		Rating:      product.Rating,
 		Photos:      photoUrls,
 		CategoryID:  product.CategoryID,
 		Category:    product.Category,
