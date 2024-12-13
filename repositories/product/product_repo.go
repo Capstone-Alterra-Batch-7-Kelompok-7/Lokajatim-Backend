@@ -113,3 +113,10 @@ func (r *ProductRepositoryImpl) DeleteProductPhotos(productID int) error {
 	}
 	return nil
 }
+
+func (r *ProductRepositoryImpl) BulkInsert(products []entities.Product) error {
+	if err := r.db.Create(&products).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -73,6 +73,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.POST("/events", rc.EventController.CreateEvent)
 	eJWT.PUT("/events/:id", rc.EventController.UpdateEvent)
 	eJWT.DELETE("/events/:id", rc.EventController.DeleteEvent)
+	e.GET("/events/best", rc.EventController.GetByBestPrice)
 
 	// Ticket Routes
 	eJWT.GET("/tickets", rc.TicketController.GetAllTickets)
@@ -114,6 +115,8 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.POST("/products", rc.ProductController.CreateProduct)
 	eJWT.PUT("/products/:id", rc.ProductController.UpdateProduct)
 	eJWT.DELETE("/products/:id", rc.ProductController.DeleteProduct)
+	e.GET("/products/best", rc.ProductController.GetBestProductsPrice)
+	eJWT.POST("/products/import", rc.ProductController.ImportProducts)
 
 	// Cart Routes
 	eJWT.GET("/carts/:user_id", rc.CartController.GetCartByUserID)

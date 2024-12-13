@@ -15,4 +15,5 @@ type ProductRepositoryInterface interface {
 	GetProductPhotos(productID int) ([]entities.ProductPhoto, error)
 	UpdateProductPhotos(productID int, photos []entities.ProductPhoto) error
 	DeleteProductPhotos(productID int) error
+	BulkInsert(products []entities.Product) error
 }

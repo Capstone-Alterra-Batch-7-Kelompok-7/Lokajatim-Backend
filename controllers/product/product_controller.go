@@ -2,11 +2,13 @@ package product
 
 import (
 	"fmt"
+	"io"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/pagination"
 	"lokajatim/controllers/product/request"
 	"lokajatim/controllers/product/response"
 	"lokajatim/services/product"
+	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -226,4 +228,53 @@ func (h *ProductController) DeleteProduct(c echo.Context) error {
 		})
 	}
 	return base.SuccesResponse(c, "Product deleted successfully")
+}
+
+// @Summary Import products
+// @Description Import products from CSV file
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param file formData file true "CSV file"
+// @Success 200 "Products imported successfully"
+// @Failure 400 {object} base.BaseResponse
+// @Router /products/import [post]
+func (h *ProductController) ImportProducts(c echo.Context) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to retrieve file",
+		})
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to open file",
+		})
+	}
+	defer src.Close()
+
+	tempFilePath := "/tmp/" + file.Filename
+	dst, err := os.Create(tempFilePath)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to create temp file",
+		})
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, src); err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to save file",
+		})
+	}
+
+	if err := h.ProductService.ImportProducts(tempFilePath); err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to import products",
+		})
+	}
+
+	return base.SuccesResponse(c, "Products imported successfully")
 }

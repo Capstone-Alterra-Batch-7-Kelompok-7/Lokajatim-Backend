@@ -1,8 +1,12 @@
 package product
 
 import (
+	"encoding/csv"
+	"errors"
 	"lokajatim/entities"
 	"lokajatim/repositories/product"
+	"os"
+	"strconv"
 )
 
 type ProductService struct {
@@ -51,4 +55,44 @@ func (s *ProductService) UpdateProductPhotos(productID int, photos []entities.Pr
 
 func (s *ProductService) DeleteProductPhotos(productID int) error {
 	return s.productRepository.DeleteProductPhotos(productID)
+}
+
+func (s *ProductService) ImportProducts(filePath string) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return errors.New("failed to open file")
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return errors.New("failed to read CSV file")
+	}
+
+	var products []entities.Product
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		price, _ := strconv.Atoi(record[2])
+		stock, _ := strconv.Atoi(record[3])
+		categoryID, _ := strconv.Atoi(record[5])
+		rating, _ := strconv.ParseFloat(record[6], 64)
+
+		products = append(products, entities.Product{
+			Name:        record[1],
+			Price:       price,
+			Stock:       stock,
+			Description: record[4],
+			CategoryID:  categoryID,
+			Rating:      rating,
+		})
+	}
+
+	if err := s.productRepository.BulkInsert(products); err != nil {
+		return err
+	}
+
+	return nil
 }
