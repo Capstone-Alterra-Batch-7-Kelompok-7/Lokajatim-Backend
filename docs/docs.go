@@ -1458,6 +1458,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/products/import": {
+            "post": {
+                "description": "Import products from CSV file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Import products",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "CSV file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products imported successfully"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/products/{id}": {
             "get": {
                 "description": "Get product by ID",
@@ -2457,9 +2492,6 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "rating": {
-                    "type": "number"
-                },
                 "stock": {
                     "type": "integer"
                 },
@@ -2644,7 +2676,6 @@ const docTemplate = `{
                 "name",
                 "photos",
                 "price",
-                "rating",
                 "stock"
             ],
             "properties": {
@@ -2665,9 +2696,6 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
-                },
-                "rating": {
-                    "type": "number"
                 },
                 "stock": {
                     "type": "integer"

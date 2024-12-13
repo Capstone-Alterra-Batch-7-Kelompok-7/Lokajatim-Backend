@@ -12,7 +12,6 @@ import (
 // @Param Price int true "Price of the product"
 // @Param Stock int true "Stock of the product"
 // @Param Description string true "Description of the product"
-// @Param Rating float64 true "Rating of the product"
 // @Param Photos []string true "Photos of the product"
 // @Param CategoryID int true "Category ID of the product"
 // @Param Category Category true "Category of the product"

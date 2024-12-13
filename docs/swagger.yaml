@@ -143,8 +143,6 @@ definitions:
         type: array
       price:
         type: integer
-      rating:
-        type: number
       stock:
         type: integer
       updated_at:
@@ -277,8 +275,6 @@ definitions:
         type: array
       price:
         type: integer
-      rating:
-        type: number
       stock:
         type: integer
     required:
@@ -287,7 +283,6 @@ definitions:
     - name
     - photos
     - price
-    - rating
     - stock
     type: object
   request.QuantityRequest:
@@ -1564,6 +1559,29 @@ paths:
           schema:
             $ref: '#/definitions/base.BaseResponse'
       summary: Get best products by price
+      tags:
+      - Product
+  /products/import:
+    post:
+      consumes:
+      - application/json
+      description: Import products from CSV file
+      parameters:
+      - description: CSV file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products imported successfully
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Import products
       tags:
       - Product
   /register:
