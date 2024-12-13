@@ -830,6 +830,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/events/best": {
+            "get": {
+                "description": "Get details of an event with the best price",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get Event by Best Price",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/response.EventResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/events/{id}": {
             "get": {
                 "description": "Get details of an event by ID",
@@ -1282,6 +1326,35 @@ const docTemplate = `{
                 "responses": {
                     "201": {
                         "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/lokajatim_controllers_product_response.ProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/best": {
+            "get": {
+                "description": "Get best products by price",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get best products by price",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/lokajatim_controllers_product_response.ProductResponse"
                         }
@@ -2134,6 +2207,23 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.EventCategory": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Ticket": {
             "type": "object",
             "properties": {
@@ -2393,6 +2483,9 @@ const docTemplate = `{
                 "capacity": {
                     "type": "integer"
                 },
+                "category_id": {
+                    "type": "integer"
+                },
                 "date_time": {
                     "type": "string"
                 },
@@ -2407,6 +2500,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
                 },
                 "url_photo": {
                     "type": "string"
@@ -2706,6 +2802,9 @@ const docTemplate = `{
                 "capacity": {
                     "type": "integer"
                 },
+                "category": {
+                    "$ref": "#/definitions/entities.EventCategory"
+                },
                 "date_time": {
                     "type": "string"
                 },
@@ -2723,6 +2822,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
                 },
                 "url_photo": {
                     "type": "string"
