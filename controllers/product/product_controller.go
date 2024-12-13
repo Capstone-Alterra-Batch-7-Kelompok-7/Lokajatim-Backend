@@ -1,6 +1,7 @@
 package product
 
 import (
+	"fmt"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/pagination"
 	"lokajatim/controllers/product/request"
@@ -113,6 +114,44 @@ func (h *ProductController) CreateProduct(c echo.Context) error {
 	}
 
 	return base.SuccesResponse(c, response.ProductFromEntities(createdProduct, photos))
+}
+
+// @Summary Get best products by price
+// @Description Get best products by price
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.ProductResponse
+// @Failure 400 {object} base.BaseResponse
+// @Router /products/best [get]
+func (h *ProductController) GetBestProductsPrice(c echo.Context) error {
+	products, err := h.ProductService.GetBestProductsPrice()
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to get best products",
+		})
+	}
+
+	if len(products) == 0 {
+		return base.ErrorResponse(c, nil, map[string]string{
+			"error": "No products found",
+		})
+	}
+
+	var productResponses []response.ProductResponse
+	for _, product := range products {
+		// Ambil foto produk
+		photos, err := h.ProductService.GetProductPhotos(product.ID)
+		if err != nil {
+			return base.ErrorResponse(c, err, map[string]string{
+				"error": fmt.Sprintf("Failed to get photos for product ID %d", product.ID),
+			})
+		}
+
+		productResponses = append(productResponses, response.ProductFromEntities(product, photos))
+	}
+
+	return base.SuccesResponse(c, productResponses)
 }
 
 // @Summary Update product

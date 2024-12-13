@@ -21,6 +21,10 @@ func (s *ProductService) GetProductByID(id int) (entities.Product, error) {
 	return s.productRepository.GetProductByID(id)
 }
 
+func (s *ProductService) GetBestProductsPrice() ([]entities.Product, error) {
+	return s.productRepository.GetBestProductsPrice()
+}
+
 func (s *ProductService) CreateProduct(product entities.Product) (entities.Product, error) {
 	return s.productRepository.CreateProduct(product)
 }
