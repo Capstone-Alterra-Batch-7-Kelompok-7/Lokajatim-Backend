@@ -79,30 +79,30 @@ func (s *ProductService) ImportProducts(filePath string) error {
 			continue
 		}
 
-		price, err := strconv.Atoi(record[2])
+		price, err := strconv.Atoi(record[1])
 		if err != nil {
 			return fmt.Errorf("invalid price on row %d: %w", i+1, err)
 		}
-		stock, err := strconv.Atoi(record[3])
+		stock, err := strconv.Atoi(record[2])
 		if err != nil {
 			return fmt.Errorf("invalid stock on row %d: %w", i+1, err)
 		}
-		categoryID, err := strconv.Atoi(record[5])
+		categoryID, err := strconv.Atoi(record[4])
 		if err != nil {
 			return fmt.Errorf("invalid category ID on row %d: %w", i+1, err)
 		}
 
 		product := entities.Product{
-			Name:        record[1],
+			Name:        record[0],
 			Price:       price,
 			Stock:       stock,
-			Description: record[4],
+			Description: record[3],
 			CategoryID:  categoryID,
 		}
 		products = append(products, product)
 
-		if len(record) > 7 && record[7] != "" {
-			photoURLs := strings.Split(record[7], ";")
+		if len(record) > 6 && record[6] != "" {
+			photoURLs := strings.Split(record[6], ";")
 			for _, url := range photoURLs {
 				photos = append(photos, entities.ProductPhoto{
 					UrlPhoto:  url,
