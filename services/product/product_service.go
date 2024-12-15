@@ -91,10 +91,6 @@ func (s *ProductService) ImportProducts(filePath string) error {
 		if err != nil {
 			return fmt.Errorf("invalid category ID on row %d: %w", i+1, err)
 		}
-		rating, err := strconv.ParseFloat(record[6], 64)
-		if err != nil {
-			return fmt.Errorf("invalid rating on row %d: %w", i+1, err)
-		}
 
 		product := entities.Product{
 			Name:        record[1],
@@ -102,7 +98,6 @@ func (s *ProductService) ImportProducts(filePath string) error {
 			Stock:       stock,
 			Description: record[4],
 			CategoryID:  categoryID,
-			Rating:      rating,
 		}
 		products = append(products, product)
 

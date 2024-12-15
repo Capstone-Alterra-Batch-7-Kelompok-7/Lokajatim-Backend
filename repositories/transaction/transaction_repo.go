@@ -24,27 +24,24 @@ func (r *TransactionRepositoryImpl) CreateTransaction(transaction entities.Trans
 	}
 
 	var createdTransaction entities.Transaction
-	result := r.db.Preload("User").First(&createdTransaction, transaction.ID)
-	if result.Error != nil {
-		return entities.Transaction{}, result.Error
+	if err := r.db.Preload("User").First(&createdTransaction, transaction.ID).Error; err != nil {
+		return entities.Transaction{}, err
 	}
 	return createdTransaction, nil
 }
 
 func (r *TransactionRepositoryImpl) GetTransactionByID(transactionID int) (entities.Transaction, error) {
 	var transaction entities.Transaction
-	result := r.db.Preload("User").First(&transaction, transactionID)
-	if result.Error != nil {
-		return entities.Transaction{}, result.Error
+	if err := r.db.Preload("User").First(&transaction, transactionID).Error; err != nil {
+		return entities.Transaction{}, err
 	}
 	return transaction, nil
 }
 
 func (r *TransactionRepositoryImpl) GetAllTransactions() ([]entities.Transaction, error) {
 	var transactions []entities.Transaction
-	result := r.db.Preload("User").Find(&transactions)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.db.Preload("User").Find(&transactions).Error; err != nil {
+		return nil, err
 	}
 	return transactions, nil
 }
@@ -55,22 +52,18 @@ func (r *TransactionRepositoryImpl) UpdateTransaction(transactionID int, updates
 	}
 
 	var updatedTransaction entities.Transaction
-	result := r.db.Preload("User").First(&updatedTransaction, transactionID)
-	if result.Error != nil {
-		return entities.Transaction{}, result.Error
+	if err := r.db.Preload("User").First(&updatedTransaction, transactionID).Error; err != nil {
+		return entities.Transaction{}, err
 	}
 	return updatedTransaction, nil
 }
 
 func (r *TransactionRepositoryImpl) UpdateTransactionStatus(transactionID int, status string) error {
-	if err := r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Update("status", status).Error; err != nil {
-		return err
-	}
-	return nil
+	return r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Update("status", status).Error
 }
 
 func (r *TransactionRepositoryImpl) DeleteTransaction(transactionID int) error {
-	result := r.db.Model(&entities.Transaction{}).Where("id = ?", transactionID).Delete(&entities.Transaction{})
+	result := r.db.Where("id = ?", transactionID).Delete(&entities.Transaction{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -78,4 +71,16 @@ func (r *TransactionRepositoryImpl) DeleteTransaction(transactionID int) error {
 		return errors.New("transaction not found")
 	}
 	return nil
+}
+
+func (r *TransactionRepositoryImpl) GetTransactionByOrderID(orderID string) (entities.Transaction, error) {
+	var transaction entities.Transaction
+	if err := r.db.Preload("User").Where("transaction_id = ?", orderID).First(&transaction).Error; err != nil {
+		return entities.Transaction{}, err
+	}
+	return transaction, nil
+}
+
+func (r *TransactionRepositoryImpl) UpdateTransactionStatusByOrderID(orderID string, status string) error {
+	return r.db.Model(&entities.Transaction{}).Where("transaction_id = ?", orderID).Update("status", status).Error
 }

@@ -6,6 +6,7 @@ import (
 	"lokajatim/controllers/transaction/request"
 	"lokajatim/controllers/transaction/response"
 	"lokajatim/services/transaction"
+	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -165,4 +166,46 @@ func (controller *TransactionController) DeleteTransaction(c echo.Context) error
 		})
 	}
 	return base.SuccesResponse(c, "Transaction deleted successfully")
+}
+
+// @Summary Handle Midtrans Notification
+// @Description Handle payment notification from Midtrans
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /transactions/notifications [post]
+func (controller *TransactionController) HandleMidtransNotification(c echo.Context) error {
+	var notificationPayload map[string]interface{}
+
+	if err := c.Bind(&notificationPayload); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Invalid notification payload",
+		})
+	}
+
+	orderID, ok := notificationPayload["order_id"].(string)
+	if !ok {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Order ID is missing",
+		})
+	}
+
+	transactionStatus, ok := notificationPayload["transaction_status"].(string)
+	if !ok {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Transaction status is missing",
+		})
+	}
+
+	// Update transaction status
+	if err := controller.TransactionService.HandleMidtransNotification(orderID, transactionStatus); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update transaction status",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Notification received successfully",
+	})
 }

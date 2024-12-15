@@ -15,6 +15,7 @@ import (
 	"lokajatim/controllers/product"
 	"lokajatim/controllers/ticket"
 	"lokajatim/controllers/transaction"
+	"lokajatim/controllers/event_category"
 
 	"lokajatim/middleware"
 
@@ -25,17 +26,18 @@ import (
 )
 
 type RouteController struct {
-	AuthController        *auth.AuthController
-	EventController       *event.EventController
-	TicketController      *ticket.TicketController
-	CommentController     *comment.CommentController
-	ArticleController     *article.ArticleController
-	LikeController        *like.LikeController
-	CategoryController    *category.CategoryController
-	ProductController     *product.ProductController
-	CartController        *cart.CartController
-	TransactionController *transaction.TransactionController
-	ChatbotController	*chatbot.ChatbotController
+	AuthController          *auth.AuthController
+	EventController         *event.EventController
+	TicketController        *ticket.TicketController
+	CommentController       *comment.CommentController
+	ArticleController       *article.ArticleController
+	LikeController          *like.LikeController
+	CategoryController      *category.CategoryController
+	EventCategoryController *event_category.EventCategoryController
+	ProductController       *product.ProductController
+	CartController          *cart.CartController
+	TransactionController   *transaction.TransactionController
+	ChatbotController       *chatbot.ChatbotController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -111,6 +113,13 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.PUT("/categories/:id", rc.CategoryController.UpdateCategory)
 	eJWT.DELETE("/categories/:id", rc.CategoryController.DeleteCategory)
 
+	// Event Category Routes
+	eJWT.GET("/event-categories", rc.EventCategoryController.GetEventCategories)
+	eJWT.GET("/event-categories/:id", rc.EventCategoryController.GetEventCategoryByID)
+	eJWT.POST("/event-categories", rc.EventCategoryController.CreateEventCategory)
+	eJWT.PUT("/event-categories/:id", rc.EventCategoryController.UpdateEventCategory)
+	eJWT.DELETE("/event-categories/:id", rc.EventCategoryController.DeleteEventCategory)
+
 	// Product Routes
 	e.GET("/products", rc.ProductController.GetAllProducts)
 	e.GET("/products/:id", rc.ProductController.GetProductByID)
@@ -134,6 +143,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.PUT("/transactions/:id", rc.TransactionController.UpdateTransaction)
 	eJWT.PUT("/transactions/:id/status", rc.TransactionController.UpdateTransactionStatus)
 	eJWT.DELETE("/transactions/:id", rc.TransactionController.DeleteTransaction)
+	e.POST("/transactions/notifications", rc.TransactionController.HandleMidtransNotification)
 
 	// Chatbot Routes
 	eJWT.POST("/chatbot", rc.ChatbotController.ChatbotController)
