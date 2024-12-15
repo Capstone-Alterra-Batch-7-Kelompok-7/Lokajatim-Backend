@@ -35,7 +35,7 @@ type RouteController struct {
 	ProductController     *product.ProductController
 	CartController        *cart.CartController
 	TransactionController *transaction.TransactionController
-	ChatbotController	*chatbot.ChatbotController
+	ChatbotController     *chatbot.ChatbotController
 }
 
 func (rc RouteController) InitRoute(e *echo.Echo) {
@@ -134,6 +134,7 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	eJWT.PUT("/transactions/:id", rc.TransactionController.UpdateTransaction)
 	eJWT.PUT("/transactions/:id/status", rc.TransactionController.UpdateTransactionStatus)
 	eJWT.DELETE("/transactions/:id", rc.TransactionController.DeleteTransaction)
+	e.POST("/transactions/notifications", rc.TransactionController.HandleMidtransNotification)
 
 	// Chatbot Routes
 	eJWT.POST("/chatbot", rc.ChatbotController.ChatbotController)

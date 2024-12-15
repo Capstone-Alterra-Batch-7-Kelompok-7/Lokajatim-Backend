@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"errors"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/pagination"
 	"lokajatim/controllers/transaction/request"
@@ -165,4 +166,46 @@ func (controller *TransactionController) DeleteTransaction(c echo.Context) error
 		})
 	}
 	return base.SuccesResponse(c, "Transaction deleted successfully")
+}
+
+// @Summary Handle Midtrans Notification
+// @Description Handle payment notification from Midtrans
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /transactions/notifications [post]
+func (controller *TransactionController) HandleMidtransNotification(c echo.Context) error {
+	var notificationPayload map[string]interface{}
+
+	if err := c.Bind(&notificationPayload); err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to bind notification payload",
+		})
+	}
+
+	transactionID, ok := notificationPayload["order_id"].(string)
+	if !ok {
+		return base.ErrorResponse(c, errors.New("order_id is missing"), map[string]string{
+			"error": "Invalid notification payload",
+		})
+	}
+
+	status, ok := notificationPayload["transaction_status"].(string)
+	if !ok {
+		return base.ErrorResponse(c, errors.New("transaction_status is missing"), map[string]string{
+			"error": "Invalid notification payload",
+		})
+	}
+
+	err := controller.TransactionService.HandleMidtransNotification(transactionID, status)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to process notification",
+		})
+	}
+
+	return base.SuccesResponse(c, map[string]string{
+		"message": "Notification processed successfully",
+	})
 }

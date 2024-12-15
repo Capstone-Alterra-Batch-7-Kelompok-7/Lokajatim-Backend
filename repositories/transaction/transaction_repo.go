@@ -79,3 +79,19 @@ func (r *TransactionRepositoryImpl) DeleteTransaction(transactionID int) error {
 	}
 	return nil
 }
+
+func (r *TransactionRepositoryImpl) GetTransactionByOrderID(orderID string) (entities.Transaction, error) {
+	var transaction entities.Transaction
+	result := r.db.Preload("User").Where("transaction_id = ?", orderID).First(&transaction)
+	if result.Error != nil {
+		return entities.Transaction{}, result.Error
+	}
+	return transaction, nil
+}
+
+func (r *TransactionRepositoryImpl) UpdateTransactionStatusByOrderID(orderID string, status string) error {
+	if err := r.db.Model(&entities.Transaction{}).Where("transaction_id = ?", orderID).Update("status", status).Error; err != nil {
+		return err
+	}
+	return nil
+}
