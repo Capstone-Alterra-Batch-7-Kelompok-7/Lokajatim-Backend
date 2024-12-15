@@ -112,22 +112,14 @@ func (h *CartController) UpdateItemQuantity(c echo.Context) error {
 		})
 	}
 
-	return base.SuccesResponse(c, response.CartItemResponse{
-		ID:        cartItem.ID,
-		ProductID: cartItem.ProductID,
-		Product: response.ProductResponse{
-			ID:          cartItem.Product.ID,
-			Name:        cartItem.Product.Name,
-			Price:       cartItem.Product.Price,
-			Stock:       cartItem.Product.Stock,
-			Description: cartItem.Product.Description,
-			CreatedAt:   cartItem.Product.CreatedAt,
-			UpdatedAt:   cartItem.Product.UpdatedAt,
-		},
-		Quantity:  cartItem.Quantity,
-		CreatedAt: cartItem.CreatedAt,
-		UpdatedAt: cartItem.UpdatedAt,
-	})
+	cart, err := h.CartService.FindByUserID(cartItem.Cart.UserID)
+	if err != nil {
+		return base.ErrorResponse(c, err, map[string]string{
+			"error": "Failed to fetch updated cart",
+		})
+	}
+
+	return base.SuccesResponse(c, response.CartFromEntities(cart))
 }
 
 // @Summary Remove item from cart
