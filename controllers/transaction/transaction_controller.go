@@ -1,12 +1,13 @@
 package transaction
 
 import (
-	"errors"
+	"fmt"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/pagination"
 	"lokajatim/controllers/transaction/request"
 	"lokajatim/controllers/transaction/response"
 	"lokajatim/services/transaction"
+	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -179,33 +180,35 @@ func (controller *TransactionController) HandleMidtransNotification(c echo.Conte
 	var notificationPayload map[string]interface{}
 
 	if err := c.Bind(&notificationPayload); err != nil {
-		return base.ErrorResponse(c, err, map[string]string{
-			"error": "Failed to bind notification payload",
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Invalid notification payload",
 		})
 	}
 
-	transactionID, ok := notificationPayload["order_id"].(string)
+	fmt.Printf("Notification payload: %+v\n", notificationPayload)
+
+	orderID, ok := notificationPayload["order_id"].(string)
 	if !ok {
-		return base.ErrorResponse(c, errors.New("order_id is missing"), map[string]string{
-			"error": "Invalid notification payload",
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Order ID is missing",
 		})
 	}
 
-	status, ok := notificationPayload["transaction_status"].(string)
+	transactionStatus, ok := notificationPayload["transaction_status"].(string)
 	if !ok {
-		return base.ErrorResponse(c, errors.New("transaction_status is missing"), map[string]string{
-			"error": "Invalid notification payload",
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Transaction status is missing",
 		})
 	}
 
-	err := controller.TransactionService.HandleMidtransNotification(transactionID, status)
-	if err != nil {
-		return base.ErrorResponse(c, err, map[string]string{
-			"error": "Failed to process notification",
+	// Update transaction status
+	if err := controller.TransactionService.HandleMidtransNotification(orderID, transactionStatus); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update transaction status",
 		})
 	}
 
-	return base.SuccesResponse(c, map[string]string{
-		"message": "Notification processed successfully",
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Notification received successfully",
 	})
 }
