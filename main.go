@@ -7,6 +7,7 @@ import (
 	authController "lokajatim/controllers/auth"
 	cartController "lokajatim/controllers/cart"
 	categoryController "lokajatim/controllers/category"
+	eventCategoryController "lokajatim/controllers/event_category"
 	commentController "lokajatim/controllers/comment"
 	"lokajatim/controllers/event"
 	likeController "lokajatim/controllers/like"
@@ -25,6 +26,7 @@ import (
 	productRepo "lokajatim/repositories/product"
 	ticketRepo "lokajatim/repositories/ticket"
 	TransactionRepo "lokajatim/repositories/transaction"
+	eventCategoryRepo "lokajatim/repositories/event_category"
 	"lokajatim/routes"
 	articleService "lokajatim/services/article"
 	authService "lokajatim/services/auth"
@@ -36,6 +38,7 @@ import (
 	productService "lokajatim/services/product"
 	ticketService "lokajatim/services/ticket"
 	TransactionService "lokajatim/services/transaction"
+	eventCategoryService "lokajatim/services/event_category"
 	"lokajatim/utils"
 
 	_ "lokajatim/docs"
@@ -109,6 +112,11 @@ func main() {
 	categoryService := categoryService.NewCategoryService(categoryRepo)
 	categoryController := categoryController.NewCategoryController(*categoryService)
 
+	// Initialize Event Category components
+	eventCategoryRepo := eventCategoryRepo.NewEventCategoryRepository(db)
+	eventCategoryService := eventCategoryService.NewEventCategoryService(eventCategoryRepo)
+	eventCategoryController := eventCategoryController.NewEventCategoryController(*eventCategoryService)
+
 	// Initialize Product components
 	productRepo := productRepo.NewProductRepository(db)
 	productService := productService.NewProductService(productRepo)
@@ -144,6 +152,7 @@ func main() {
 		CartController:        cartController,
 		TransactionController: transactionController,
 		ChatbotController: chatbotController,
+		EventCategoryController: eventCategoryController,
 	}
 
 	// Set up all routes using the routeController

@@ -222,6 +222,14 @@ definitions:
       user_id:
         type: integer
     type: object
+  request.EventCategoryRequest:
+    description: EventCategoryRequest is the request for the Event Category endpoint
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   request.EventRequest:
     description: EventRequest is the request for creating or updating an event
     properties:
@@ -433,6 +441,18 @@ definitions:
         type: integer
       count:
         type: integer
+    type: object
+  response.EventCategoryResponse:
+    description: EventCategoryResponse is the response for the Event Category controller
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
     type: object
   response.EventResponse:
     description: EventResponse is the response for event data retrieval
@@ -1088,6 +1108,131 @@ paths:
       summary: Get comments by article ID
       tags:
       - Comment
+  /event-categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all event categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.EventCategoryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all event categories
+      tags:
+      - Event Category
+    post:
+      consumes:
+      - application/json
+      description: Create event category
+      parameters:
+      - description: Event Category Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.EventCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create event category
+      tags:
+      - Event Category
+  /event-categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete event category
+      parameters:
+      - description: ID of the event category
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete event category
+      tags:
+      - Event Category
+    get:
+      consumes:
+      - application/json
+      description: Get event category by ID
+      parameters:
+      - description: ID of the event category
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EventCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get event category by ID
+      tags:
+      - Event Category
+    put:
+      consumes:
+      - application/json
+      description: Update event category
+      parameters:
+      - description: ID of the event category
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event Category Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EventCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update event category
+      tags:
+      - Event Category
   /events:
     get:
       consumes:
@@ -1887,6 +2032,23 @@ paths:
               type: string
             type: object
       summary: Update Transaction Status
+      tags:
+      - Transaction
+  /transactions/notifications:
+    post:
+      consumes:
+      - application/json
+      description: Handle payment notification from Midtrans
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Handle Midtrans Notification
       tags:
       - Transaction
   /users:
