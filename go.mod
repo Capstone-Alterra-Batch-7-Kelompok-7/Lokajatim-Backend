@@ -6,8 +6,9 @@ toolchain go1.23.0
 
 require (
 	github.com/go-mail/mail v2.3.1+incompatible
-	github.com/midtrans/midtrans-go v1.3.8
 	github.com/google/generative-ai-go v0.19.0
+	github.com/midtrans/midtrans-go v1.3.8
+	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/swag v1.16.4
 	google.golang.org/api v0.186.0
 	gorm.io/driver/mysql v1.5.7
@@ -21,6 +22,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	cloud.google.com/go/longrunning v0.5.7 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -38,6 +40,8 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0 // indirect

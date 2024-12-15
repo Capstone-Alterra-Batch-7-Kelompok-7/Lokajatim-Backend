@@ -1,4 +1,4 @@
-package services
+package chatbot
 
 import (
 	"context"
