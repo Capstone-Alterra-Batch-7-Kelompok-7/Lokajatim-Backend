@@ -11,14 +11,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewAuthController(as services.AuthInterface) *AuthController {
+func NewAuthController(as services.AuthServiceInterface) *AuthController {
 	return &AuthController{
 		authService: as,
 	}
 }
 
 type AuthController struct {
-	authService services.AuthInterface
+	authService services.AuthServiceInterface
 }
 
 // @Summary Login

@@ -85,7 +85,7 @@ func main() {
 	// Initialize Article components
 	articleRepo := articleRepo.NewArticleRepository(db)
 	articleService := articleService.NewArticleService(articleRepo)
-	articleController := articleController.NewArticleController(*articleService)
+	articleController := articleController.NewArticleController(articleService)
 
 	// Initialize Comment components
 	commentRepo := commentRepo.NewCommentRepository(db)
