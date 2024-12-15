@@ -147,4 +147,3 @@ func TestGetByID_Error(t *testing.T) {
 	assert.Nil(t, result)
 	mockRepo.AssertExpectations(t)
 }
-

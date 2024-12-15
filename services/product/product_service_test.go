@@ -15,6 +15,9 @@ type MockProductRepository struct {
 
 func (m *MockProductRepository) GetProducts() ([]entities.Product, error) {
 	args := m.Called()
+	if args.Get(0) == nil {
+		return []entities.Product{}, args.Error(1)
+	}
 	return args.Get(0).([]entities.Product), args.Error(1)
 }
 
@@ -91,6 +94,37 @@ func TestGetProducts(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
+func TestGetProductsError(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	// Return an error from the mock
+	mockRepo.On("GetProducts").Return(nil, assert.AnError)
+
+	// Call the method
+	products, err := service.GetProducts()
+
+	// Check that the error is returned
+	assert.Error(t, err)
+	assert.Empty(t, products) // Expecting nil as products when an error occurs
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetProductsEmptyList(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	mockRepo.On("GetProducts").Return([]entities.Product{}, nil)  // Empty list
+
+	products, err := service.GetProducts()
+
+	assert.NoError(t, err)
+	assert.Empty(t, products)
+
+	mockRepo.AssertExpectations(t)
+}
+
 func TestGetProductByID(t *testing.T) {
 	mockRepo := new(MockProductRepository)
 	service := product.NewProductService(mockRepo)
@@ -122,6 +156,24 @@ func TestCreateProduct(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
+func TestCreateProductPhotos(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	photos := []entities.ProductPhoto{
+		{ProductID: 1, UrlPhoto: "url1"},
+		{ProductID: 1, UrlPhoto: "url2"},
+	}
+
+	mockRepo.On("CreateProductPhotos", photos).Return(nil)  // Simulate successful photo creation
+
+	err := service.CreateProductPhotos(photos)
+
+	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
 func TestUpdateProduct(t *testing.T) {
 	mockRepo := new(MockProductRepository)
 	service := product.NewProductService(mockRepo)
@@ -138,6 +190,23 @@ func TestUpdateProduct(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
+func TestUpdateProductPhotos(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	photos := []entities.ProductPhoto{
+		{ProductID: 1, UrlPhoto: "new_url1"},
+	}
+
+	mockRepo.On("UpdateProductPhotos", 1, photos).Return(nil)  // Simulate successful photo update
+
+	err := service.UpdateProductPhotos(1, photos)
+
+	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
 func TestDeleteProduct(t *testing.T) {
 	mockRepo := new(MockProductRepository)
 	service := product.NewProductService(mockRepo)
@@ -147,6 +216,38 @@ func TestDeleteProduct(t *testing.T) {
 	err := service.DeleteProduct(1)
 
 	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetBestProductsPrice(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	mockProducts := []entities.Product{
+		{ID: 1, Name: "Best Product", Price: 50000},
+		{ID: 2, Name: "Another Product", Price: 40000},
+	}
+	mockRepo.On("GetBestProductsPrice").Return(mockProducts, nil)
+
+	products, err := service.GetBestProductsPrice()
+
+	assert.NoError(t, err)
+	assert.Equal(t, mockProducts, products)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetBestProductsPriceError(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	mockRepo.On("GetBestProductsPrice").Return([]entities.Product{}, assert.AnError)
+
+	products, err := service.GetBestProductsPrice()
+
+	assert.Error(t, err)
+	assert.Empty(t, products)
 
 	mockRepo.AssertExpectations(t)
 }
