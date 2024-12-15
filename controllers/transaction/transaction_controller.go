@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"fmt"
 	"lokajatim/controllers/base"
 	"lokajatim/controllers/pagination"
 	"lokajatim/controllers/transaction/request"
@@ -184,8 +183,6 @@ func (controller *TransactionController) HandleMidtransNotification(c echo.Conte
 			"message": "Invalid notification payload",
 		})
 	}
-
-	fmt.Printf("Notification payload: %+v\n", notificationPayload)
 
 	orderID, ok := notificationPayload["order_id"].(string)
 	if !ok {
