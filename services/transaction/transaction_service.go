@@ -92,19 +92,11 @@ func (s *TransactionService) HandleMidtransNotification(orderID, status string) 
 }
 
 func (s *TransactionService) GetTransactionByID(transactionID int) (entities.Transaction, error) {
-	transaction, err := s.transactionRepo.GetTransactionByID(transactionID)
-	if err != nil {
-		return entities.Transaction{}, err
-	}
-	return transaction, nil
+	return s.transactionRepo.GetTransactionByID(transactionID)
 }
 
 func (s *TransactionService) GetAllTransactions() ([]entities.Transaction, error) {
-	transactions, err := s.transactionRepo.GetAllTransactions()
-	if err != nil {
-		return nil, err
-	}
-	return transactions, nil
+	return s.transactionRepo.GetAllTransactions()
 }
 
 func (s *TransactionService) UpdateTransaction(id int, updatedTransaction entities.Transaction) (entities.Transaction, error) {
@@ -121,12 +113,7 @@ func (s *TransactionService) UpdateTransaction(id int, updatedTransaction entiti
 		"updated_at":  utils.GetCurrentTime(),
 	}
 
-	transaction, err := s.transactionRepo.UpdateTransaction(id, updates)
-	if err != nil {
-		return entities.Transaction{}, err
-	}
-
-	return transaction, nil
+	return s.transactionRepo.UpdateTransaction(id, updates)
 }
 
 func (s *TransactionService) UpdateTransactionStatus(transactionID int, status string) error {
