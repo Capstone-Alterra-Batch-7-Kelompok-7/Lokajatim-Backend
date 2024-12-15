@@ -16,7 +16,10 @@ func NewCartRepository(db *gorm.DB) CartRepositoryInterface {
 
 func (r *cartRepository) FindByUserID(userID int) (entities.Cart, error) {
 	var cart entities.Cart
-	result := r.db.Preload("Items.Product").Preload("User").First(&cart, "user_id = ?", userID)
+	result := r.db.Preload("Items.Product.Photos").
+        Preload("Items.Product").
+        Preload("Items").
+        Preload("User").First(&cart, "user_id = ?", userID)
 	if result.Error != nil {
 		return entities.Cart{}, result.Error
 	}
@@ -30,7 +33,10 @@ func (r *cartRepository) FindByUserID(userID int) (entities.Cart, error) {
 
 func (r *cartRepository) FindByID(cartID int) (entities.Cart, error) {
 	var cart entities.Cart
-	result := r.db.Preload("Items.Product").Preload("User").First(&cart, cartID)
+	result := r.db.Preload("Items.Product.Photos").
+        Preload("Items.Product").
+        Preload("Items").
+        Preload("User").First(&cart, cartID)
 	if result.Error != nil {
 		return entities.Cart{}, result.Error
 	}
@@ -42,6 +48,33 @@ func (r *cartRepository) FindByID(cartID int) (entities.Cart, error) {
 	return cart, nil
 }
 
+func (r *cartRepository) FindByCartItemID(cartItemID int) (entities.Cart, error) {
+    var cartItem entities.CartItem
+    result := r.db.Preload("Cart.Items.Product.Photos").Preload("Cart.Items.Product").
+        Preload("Cart.User").First(&cartItem, cartItemID)
+    if result.Error != nil {
+        return entities.Cart{}, result.Error
+    }
+
+    var cart entities.Cart
+    result = r.db.Preload("Items.Product.Photos").
+        Preload("Items.Product").
+        Preload("Items").
+        Preload("User").
+        First(&cart, cartItem.CartID)
+    if result.Error != nil {
+        return entities.Cart{}, result.Error
+    }
+
+    cart.CalculateTotalPrice()
+    cart.CalculateTotalPriceAfterAddTransactionPrice()
+    if err := r.db.Save(&cart).Error; err != nil {
+        return entities.Cart{}, err
+    }
+
+    return cart, nil
+}
+
 func (r *cartRepository) Create(cart entities.Cart) (entities.Cart, error) {
 	if err := r.db.Create(&cart).Error; err != nil {
 		return entities.Cart{}, err
@@ -51,7 +84,10 @@ func (r *cartRepository) Create(cart entities.Cart) (entities.Cart, error) {
 
 func (r *cartRepository) AddItemToCart(userID int, cartItem entities.CartItem) (entities.CartItem, error) {
 	var cart entities.Cart
-	result := r.db.Preload("Items.Product").Preload("User").First(&cart, "user_id = ?", userID)
+	result := r.db.Preload("Items.Product.Photos").
+        Preload("Items.Product").
+        Preload("Items").
+        Preload("User").First(&cart, "user_id = ?", userID)
 
 	if result.Error != nil {
 		cart = entities.Cart{UserID: userID}

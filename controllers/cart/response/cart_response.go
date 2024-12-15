@@ -22,7 +22,6 @@ type CartItemResponse struct {
 	ID        int             `json:"id"`
 	ProductID int             `json:"product_id"`
 	Product   ProductResponse `json:"product"`
-	Photos    []string        `json:"photos"`
 	Quantity  int             `json:"quantity"`
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`
@@ -70,7 +69,6 @@ func CartFromEntities(cart entities.Cart) CartResponse {
 			ID:        item.ID,
 			ProductID: item.ProductID,
 			Product:   ProductFromEntities(item.Product),
-			Photos:    photoUrls,
 			Quantity:  item.Quantity,
 			CreatedAt: item.CreatedAt,
 			UpdatedAt: item.UpdatedAt,

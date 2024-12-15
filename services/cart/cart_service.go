@@ -21,6 +21,10 @@ func (s *CartService) FindByID(cartID int) (entities.Cart, error) {
 	return s.cartRepository.FindByID(cartID)
 }
 
+func (s *CartService) FindByCartItemID(cartItemID int) (entities.Cart, error) {
+	return s.cartRepository.FindByCartItemID(cartItemID)
+}
+
 func (s *CartService) Create(cart entities.Cart) (entities.Cart, error) {
 	return s.cartRepository.Create(cart)
 }
