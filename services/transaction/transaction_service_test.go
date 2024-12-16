@@ -69,6 +69,11 @@ func (m *MockCartRepository) FindByID(cartID int) (entities.Cart, error) {
 	return args.Get(0).(entities.Cart), args.Error(1)
 }
 
+func (m *MockCartRepository) FindByCartItemID(cartItemID int) (entities.Cart, error) {
+	args := m.Called(cartItemID)
+	return args.Get(0).(entities.Cart), args.Error(1)
+}
+
 func (m *MockCartRepository) Create(cart entities.Cart) (entities.Cart, error) {
 	args := m.Called(cart)
 	return args.Get(0).(entities.Cart), args.Error(1)
