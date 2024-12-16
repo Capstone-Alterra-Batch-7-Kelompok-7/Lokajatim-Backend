@@ -3319,6 +3319,24 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ProductInCart": {
+            "description": "ProductInCart is the response for product in cart data retrieval",
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
         "response.RegisterResponse": {
             "description": "RegisterResponse is the response for the Register controller",
             "type": "object",
@@ -3349,6 +3367,9 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                },
+                "token": {
+                    "type": "string"
                 }
             }
         },
@@ -3367,6 +3388,12 @@ const docTemplate = `{
                 },
                 "payment_url": {
                     "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ProductInCart"
+                    }
                 },
                 "status": {
                     "type": "string"

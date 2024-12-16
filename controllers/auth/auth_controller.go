@@ -147,10 +147,10 @@ func (ac *AuthController) SendOTPController(c echo.Context) error {
 	}
 
 	// Kirimkan token JWT dalam respons
-	return base.SuccesResponse(c, map[string]interface{}{
-		"message": "OTP sent successfully",
-		"token":   token,
-	})
+	return base.SuccesResponse(c, response.SendOTPResponse{
+        Message: "OTP sent successfully",
+        Token:   token,
+    })
 }
 
 // ResetPasswordController handles the password reset request

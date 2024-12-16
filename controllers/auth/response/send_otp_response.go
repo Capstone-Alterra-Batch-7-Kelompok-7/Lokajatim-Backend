@@ -7,4 +7,5 @@ package response
 // @Failure 500 {object} base.BaseResponse "Internal server error"
 type SendOTPResponse struct {
 	Message string `json:"message"`
+	Token   string `json:"token"`
 }
