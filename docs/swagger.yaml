@@ -354,6 +354,13 @@ definitions:
     required:
     - name
     type: object
+  request.VerifyOTPRequest:
+    properties:
+      otp:
+        type: string
+    required:
+    - otp
+    type: object
   response.ArticleResponse:
     description: ArticleResponse is the response for the Article controller
     properties:
@@ -2166,6 +2173,36 @@ paths:
           schema:
             $ref: '#/definitions/base.BaseResponse'
       summary: Update User
+      tags:
+      - Auth
+  /verify-otp:
+    post:
+      consumes:
+      - application/json
+      description: Verify if the provided OTP is valid for the logged-in user
+      parameters:
+      - description: Request to verify OTP
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.VerifyOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP verified successfully
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Invalid OTP
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Verify OTP
       tags:
       - Auth
 swagger: "2.0"

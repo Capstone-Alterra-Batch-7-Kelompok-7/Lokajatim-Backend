@@ -16,11 +16,11 @@ import (
 
 type TicketController struct {
 	ticketService ticket.TicketInterface
-	authService   services.AuthInterface
+	authService   services.AuthServiceInterface
 	eventService  eventService.EventService
 }
 
-func NewTicketController(ticketService ticket.TicketInterface, authService services.AuthInterface,eventService eventService.EventService) *TicketController {
+func NewTicketController(ticketService ticket.TicketInterface, authService services.AuthServiceInterface,eventService eventService.EventService) *TicketController {
 	return &TicketController{
 		ticketService: ticketService,
 		authService:   authService,

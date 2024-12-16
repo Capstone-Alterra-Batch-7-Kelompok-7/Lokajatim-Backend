@@ -78,14 +78,15 @@ func main() {
 
 	// Initialize Auth components
 	authJwt := middleware.JwtLokajatim{}
+	authJwtReset := middleware.JwtLokajatimReset{}
 	authRepo := authRepo.NewAuthRepo(db)
-	authService := authService.NewAuthService(authRepo, authJwt)
+	authService := authService.NewAuthService(authRepo, authJwt, authJwtReset)
 	authController := authController.NewAuthController(authService)
 
 	// Initialize Article components
 	articleRepo := articleRepo.NewArticleRepository(db)
 	articleService := articleService.NewArticleService(articleRepo)
-	articleController := articleController.NewArticleController(*articleService)
+	articleController := articleController.NewArticleController(articleService)
 
 	// Initialize Comment components
 	commentRepo := commentRepo.NewCommentRepository(db)

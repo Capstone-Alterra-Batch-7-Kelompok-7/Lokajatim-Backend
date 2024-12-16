@@ -5,20 +5,23 @@ import (
 	"lokajatim/controllers/auth/request"
 	"lokajatim/controllers/auth/response"
 	"lokajatim/controllers/base"
+	"lokajatim/middleware"
 	services "lokajatim/services/auth"
+	"lokajatim/utils"
+	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-func NewAuthController(as services.AuthInterface) *AuthController {
+func NewAuthController(as services.AuthServiceInterface) *AuthController {
 	return &AuthController{
 		authService: as,
 	}
 }
 
 type AuthController struct {
-	authService services.AuthInterface
+	authService services.AuthServiceInterface
 }
 
 // @Summary Login
@@ -112,21 +115,43 @@ func (userController AuthController) GetUserByID(c echo.Context) error {
 // @Failure 400 {object} base.BaseResponse "Invalid email address"
 // @Failure 500 {object} base.BaseResponse "Internal server error"
 // @Router /forgot-password [post]
-func (userController *AuthController) SendOTPController(c echo.Context) error {
-	var request request.SendOTPRequest
+func (ac *AuthController) SendOTPController(c echo.Context) error {
+	var request struct {
+		Email string `json:"email" validate:"required,email"`
+	}
+
 	if err := c.Bind(&request); err != nil {
-		return base.ErrorResponse(c, err, "Failed to bind request parameters")
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request format")
 	}
 
-	// Call service to send OTP
-	message, err := userController.authService.SendOTPToEmail(request.Email)
+	// Periksa apakah email ada di database
+	user, err := ac.authService.GetUserByEmail(request.Email)
 	if err != nil {
-		return base.ErrorResponse(c, err, "Failed to send OTP to email adress")
+		return echo.NewHTTPError(http.StatusNotFound, "Email not found")
 	}
 
-	// Return success response
-	response := response.SendOTPResponse{Message: message}
-	return base.SuccesResponse(c, response)
+	// Generate JWT untuk email
+	token, err := middleware.JwtLokajatimReset{}.GenerateEmailJWT(user.Email)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate token")
+	}
+
+	// Generate OTP dan simpan ke database
+	otp := utils.GenerateOTP()
+	if err := ac.authService.StoreOTP(user.Email, otp); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to store OTP")
+	}
+
+	// Kirim OTP melalui email (opsional)
+	if err := utils.SendOTPEmail(user.Email, otp); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to send OTP email")
+	}
+
+	// Kirimkan token JWT dalam respons
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "OTP sent successfully",
+		"token":   token,
+	})
 }
 
 // ResetPasswordController handles the password reset request
@@ -237,3 +262,36 @@ func (ac *AuthController) DeleteUserController(c echo.Context) error {
 	return base.SuccesResponse(c, map[string]string{"message": "User deleted successfully"})
 }
 
+// VerifyOTPController handles OTP verification
+// @Summary Verify OTP
+// @Description Verify if the provided OTP is valid for the logged-in user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body request.VerifyOTPRequest true "Request to verify OTP"
+// @Success 200 {object} base.BaseResponse "OTP verified successfully"
+// @Failure 400 {object} base.BaseResponse "Invalid OTP"
+// @Failure 500 {object} base.BaseResponse "Internal server error"
+// @Router /verify-otp [post]
+func (ac *AuthController) VerifyOTPController(c echo.Context) error {
+	email, ok := c.Get("email").(string)
+	if !ok {
+		return base.ErrorResponse(c,nil, "Invalid token claims")
+	}
+	
+	var verifyRequest struct {
+		OTP string `json:"otp" validate:"required"`
+	}
+	if err := c.Bind(&verifyRequest); err != nil {
+		return base.ErrorResponse(c,nil, "Invalid request format")
+	}
+
+	valid, err := ac.authService.VerifyOTP(email, verifyRequest.OTP)
+	if err != nil || !valid {
+		return base.ErrorResponse(c,nil, "Invalid OTP")
+	}
+
+	return base.SuccesResponse(c, map[string]string{
+		"message": "OTP verified successfully",
+	})
+}
