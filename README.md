@@ -8,6 +8,7 @@ Lokajatim Backend adalah backend service yang dikembangkan menggunakan Golang un
 - **API Terstruktur**: Mendukung integrasi dengan frontend melalui REST API.
 - **Keamanan**: JWT untuk autentikasi, validasi input, dan sanitasi data.
 - **Testing**: Unit testing untuk memastikan stabilitas aplikasi.
+- **Pembayaran**: Melakukan pembayaran menggunakan Midtrans sebagai Payment Gateway
 
 ## 🛠️ Teknologi yang Digunakan
 - **Bahasa Pemrograman**: Golang
@@ -16,16 +17,17 @@ Lokajatim Backend adalah backend service yang dikembangkan menggunakan Golang un
 - **ORM**: GORM
 - **Middleware**: JWT, CORS
 - **Deployment**: AWS
-- **Tooling**: Swagger untuk dokumentasi API
+- **Tooling**: Swagger untuk dokumentasi API, Midtrans sebagai Payment Gateway
 
 ## 📂 Struktur Proyek
 ```
 Lokajatim-Backend/
 ├── config/         # Konfigurasi aplikasi (database, JWT, dll.)
 ├── controllers/    # Logika bisnis dan handler untuk HTTP request
-├── models/         # Model database
+├── entities/       # Model database
 ├── routes/         # Routing untuk endpoint API
 ├── services/       # Logika layanan yang terpisah dari controller
+├── repositories/   # Repository layer untuk akses data
 ├── utils/          # Fungsi pendukung
 ├── tests/          # File unit testing
 └── main.go         # Entry point aplikasi
