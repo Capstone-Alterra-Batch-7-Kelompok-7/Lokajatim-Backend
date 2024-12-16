@@ -2637,6 +2637,9 @@ const docTemplate = `{
                 "payment_method": {
                     "type": "string"
                 },
+                "quantity": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "string"
                 },

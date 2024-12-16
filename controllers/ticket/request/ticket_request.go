@@ -13,6 +13,7 @@ import (
 // @Param Status string true "Ticket status"
 type CreateTicketRequest struct {
 	EventsID      uint   `json:"events_id" validate:"required"`
+	Quantity      int    `json:"quantity" validate:"required,min=1"`
 	TotalAmount   int    `json:"total_amount" validate:"required,min=1"`
 	UsersID       int   `json:"users_id" validate:"required"`
 	PaymentMethod string `json:"payment_method" validate:"required"`
@@ -28,6 +29,7 @@ type CreateTicketRequest struct {
 // @Param Status string false "Ticket status"
 type UpdateTicketRequest struct {
 	EventsID      uint   `json:"events_id" validate:"omitempty"`
+	Quantity      int    `json:"quantity" validate:"required,min=1"`
 	TotalAmount   int    `json:"total_amount" validate:"omitempty,min=1"`
 	UsersID       int   `json:"users_id" validate:"omitempty"`
 	PaymentMethod string `json:"payment_method" validate:"omitempty"`
@@ -41,6 +43,7 @@ func (req CreateTicketRequest) ToEntity() entities.Ticket {
 		UsersID:       req.UsersID,
 		PaymentMethod: req.PaymentMethod,
 		Status:        req.Status,
+		Quantity:      req.Quantity,
 	}
 }
 
@@ -51,5 +54,6 @@ func (req UpdateTicketRequest) ToEntity() entities.Ticket {
 		UsersID:       req.UsersID,
 		PaymentMethod: req.PaymentMethod,
 		Status:        req.Status,
+		Quantity:      req.Quantity,
 	}
 }
