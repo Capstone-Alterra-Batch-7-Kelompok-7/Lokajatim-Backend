@@ -1,24 +1,43 @@
 package auth_test
 
 import (
-	// "testing"
+	"errors"
+	"testing"
 
 	"lokajatim/entities"
-	// "lokajatim/services/auth"
-
-	// "github.com/stretchr/testify/assert"
+	"lokajatim/services/auth"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-// MockAuthRepo untuk AuthRepoInterface
+// Mock for AuthRepoInterface
 type MockAuthRepo struct {
 	mock.Mock
 }
 
+func (m *MockAuthRepo) Login(user entities.User) (entities.User, error) {
+	args := m.Called(user)
+	return args.Get(0).(entities.User), args.Error(1)
+}
+
 func (m *MockAuthRepo) GetUserByEmail(email string) (entities.User, error) {
 	args := m.Called(email)
-	user, _ := args.Get(0).(entities.User)
-	return user, args.Error(1)
+	return args.Get(0).(entities.User), args.Error(1)
+}
+
+func (m *MockAuthRepo) GetUserByID(userID int) (entities.User, error) {
+	args := m.Called(userID)
+	return args.Get(0).(entities.User), args.Error(1)
+}
+
+func (m *MockAuthRepo) GetAllUsers() ([]entities.User, error) {
+	args := m.Called()
+	return args.Get(0).([]entities.User), args.Error(1)
+}
+
+func (m *MockAuthRepo) Register(user entities.User) (entities.User, error) {
+	args := m.Called(user)
+	return args.Get(0).(entities.User), args.Error(1)
 }
 
 func (m *MockAuthRepo) GetLastUserID() (int, error) {
@@ -26,10 +45,14 @@ func (m *MockAuthRepo) GetLastUserID() (int, error) {
 	return args.Int(0), args.Error(1)
 }
 
-func (m *MockAuthRepo) Register(user entities.User) (entities.User, error) {
+func (m *MockAuthRepo) UpdateUser(user entities.User) (entities.User, error) {
 	args := m.Called(user)
-	registeredUser, _ := args.Get(0).(entities.User)
-	return registeredUser, args.Error(1)
+	return args.Get(0).(entities.User), args.Error(1)
+}
+
+func (m *MockAuthRepo) DeleteUser(userID int) error {
+	args := m.Called(userID)
+	return args.Error(0)
 }
 
 func (m *MockAuthRepo) StoreOTP(email, otp string) error {
@@ -47,34 +70,7 @@ func (m *MockAuthRepo) UpdatePassword(user entities.User) error {
 	return args.Error(0)
 }
 
-func (m *MockAuthRepo) GetUserByID(userID int) (entities.User, error) {
-	args := m.Called(userID)
-	user, _ := args.Get(0).(entities.User)
-	return user, args.Error(1)
-}
-
-func (m *MockAuthRepo) GetAllUsers() ([]entities.User, error) {
-	args := m.Called()
-	users, _ := args.Get(0).([]entities.User)
-	return users, args.Error(1)
-}
-
-func (m *MockAuthRepo) UpdateUser(user entities.User) (entities.User, error) {
-	args := m.Called(user)
-	updatedUser, _ := args.Get(0).(entities.User)
-	return updatedUser, args.Error(1)
-}
-
-func (m *MockAuthRepo) DeleteUser(userID int) error {
-	args := m.Called(userID)
-	return args.Error(0)
-}
-
-func (m *MockAuthRepo) Login(user entities.User) (entities.User, error) {
-	args := m.Called(user)
-	return args.Get(0).(entities.User), args.Error(1)
-}
-// MockJwt untuk JwtInterface
+// Mock for JwtInterface
 type MockJwt struct {
 	mock.Mock
 }
@@ -84,91 +80,150 @@ func (m *MockJwt) GenerateJWT(userID int, name, role string) (string, error) {
 	return args.String(0), args.Error(1)
 }
 
-// Test Login sukses
-// func TestLogin_Success(t *testing.T) {
-// 	mockRepo := new(MockAuthRepo)
-// 	mockJwt := new(MockJwt)
-// 	authService := auth.NewAuthService(mockRepo, mockJwt)
+func TestLogin(t *testing.T) {
+	mockAuthRepo := new(MockAuthRepo)
+	mockJwt := new(MockJwt)
+	service := auth.NewAuthService(mockAuthRepo, mockJwt, nil)
 
-// 	userInput := entities.User{Email: "user@example.com", Password: "password123"}
-// 	dbUser := entities.User{ID: 1, Email: "user@example.com", Password: "$2a$14$hashedPassword", Name: "Test User", Role: "user"}
+	// Generate hashed password
+	hashedPassword, _ := service.HashPassword("password")
 
-// 	mockRepo.On("GetUserByEmail", userInput.Email).Return(dbUser, nil)
-// 	mockJwt.On("GenerateJWT", dbUser.ID, dbUser.Name, dbUser.Role).Return("valid_jwt_token", nil)
+	validUser := entities.User{
+		Email:    "test@example.com",
+		Password: "password",
+	}
+	storedUser := entities.User{
+		ID:       1,
+		Email:    "test@example.com",
+		Password: hashedPassword,
+		Name:     "Test User",
+		Role:     "user",
+	}
 
-// 	result, err := authService.Login(userInput)
+	mockAuthRepo.On("GetUserByEmail", validUser.Email).Return(storedUser, nil)
+	mockJwt.On("GenerateJWT", storedUser.ID, storedUser.Name, storedUser.Role).Return("testtoken", nil)
 
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, "valid_jwt_token", result.Token)
-// 	mockRepo.AssertExpectations(t)
-// 	mockJwt.AssertExpectations(t)
-// }
+	// Successful Login
+	result, err := service.Login(validUser)
+	assert.NoError(t, err)
+	assert.Equal(t, "testtoken", result.Token)
 
-// // Test Register sukses
-// func TestRegister_Success(t *testing.T) {
-// 	mockRepo := new(MockAuthRepo)
-// 	mockJwt := new(MockJwt)
-// 	authService := auth.NewAuthService(mockRepo, mockJwt)
+	// Invalid Password
+	mockAuthRepo.On("GetUserByEmail", validUser.Email).Return(storedUser, nil)
+	invalidPasswordUser := entities.User{
+		Email:    "test@example.com",
+		Password: "wrongpassword",
+	}
+	_, err = service.Login(invalidPasswordUser)
+	assert.Error(t, err)
+	assert.Equal(t, "incorrect password", err.Error())
 
-// 	userInput := entities.User{Email: "newuser@example.com", Password: "password123", Name: "New User"}
-// 	registeredUser := entities.User{ID: 1, Email: "newuser@example.com", Password: "$2a$14$hashedPassword", Name: "New User"}
+	// Invalid Email
+	mockAuthRepo.On("GetUserByEmail", "invalid@example.com").Return(entities.User{}, errors.New("user not found"))
+	invalidUser := entities.User{
+		Email:    "invalid@example.com",
+		Password: "password",
+	}
+	_, err = service.Login(invalidUser)
+	assert.Error(t, err)
+}
 
-// 	mockRepo.On("GetLastUserID").Return(0, nil)
-// 	mockRepo.On("Register", mock.Anything).Return(registeredUser, nil)
-// 	mockJwt.On("GenerateJWT", registeredUser.ID, registeredUser.Name, registeredUser.Role).Return("valid_jwt_token", nil)
+func TestRegister(t *testing.T) {
+	mockAuthRepo := new(MockAuthRepo)
+	mockJwt := new(MockJwt)
+	service := auth.NewAuthService(mockAuthRepo, mockJwt, nil)
 
-// 	result, err := authService.Register(userInput)
+	newUser := entities.User{
+		Email:    "newuser@example.com",
+		Password: "password",
+	}
 
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, "valid_jwt_token", result.Token)
-// 	mockRepo.AssertExpectations(t)
-// 	mockJwt.AssertExpectations(t)
-// }
+	mockAuthRepo.On("GetLastUserID").Return(1, nil)
+	mockAuthRepo.On("Register", mock.Anything).Return(newUser, nil)
+	mockJwt.On("GenerateJWT", mock.Anything, mock.Anything, mock.Anything).Return("testtoken", nil)
 
-// Test GetUserByID sukses
-// func TestGetUserByID_Success(t *testing.T) {
-// 	mockRepo := new(MockAuthRepo)
-// 	authService := auth.NewAuthService(mockRepo, nil)
+	// Successful Registration
+	result, err := service.Register(newUser)
+	assert.NoError(t, err)
+	assert.Equal(t, "testtoken", result.Token)
+}
 
-// 	dbUser := entities.User{ID: 1, Email: "user@example.com", Name: "Test User"}
+func TestGetUserByID(t *testing.T) {
+	mockAuthRepo := new(MockAuthRepo)
+	service := auth.NewAuthService(mockAuthRepo, nil, nil)
 
-// 	mockRepo.On("GetUserByID", 1).Return(dbUser, nil)
+	user := entities.User{
+		ID:    1,
+		Name:  "Test User",
+		Email: "test@example.com",
+	}
 
-// 	result, err := authService.GetUserByID(1)
+	mockAuthRepo.On("GetUserByID", user.ID).Return(user, nil)
 
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, dbUser, result)
-// 	mockRepo.AssertExpectations(t)
-// }
+	// Successful Get User By ID
+	result, err := service.GetUserByID(user.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, user, result)
 
-// Test GetAllUsers sukses
-// func TestGetAllUsers_Success(t *testing.T) {
-// 	mockRepo := new(MockAuthRepo)
-// 	authService := auth.NewAuthService(mockRepo, nil)
+	// User Not Found
+	mockAuthRepo.On("GetUserByID", 2).Return(entities.User{}, errors.New("user not found"))
+	_, err = service.GetUserByID(2)
+	assert.Error(t, err)
+}
 
-// 	users := []entities.User{
-// 		{ID: 1, Email: "user1@example.com"},
-// 		{ID: 2, Email: "user2@example.com"},
-// 	}
+func TestGetAllUsers(t *testing.T) {
+	mockAuthRepo := new(MockAuthRepo)
+	service := auth.NewAuthService(mockAuthRepo, nil, nil)
 
-// 	mockRepo.On("GetAllUsers").Return(users, nil)
+	users := []entities.User{
+		{ID: 1, Name: "User 1"},
+		{ID: 2, Name: "User 2"},
+	}
 
-// 	result, err := authService.GetAllUsers()
+	mockAuthRepo.On("GetAllUsers").Return(users, nil)
 
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, users, result)
-// 	mockRepo.AssertExpectations(t)
-// }
+	// Successful Get All Users
+	result, err := service.GetAllUsers()
+	assert.NoError(t, err)
+	assert.Equal(t, users, result)
+}
 
-// Test DeleteUser sukses
-// func TestDeleteUser_Success(t *testing.T) {
-// 	mockRepo := new(MockAuthRepo)
-// 	authService := auth.NewAuthService(mockRepo, nil)
+func TestUpdateUser(t *testing.T) {
+	mockAuthRepo := new(MockAuthRepo)
+	service := auth.NewAuthService(mockAuthRepo, nil, nil)
 
-// 	mockRepo.On("DeleteUser", 1).Return(nil)
+	existingUser := entities.User{
+		ID:    1,
+		Name:  "Old Name",
+		Email: "test@example.com",
+	}
 
-// 	err := authService.DeleteUser(1)
+	updatedData := entities.User{
+		Name: "New Name",
+	}
 
-// 	assert.NoError(t, err)
-// 	mockRepo.AssertExpectations(t)
-// }
+	updatedUser := entities.User{
+		ID:    1,
+		Name:  "New Name",
+		Email: "test@example.com",
+	}
+
+	mockAuthRepo.On("GetUserByID", existingUser.ID).Return(existingUser, nil)
+	mockAuthRepo.On("UpdateUser", mock.Anything).Return(updatedUser, nil)
+
+	// Successful Update User
+	result, err := service.UpdateUser(existingUser.ID, updatedData)
+	assert.NoError(t, err)
+	assert.Equal(t, updatedUser, result)
+}
+
+func TestDeleteUser(t *testing.T) {
+	mockAuthRepo := new(MockAuthRepo)
+	service := auth.NewAuthService(mockAuthRepo, nil, nil)
+
+	mockAuthRepo.On("DeleteUser", 1).Return(nil)
+
+	// Successful Delete User
+	err := service.DeleteUser(1)
+	assert.NoError(t, err)
+}

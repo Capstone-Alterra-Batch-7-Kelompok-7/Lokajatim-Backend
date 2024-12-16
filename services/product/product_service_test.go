@@ -3,6 +3,7 @@ package product_test
 import (
 	"lokajatim/entities"
 	"lokajatim/services/product"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -115,7 +116,7 @@ func TestGetProductsEmptyList(t *testing.T) {
 	mockRepo := new(MockProductRepository)
 	service := product.NewProductService(mockRepo)
 
-	mockRepo.On("GetProducts").Return([]entities.Product{}, nil)  // Empty list
+	mockRepo.On("GetProducts").Return([]entities.Product{}, nil) // Empty list
 
 	products, err := service.GetProducts()
 
@@ -165,7 +166,7 @@ func TestCreateProductPhotos(t *testing.T) {
 		{ProductID: 1, UrlPhoto: "url2"},
 	}
 
-	mockRepo.On("CreateProductPhotos", photos).Return(nil)  // Simulate successful photo creation
+	mockRepo.On("CreateProductPhotos", photos).Return(nil) // Simulate successful photo creation
 
 	err := service.CreateProductPhotos(photos)
 
@@ -198,7 +199,7 @@ func TestUpdateProductPhotos(t *testing.T) {
 		{ProductID: 1, UrlPhoto: "new_url1"},
 	}
 
-	mockRepo.On("UpdateProductPhotos", 1, photos).Return(nil)  // Simulate successful photo update
+	mockRepo.On("UpdateProductPhotos", 1, photos).Return(nil) // Simulate successful photo update
 
 	err := service.UpdateProductPhotos(1, photos)
 
@@ -252,3 +253,76 @@ func TestGetBestProductsPriceError(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
+func TestDeleteProductPhotos(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	mockRepo.On("DeleteProductPhotos", 1).Return(nil)
+
+	err := service.DeleteProductPhotos(1)
+
+	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestDeleteProductPhotosError(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	mockRepo.On("DeleteProductPhotos", 1).Return(assert.AnError)
+
+	err := service.DeleteProductPhotos(1)
+
+	assert.Error(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestImportProducts(t *testing.T) {
+    mockRepo := new(MockProductRepository)
+    service := product.NewProductService(mockRepo)
+
+    // Data CSV tanpa karakter tab
+    csvData := `name,price,stock,description,category_id,other_field,photos
+Product 1,1000,10,Description 1,1,,photo1;photo2
+Product 2,2000,20,Description 2,2,,photo3`
+
+    // Membuat file sementara untuk pengujian
+    tempFile, err := os.CreateTemp("", "test_import_products_*.csv")
+    assert.NoError(t, err)
+    defer os.Remove(tempFile.Name())
+
+    _, err = tempFile.WriteString(csvData)
+    assert.NoError(t, err)
+    tempFile.Close()
+
+    // Mocking repository calls
+    mockProducts := []entities.Product{
+        {Name: "Product 1", Price: 1000, Stock: 10, Description: "Description 1", CategoryID: 1},
+        {Name: "Product 2", Price: 2000, Stock: 20, Description: "Description 2", CategoryID: 2},
+    }
+    mockPhotos := []entities.ProductPhoto{
+        {UrlPhoto: "photo1", ProductID: 0},
+        {UrlPhoto: "photo2", ProductID: 0},
+        {UrlPhoto: "photo3", ProductID: 0},
+    }
+
+    mockRepo.On("BulkInsert", mockProducts).Return(nil)
+    mockRepo.On("BulkInsertPhotos", mockPhotos).Return(nil)
+
+    err = service.ImportProducts(tempFile.Name())
+
+    assert.NoError(t, err)
+    mockRepo.AssertExpectations(t)
+}
+
+
+func TestImportProductsFileError(t *testing.T) {
+	mockRepo := new(MockProductRepository)
+	service := product.NewProductService(mockRepo)
+
+	err := service.ImportProducts("non_existing_file.csv")
+
+	assert.Error(t, err)
+}

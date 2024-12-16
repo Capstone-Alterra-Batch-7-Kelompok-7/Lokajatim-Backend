@@ -1,0 +1,1018 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>article: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">lokajatim/services/article/article_service.go (100.0%)</option>
+				
+				<option value="file1">lokajatim/services/auth/auth_service.go (48.6%)</option>
+				
+				<option value="file2">lokajatim/services/cart/cart_service.go (100.0%)</option>
+				
+				<option value="file3">lokajatim/services/category/category_service.go (100.0%)</option>
+				
+				<option value="file4">lokajatim/services/chatbot/chatbot_service.go (52.6%)</option>
+				
+				<option value="file5">lokajatim/services/comment/comment_service.go (100.0%)</option>
+				
+				<option value="file6">lokajatim/services/event/event_service.go (100.0%)</option>
+				
+				<option value="file7">lokajatim/services/event_category/event_category_service.go (92.3%)</option>
+				
+				<option value="file8">lokajatim/services/like/like_service.go (88.2%)</option>
+				
+				<option value="file9">lokajatim/services/product/product_service.go (85.4%)</option>
+				
+				<option value="file10">lokajatim/services/ticket/ticket_service.go (100.0%)</option>
+				
+				<option value="file11">lokajatim/services/transaction/transaction_service.go (42.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package article
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/article"
+)
+
+type ArticleServiceImpl struct {
+        articleRepository article.ArticleRepository
+}
+
+func NewArticleService(articleRepo article.ArticleRepository) ArticleService <span class="cov8" title="1">{
+        return &amp;ArticleServiceImpl{articleRepository: articleRepo}
+}</span>
+
+func (s *ArticleServiceImpl) GetAllArticles() ([]entities.Article, error) <span class="cov8" title="1">{
+        return s.articleRepository.GetAll()
+}</span>
+
+func (s *ArticleServiceImpl) GetArticleByID(id int) (entities.Article, error) <span class="cov8" title="1">{
+        return s.articleRepository.GetByID(id)
+}</span>
+
+func (s *ArticleServiceImpl) CreateArticle(article entities.Article) (entities.Article, error) <span class="cov8" title="1">{
+        return s.articleRepository.Create(article)
+}</span>
+
+func (s *ArticleServiceImpl) UpdateArticle(id int, article entities.Article) (entities.Article, error) <span class="cov8" title="1">{
+        return s.articleRepository.Update(id, article)
+}</span>
+
+func (s *ArticleServiceImpl) DeleteArticle(id int) error <span class="cov8" title="1">{
+        return s.articleRepository.Delete(id)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package auth
+
+import (
+        "errors"
+        "fmt"
+        "lokajatim/constant"
+        "lokajatim/entities"
+        "lokajatim/middleware"
+        "lokajatim/repositories/auth"
+        "lokajatim/utils"
+
+        "golang.org/x/crypto/bcrypt"
+)
+
+// AuthService struct untuk mengimplementasikan layanan autentikasi
+type AuthService struct {
+        authRepoInterface auth.AuthRepoInterface
+        jwtInterface      middleware.JwtInterface
+}
+
+// NewAuthService untuk membuat instance baru AuthService
+func NewAuthService(ar auth.AuthRepoInterface, jt middleware.JwtInterface, jtr middleware.JwtInterfaceReset) *AuthService <span class="cov8" title="1">{
+        return &amp;AuthService{
+                authRepoInterface: ar,
+                jwtInterface:      jt,
+        }
+}</span>
+
+// Login memverifikasi email dan password, lalu mengembalikan user dengan token
+func (authService AuthService) Login(user entities.User) (entities.User, error) <span class="cov8" title="1">{
+        if user.Email == "" </span><span class="cov0" title="0">{
+                return entities.User{}, constant.EMAIL_IS_EMPTY
+        }</span>
+        <span class="cov8" title="1">if user.Password == "" </span><span class="cov0" title="0">{
+                return entities.User{}, constant.PASSWORD_IS_EMPTY
+        }</span>
+
+        <span class="cov8" title="1">dbUser, err := authService.authRepoInterface.GetUserByEmail(user.Email)
+        if err != nil </span><span class="cov8" title="1">{
+                return entities.User{}, errors.New("user not found")
+        }</span>
+
+        <span class="cov8" title="1">if !authService.CheckPasswordHash(user.Password, dbUser.Password) </span><span class="cov8" title="1">{
+                return entities.User{}, errors.New("incorrect password")
+        }</span>
+
+        <span class="cov8" title="1">token, err := authService.jwtInterface.GenerateJWT(dbUser.ID, dbUser.Name, dbUser.Role)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("failed to generate token")
+        }</span>
+        <span class="cov8" title="1">dbUser.Token = token
+
+        return dbUser, nil</span>
+}
+
+// Register membuat user baru dan menghasilkan token
+func (authService AuthService) Register(user entities.User) (entities.User, error) <span class="cov8" title="1">{
+        if user.Email == "" </span><span class="cov0" title="0">{
+                return entities.User{}, constant.EMAIL_IS_EMPTY
+        }</span>
+        <span class="cov8" title="1">if user.Password == "" </span><span class="cov0" title="0">{
+                return entities.User{}, constant.PASSWORD_IS_EMPTY
+        }</span>
+
+        <span class="cov8" title="1">user.Role = "user" // Default role
+
+        hashedPassword, err := authService.HashPassword(user.Password)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("failed to hash password")
+        }</span>
+        <span class="cov8" title="1">user.Password = hashedPassword
+
+        lastID, err := authService.authRepoInterface.GetLastUserID()
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("failed to fetch last user ID")
+        }</span>
+        <span class="cov8" title="1">user.ID = lastID + 1
+
+        createdUser, err := authService.authRepoInterface.Register(user)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("failed to register user")
+        }</span>
+
+        <span class="cov8" title="1">token, err := authService.jwtInterface.GenerateJWT(createdUser.ID, createdUser.Name, createdUser.Role)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("failed to generate token")
+        }</span>
+        <span class="cov8" title="1">createdUser.Token = token
+
+        return createdUser, nil</span>
+}
+
+// GetUserByID mengambil user berdasarkan ID
+func (authService AuthService) GetUserByID(userID int) (entities.User, error) <span class="cov8" title="1">{
+        if userID &lt;= 0 </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("invalid user ID")
+        }</span>
+
+        <span class="cov8" title="1">user, err := authService.authRepoInterface.GetUserByID(userID)
+        if err != nil </span><span class="cov8" title="1">{
+                return entities.User{}, errors.New("user not found")
+        }</span>
+
+        <span class="cov8" title="1">return user, nil</span>
+}
+
+// GetAllUsers mengambil semua data user
+func (authService AuthService) GetAllUsers() ([]entities.User, error) <span class="cov8" title="1">{
+        users, err := authService.authRepoInterface.GetAllUsers()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, errors.New("failed to fetch users")
+        }</span>
+
+        <span class="cov8" title="1">return users, nil</span>
+}
+
+// UpdateUser memperbarui data user berdasarkan ID
+func (authService AuthService) UpdateUser(userID int, updatedData entities.User) (entities.User, error) <span class="cov8" title="1">{
+        existingUser, err := authService.authRepoInterface.GetUserByID(userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("user not found")
+        }</span>
+
+        <span class="cov8" title="1">if updatedData.Name != "" </span><span class="cov8" title="1">{
+                existingUser.Name = updatedData.Name
+        }</span>
+        <span class="cov8" title="1">if updatedData.Address != "" </span><span class="cov0" title="0">{
+                existingUser.Address = updatedData.Address
+        }</span>
+        <span class="cov8" title="1">if updatedData.PhoneNumber != "" </span><span class="cov0" title="0">{
+                existingUser.PhoneNumber = updatedData.PhoneNumber
+        }</span>
+        <span class="cov8" title="1">if updatedData.NIK != "" </span><span class="cov0" title="0">{
+                existingUser.NIK = updatedData.NIK
+        }</span>
+
+        <span class="cov8" title="1">updatedUser, err := authService.authRepoInterface.UpdateUser(existingUser)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.User{}, errors.New("failed to update user")
+        }</span>
+
+        <span class="cov8" title="1">return updatedUser, nil</span>
+}
+
+func (authService AuthService) DeleteUser(userID int) error <span class="cov8" title="1">{
+        err := authService.authRepoInterface.DeleteUser(userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return errors.New("failed to delete user")
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (authService *AuthService) SendOTPToEmail(email string) (string, error) <span class="cov0" title="0">{
+        if email == "" </span><span class="cov0" title="0">{
+                return "", fmt.Errorf("email cannot be empty")
+        }</span>
+
+        <span class="cov0" title="0">_, err := authService.authRepoInterface.GetUserByEmail(email)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", fmt.Errorf("email not found")
+        }</span>
+
+        <span class="cov0" title="0">otp := utils.GenerateOTP()
+
+        if err := authService.authRepoInterface.StoreOTP(email, otp); err != nil </span><span class="cov0" title="0">{
+                return "", errors.New("failed to store OTP")
+        }</span>
+
+        <span class="cov0" title="0">if err := utils.SendOTPEmail(email, otp); err != nil </span><span class="cov0" title="0">{
+                return "", errors.New("failed to send OTP email")
+        }</span>
+
+        <span class="cov0" title="0">return "OTP successfully sent", nil</span>
+}
+
+func (authService *AuthService) ResetPassword(email, otp, newPassword string) (string, error) <span class="cov0" title="0">{
+        valid, err := authService.authRepoInterface.VerifyOTP(email, otp)
+        if err != nil || !valid </span><span class="cov0" title="0">{
+                return "", errors.New("invalid OTP")
+        }</span>
+
+        <span class="cov0" title="0">hashedPassword, err := authService.HashPassword(newPassword)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", errors.New("failed to hash new password")
+        }</span>
+
+        <span class="cov0" title="0">user, _ := authService.authRepoInterface.GetUserByEmail(email)
+        user.Password = hashedPassword
+
+        if err := authService.authRepoInterface.UpdatePassword(user); err != nil </span><span class="cov0" title="0">{
+                return "", errors.New("failed to update password")
+        }</span>
+
+        <span class="cov0" title="0">return "Password successfully updated", nil</span>
+}
+
+// HashPassword hashes a password
+func (authService *AuthService) HashPassword(password string) (string, error) <span class="cov8" title="1">{
+        bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+        return string(bytes), err
+}</span>
+
+// CheckPasswordHash checks a hashed password
+func (authService *AuthService) CheckPasswordHash(password, hash string) bool <span class="cov8" title="1">{
+        err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+        return err == nil
+}</span>
+
+func (authService *AuthService) VerifyOTP(email, otp string) (bool, error) <span class="cov0" title="0">{
+        // Get the OTP and expiration time from the database
+        user, err := authService.authRepoInterface.GetUserByEmail(email)
+    if err != nil </span><span class="cov0" title="0">{
+        return false, fmt.Errorf("user not found")
+    }</span>
+
+    // Cek kesesuaian OTP
+    <span class="cov0" title="0">if user.OTP != otp </span><span class="cov0" title="0">{
+        return false, fmt.Errorf("invalid OTP, ini servis")
+    }</span>
+
+    <span class="cov0" title="0">return true, nil</span>
+}
+
+func (s *AuthService) GetUserByEmail(email string) (*entities.User, error) <span class="cov0" title="0">{
+    user, err := s.authRepoInterface.GetUserByEmail(email)
+    if err != nil </span><span class="cov0" title="0">{
+        return nil, err 
+    }</span>
+    <span class="cov0" title="0">return &amp;user, nil</span>
+}
+
+func (s *AuthService) StoreOTP(email, otp string) error <span class="cov0" title="0">{
+    if email == "" || otp == "" </span><span class="cov0" title="0">{
+        return errors.New("email and otp cannot be empty")
+    }</span>
+
+    <span class="cov0" title="0">err := s.authRepoInterface.StoreOTP(email, otp)
+    if err != nil </span><span class="cov0" title="0">{
+        return errors.New("failed to store OTP in database")
+    }</span>
+
+    <span class="cov0" title="0">return nil</span>
+}</pre>
+		
+		<pre class="file" id="file2" style="display: none">package cart
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/cart"
+)
+
+type CartService struct {
+        cartRepository cart.CartRepositoryInterface
+}
+
+func NewCartService(cartRepo cart.CartRepositoryInterface) *CartService <span class="cov8" title="1">{
+        return &amp;CartService{cartRepository: cartRepo}
+}</span>
+
+func (s *CartService) FindByUserID(userID int) (entities.Cart, error) <span class="cov8" title="1">{
+        return s.cartRepository.FindByUserID(userID)
+}</span>
+
+func (s *CartService) FindByID(cartID int) (entities.Cart, error) <span class="cov8" title="1">{
+        return s.cartRepository.FindByID(cartID)
+}</span>
+
+func (s *CartService) FindByCartItemID(cartItemID int) (entities.Cart, error) <span class="cov8" title="1">{
+        return s.cartRepository.FindByCartItemID(cartItemID)
+}</span>
+
+func (s *CartService) Create(cart entities.Cart) (entities.Cart, error) <span class="cov8" title="1">{
+        return s.cartRepository.Create(cart)
+}</span>
+
+func (s *CartService) AddItemToCart(userID int, cartItem entities.CartItem) (entities.CartItem, error) <span class="cov8" title="1">{
+        return s.cartRepository.AddItemToCart(userID, cartItem)
+}</span>
+
+func (s *CartService) UpdateItemQuantity(cartItemID int, quantity int) (entities.CartItem, error) <span class="cov8" title="1">{
+        return s.cartRepository.UpdateItemQuantity(cartItemID, quantity)
+}</span>
+
+func (s *CartService) RemoveItemFromCart(cartItemID int) error <span class="cov8" title="1">{
+        return s.cartRepository.RemoveItemFromCart(cartItemID)
+}</span>
+
+func (s *CartService) ClearCart(cartID int) error <span class="cov8" title="1">{
+        return s.cartRepository.ClearCart(cartID)
+}</pre>
+		
+		<pre class="file" id="file3" style="display: none">package category
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/category"
+)
+
+type CategoryService struct {
+        categoryRepository category.CategoryRepositoryInterface
+}
+
+func NewCategoryService(categoryRepo category.CategoryRepositoryInterface) *CategoryService <span class="cov8" title="1">{
+        return &amp;CategoryService{categoryRepository: categoryRepo}
+}</span>
+
+func (s *CategoryService) GetCategories() ([]entities.Category, error) <span class="cov8" title="1">{
+        return s.categoryRepository.GetCategories()
+}</span>
+
+func (s *CategoryService) GetCategoryByID(id int) (entities.Category, error) <span class="cov8" title="1">{
+        return s.categoryRepository.GetCategoryByID(id)
+}</span>
+
+func (s *CategoryService) CreateCategory(category entities.Category) (entities.Category, error) <span class="cov8" title="1">{
+        return s.categoryRepository.CreateCategory(category)
+}</span>
+
+func (s *CategoryService) UpdateCategory(id int, category entities.Category) (entities.Category, error) <span class="cov8" title="1">{
+        return s.categoryRepository.UpdateCategory(id, category)
+}</span>
+
+func (s *CategoryService) DeleteCategory(id int) error <span class="cov8" title="1">{
+        return s.categoryRepository.DeleteCategory(id)
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package chatbot
+
+import (
+        "context"
+        "fmt"
+        "os"
+
+        "github.com/google/generative-ai-go/genai"
+        "google.golang.org/api/option"
+)
+
+type AIService struct {
+        client *genai.Client
+        model  *genai.GenerativeModel
+        cs     *genai.ChatSession
+}
+
+func NewChatbotService() (*AIService, error) <span class="cov8" title="1">{
+        ctx := context.Background()
+        client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GEMINI_API_KEY")))
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create Generative AI client: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">model := client.GenerativeModel("gemini-1.5-flash")
+        cs := model.StartChat()
+
+        return &amp;AIService{
+                client: client,
+                model:  model,
+                cs:     cs,
+        }, nil</span>
+}
+
+func (c *AIService) GenerateResponse(ctx context.Context, message string) (string, error) <span class="cov8" title="1">{
+        c.cs.History = append(c.cs.History, genai.NewUserContent(genai.Text(message)))
+
+        resp, err := c.cs.SendMessage(ctx, genai.Text(message))
+        if err != nil || resp == nil || len(resp.Candidates) == 0 </span><span class="cov8" title="1">{
+                return "Maaf, saya tidak dapat memberikan jawaban saat ini.", nil
+        }</span>
+
+        <span class="cov0" title="0">response := ""
+        if len(resp.Candidates[0].Content.Parts) &gt; 0 </span><span class="cov0" title="0">{
+                for _, part := range resp.Candidates[0].Content.Parts </span><span class="cov0" title="0">{
+                        if text, ok := part.(genai.Text); ok </span><span class="cov0" title="0">{
+                                response += string(text) + " "
+                        }</span>
+                }
+        }
+
+        <span class="cov0" title="0">if response == "" </span><span class="cov0" title="0">{
+                return "Maaf, saya tidak dapat memberikan jawaban saat ini.", nil
+        }</span>
+
+        <span class="cov0" title="0">return response, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package comment
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/comment"
+)
+
+type CommentService struct {
+        commentRepository comment.CommentRepositoryInterface
+}
+
+func NewCommentService(commentRepo comment.CommentRepositoryInterface) *CommentService <span class="cov8" title="1">{
+        return &amp;CommentService{commentRepository: commentRepo}
+}</span>
+
+func (s *CommentService) GetCommentByID(id int) (entities.Comment, error) <span class="cov8" title="1">{
+        return s.commentRepository.GetCommentByID(id)
+}</span>
+
+func (s *CommentService) GetCommentsByArticleID(articleID int) ([]entities.Comment, error) <span class="cov8" title="1">{
+        return s.commentRepository.GetCommentsByArticleID(articleID)
+}</span>
+
+func (s *CommentService) CreateComment(comment entities.Comment) (entities.Comment, error) <span class="cov8" title="1">{
+        return s.commentRepository.CreateComment(comment)
+}</span>
+
+func (s *CommentService) DeleteComment(id int) error <span class="cov8" title="1">{
+        return s.commentRepository.DeleteComment(id)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package event
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/event"
+)
+
+type eventService struct {
+        repo event.EventRepository
+}
+
+func NewEventService(repo event.EventRepository) EventService <span class="cov8" title="1">{
+        return &amp;eventService{repo}
+}</span>
+
+func (s *eventService) GetAll() ([]entities.Event, error) <span class="cov8" title="1">{
+        return s.repo.GetAll()
+}</span>
+
+func (s *eventService) GetByID(id uint) (*entities.Event, error) <span class="cov8" title="1">{
+        return s.repo.GetByID(id)
+}</span>
+
+func (s *eventService) GetbyBestPrice() ([]entities.Event, error) <span class="cov8" title="1">{
+        return s.repo.GetbyBestPrice()
+}</span>
+
+func (s *eventService) Create(event *entities.Event) error <span class="cov8" title="1">{
+        return s.repo.Create(event)
+}</span>
+
+func (s *eventService) Update(event *entities.Event) error <span class="cov8" title="1">{
+        return s.repo.Update(event)
+}</span>
+
+func (s *eventService) Delete(id uint) error <span class="cov8" title="1">{
+        return s.repo.Delete(id)
+}</pre>
+		
+		<pre class="file" id="file7" style="display: none">package event_category
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/event_category"
+)
+
+type EventCategoryServiceImpl struct {
+        repo event_category.EventCategoryRepository
+}
+
+func NewEventCategoryService(repo event_category.EventCategoryRepository) *EventCategoryServiceImpl <span class="cov8" title="1">{
+        return &amp;EventCategoryServiceImpl{repo: repo}
+}</span>
+
+func (s *EventCategoryServiceImpl) GetAll() ([]entities.EventCategory, error) <span class="cov8" title="1">{
+        return s.repo.GetAll()
+}</span>
+
+func (s *EventCategoryServiceImpl) GetByID(id int) (entities.EventCategory, error) <span class="cov8" title="1">{
+        return s.repo.GetByID(id)
+}</span>
+
+func (s *EventCategoryServiceImpl) Create(category entities.EventCategory) (entities.EventCategory, error) <span class="cov8" title="1">{
+        return s.repo.Create(category)
+}</span>
+
+func (s *EventCategoryServiceImpl) Update(category entities.EventCategory) (entities.EventCategory, error) <span class="cov8" title="1">{
+        existingCategory, err := s.repo.GetByID(category.ID)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.EventCategory{}, err
+        }</span>
+
+        <span class="cov8" title="1">existingCategory.Name = category.Name
+        return s.repo.Update(existingCategory)</span>
+}
+
+func (s *EventCategoryServiceImpl) Delete(id int) error <span class="cov8" title="1">{
+        _, err := s.repo.GetByID(id)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return s.repo.Delete(id)</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package like
+
+import (
+        "errors"
+        "lokajatim/entities"
+        "lokajatim/repositories/like"
+)
+
+type LikeService struct {
+        likeRepo like.LikeRepoInterface
+}
+
+func NewLikeService(repo like.LikeRepoInterface) *LikeService <span class="cov8" title="1">{
+        return &amp;LikeService{likeRepo: repo}
+}</span>
+
+func (s *LikeService) LikeArticle(articleID, userID int) (entities.Like, error) <span class="cov8" title="1">{
+        liked, err := s.likeRepo.IsUserLiked(articleID, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.Like{}, err
+        }</span>
+        <span class="cov8" title="1">if liked </span><span class="cov8" title="1">{
+                return entities.Like{}, errors.New("user already liked this article")
+        }</span>
+
+        <span class="cov8" title="1">like := entities.Like{
+                ArticleID: articleID,
+                UserID:    userID,
+        }
+        return s.likeRepo.CreateLike(like)</span>
+}
+
+func (s *LikeService) UnlikeArticle(articleID, userID int) error <span class="cov8" title="1">{
+        liked, err := s.likeRepo.IsUserLiked(articleID, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">if !liked </span><span class="cov8" title="1">{
+                return errors.New("user has not liked this article")
+        }</span>
+        <span class="cov8" title="1">return s.likeRepo.DeleteLike(articleID, userID)</span>
+}
+
+func (s *LikeService) GetLikesByArticle(articleID int) ([]entities.Like, error) <span class="cov8" title="1">{
+        return s.likeRepo.GetLikesByArticleID(articleID)
+}</span>
+
+func (s *LikeService) CountLikes(articleID int) (int, error) <span class="cov8" title="1">{
+        return s.likeRepo.CountLikesByArticleID(articleID)
+}</span>
+
+func (s *LikeService) IsUserLikedArticle(articleID, userID int) (bool, error) <span class="cov8" title="1">{
+        return s.likeRepo.IsUserLiked(articleID, userID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package product
+
+import (
+        "encoding/csv"
+        "fmt"
+        "lokajatim/entities"
+        "lokajatim/repositories/product"
+        "os"
+        "strconv"
+        "strings"
+)
+
+type ProductService struct {
+        productRepository product.ProductRepositoryInterface
+}
+
+func NewProductService(productRepo product.ProductRepositoryInterface) *ProductService <span class="cov8" title="1">{
+        return &amp;ProductService{productRepository: productRepo}
+}</span>
+
+func (s *ProductService) GetProducts() ([]entities.Product, error) <span class="cov8" title="1">{
+        return s.productRepository.GetProducts()
+}</span>
+
+func (s *ProductService) GetProductByID(id int) (entities.Product, error) <span class="cov8" title="1">{
+        return s.productRepository.GetProductByID(id)
+}</span>
+
+func (s *ProductService) GetBestProductsPrice() ([]entities.Product, error) <span class="cov8" title="1">{
+        return s.productRepository.GetBestProductsPrice()
+}</span>
+
+func (s *ProductService) CreateProduct(product entities.Product) (entities.Product, error) <span class="cov8" title="1">{
+        return s.productRepository.CreateProduct(product)
+}</span>
+
+func (s *ProductService) UpdateProduct(id int, product entities.Product) (entities.Product, error) <span class="cov8" title="1">{
+        return s.productRepository.UpdateProduct(id, product)
+}</span>
+
+func (s *ProductService) DeleteProduct(id int) error <span class="cov8" title="1">{
+        return s.productRepository.DeleteProduct(id)
+}</span>
+
+func (s *ProductService) CreateProductPhotos(photos []entities.ProductPhoto) error <span class="cov8" title="1">{
+        return s.productRepository.CreateProductPhotos(photos)
+}</span>
+
+func (s *ProductService) GetProductPhotos(productID int) ([]entities.ProductPhoto, error) <span class="cov0" title="0">{
+        return s.productRepository.GetProductPhotos(productID)
+}</span>
+
+func (s *ProductService) UpdateProductPhotos(productID int, photos []entities.ProductPhoto) error <span class="cov8" title="1">{
+        return s.productRepository.UpdateProductPhotos(productID, photos)
+}</span>
+
+func (s *ProductService) DeleteProductPhotos(productID int) error <span class="cov8" title="1">{
+        return s.productRepository.DeleteProductPhotos(productID)
+}</span>
+
+func (s *ProductService) ImportProducts(filePath string) error <span class="cov8" title="1">{
+        file, err := os.Open(filePath)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("failed to open file: %w", err)
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+
+        reader := csv.NewReader(file)
+        records, err := reader.ReadAll()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to read CSV file: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">var products []entities.Product
+        var photos []entities.ProductPhoto
+
+        for i, record := range records </span><span class="cov8" title="1">{
+                if i == 0 </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">price, err := strconv.Atoi(record[1])
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("invalid price on row %d: %w", i+1, err)
+                }</span>
+                <span class="cov8" title="1">stock, err := strconv.Atoi(record[2])
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("invalid stock on row %d: %w", i+1, err)
+                }</span>
+                <span class="cov8" title="1">categoryID, err := strconv.Atoi(record[4])
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("invalid category ID on row %d: %w", i+1, err)
+                }</span>
+
+                <span class="cov8" title="1">product := entities.Product{
+                        Name:        record[0],
+                        Price:       price,
+                        Stock:       stock,
+                        Description: record[3],
+                        CategoryID:  categoryID,
+                }
+                products = append(products, product)
+
+                if len(record) &gt; 6 &amp;&amp; record[6] != "" </span><span class="cov8" title="1">{
+                        photoURLs := strings.Split(record[6], ";")
+                        for _, url := range photoURLs </span><span class="cov8" title="1">{
+                                photos = append(photos, entities.ProductPhoto{
+                                        UrlPhoto:  url,
+                                        ProductID: 0,
+                                })
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">if err := s.productRepository.BulkInsert(products); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to insert products: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">for _, product := range products </span><span class="cov8" title="1">{
+                for j := range photos </span><span class="cov8" title="1">{
+                        if photos[j].ProductID == 0 </span><span class="cov8" title="1">{
+                                photos[j].ProductID = product.ID
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">if err := s.productRepository.BulkInsertPhotos(photos); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to insert product photos: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package ticket
+
+import (
+        "lokajatim/entities"
+        "lokajatim/repositories/ticket"
+)
+
+type ticketService struct {
+        ticketRepo ticket.TicketRepository
+}
+
+func NewTicketService(repo ticket.TicketRepository) TicketInterface <span class="cov8" title="1">{
+        return &amp;ticketService{ticketRepo: repo}
+}</span>
+
+func (s *ticketService) GetAllTickets() ([]entities.Ticket, error) <span class="cov8" title="1">{
+        return s.ticketRepo.GetAll()
+}</span>
+
+func (s *ticketService) GetTicketByID(id uint) (entities.Ticket, error) <span class="cov8" title="1">{
+        return s.ticketRepo.GetByID(id)
+}</span>
+
+func (s *ticketService) CreateTicket(ticket entities.Ticket) (entities.Ticket, error) <span class="cov8" title="1">{
+        return s.ticketRepo.Create(ticket)
+}</span>
+
+func (s *ticketService) UpdateTicket(ticket entities.Ticket) (entities.Ticket, error) <span class="cov8" title="1">{
+        return s.ticketRepo.Update(ticket)
+}</span>
+
+func (s *ticketService) DeleteTicket(id uint) error <span class="cov8" title="1">{
+        return s.ticketRepo.Delete(id)
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package transaction
+
+import (
+        "errors"
+        "fmt"
+        "lokajatim/entities"
+        "lokajatim/repositories/cart"
+        "lokajatim/repositories/transaction"
+        "lokajatim/utils"
+)
+
+type TransactionService struct {
+        transactionRepo transaction.TransactionRepositoryInterface
+        cartRepo        cart.CartRepositoryInterface
+}
+
+func NewTransactionService(transactionRepo transaction.TransactionRepositoryInterface, cartRepo cart.CartRepositoryInterface) *TransactionService <span class="cov8" title="1">{
+        return &amp;TransactionService{
+                transactionRepo: transactionRepo,
+                cartRepo:        cartRepo,
+        }
+}</span>
+
+func (s *TransactionService) CreateTransaction(userID, cartID int) (entities.Transaction, error) <span class="cov0" title="0">{
+        if userID == 0 || cartID == 0 </span><span class="cov0" title="0">{
+                return entities.Transaction{}, errors.New("user_id or cart_id is missing")
+        }</span>
+
+        <span class="cov0" title="0">cart, err := s.cartRepo.FindByID(cartID)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.Transaction{}, fmt.Errorf("failed to fetch cart: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">totalGrossAmount := 0.0
+        for _, item := range cart.Items </span><span class="cov0" title="0">{
+                totalGrossAmount += float64(item.Product.Price) * float64(item.Quantity)
+        }</span>
+
+        <span class="cov0" title="0">transaction := entities.Transaction{
+                UserID:        userID,
+                CartID:        cartID,
+                TotalPrice:    totalGrossAmount,
+                Status:        "Pending",
+                TransactionID: "ORDER-" + utils.GenerateUniqueID(),
+        }
+
+        paymentURL, err := utils.CreateTransaction(
+                transaction.TransactionID,
+                int64(totalGrossAmount),
+                cart.User.Name,
+                cart.User.Email,
+                cart.User.PhoneNumber,
+                cart.User.Address,
+                cart.Items,
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.Transaction{}, fmt.Errorf("failed to create payment URL: %w", err)
+        }</span>
+        <span class="cov0" title="0">transaction.PaymentURL = paymentURL
+
+        createdTransaction, err := s.transactionRepo.CreateTransaction(transaction)
+        if err != nil </span><span class="cov0" title="0">{
+                return entities.Transaction{}, fmt.Errorf("failed to save transaction: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return createdTransaction, nil</span>
+}
+
+func (s *TransactionService) HandleMidtransNotification(orderID, status string) error <span class="cov8" title="1">{
+        _, err := s.transactionRepo.GetTransactionByOrderID(orderID)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("transaction not found for order ID %s: %w", orderID, err)
+        }</span>
+
+        <span class="cov8" title="1">var updatedStatus string
+        switch status </span>{
+        case "capture", "settlement":<span class="cov8" title="1">
+                updatedStatus = "complete"</span>
+        case "pending":<span class="cov0" title="0">
+                updatedStatus = "pending"</span>
+        case "deny", "expire", "cancel":<span class="cov0" title="0">
+                updatedStatus = "failed"</span>
+        default:<span class="cov0" title="0">
+                updatedStatus = "unknown"</span>
+        }
+
+        <span class="cov8" title="1">if err := s.transactionRepo.UpdateTransactionStatusByOrderID(orderID, updatedStatus); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to update transaction status: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (s *TransactionService) GetTransactionByID(transactionID int) (entities.Transaction, error) <span class="cov0" title="0">{
+        return s.transactionRepo.GetTransactionByID(transactionID)
+}</span>
+
+func (s *TransactionService) GetAllTransactions() ([]entities.Transaction, error) <span class="cov0" title="0">{
+        return s.transactionRepo.GetAllTransactions()
+}</span>
+
+func (s *TransactionService) UpdateTransaction(id int, updatedTransaction entities.Transaction) (entities.Transaction, error) <span class="cov8" title="1">{
+        if id &lt;= 0 </span><span class="cov8" title="1">{
+                return entities.Transaction{}, errors.New("invalid transaction ID")
+        }</span>
+
+        <span class="cov8" title="1">updates := map[string]interface{}{
+                "user_id":     updatedTransaction.UserID,
+                "cart_id":     updatedTransaction.CartID,
+                "total_price": updatedTransaction.TotalPrice + 2000,
+                "status":      updatedTransaction.Status,
+                "payment_url": updatedTransaction.PaymentURL,
+                "updated_at":  utils.GetCurrentTime(),
+        }
+
+        return s.transactionRepo.UpdateTransaction(id, updates)</span>
+}
+
+func (s *TransactionService) UpdateTransactionStatus(transactionID int, status string) error <span class="cov8" title="1">{
+        if status == "" </span><span class="cov8" title="1">{
+                return errors.New("status cannot be empty")
+        }</span>
+        <span class="cov8" title="1">return s.transactionRepo.UpdateTransactionStatus(transactionID, status)</span>
+}
+
+func (s *TransactionService) DeleteTransaction(transactionID int) error <span class="cov8" title="1">{
+        return s.transactionRepo.DeleteTransaction(transactionID)
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

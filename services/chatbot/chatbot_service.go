@@ -1,4 +1,4 @@
-package services
+package chatbot
 
 import (
 	"context"
@@ -36,20 +36,22 @@ func (c *AIService) GenerateResponse(ctx context.Context, message string) (strin
 	c.cs.History = append(c.cs.History, genai.NewUserContent(genai.Text(message)))
 
 	resp, err := c.cs.SendMessage(ctx, genai.Text(message))
-	if err != nil {
-		return "", fmt.Errorf("failed to generate response: %w", err)
+	if err != nil || resp == nil || len(resp.Candidates) == 0 {
+		return "Maaf, saya tidak dapat memberikan jawaban saat ini.", nil
 	}
 
-	if len(resp.Candidates) > 0 && resp.Candidates[0].Content != nil {
-		response := ""
+	response := ""
+	if len(resp.Candidates[0].Content.Parts) > 0 {
 		for _, part := range resp.Candidates[0].Content.Parts {
 			if text, ok := part.(genai.Text); ok {
 				response += string(text) + " "
 			}
 		}
-		return response, nil
 	}
 
-	return "Maaf, saya tidak dapat memberikan jawaban saat ini.", nil
-}
+	if response == "" {
+		return "Maaf, saya tidak dapat memberikan jawaban saat ini.", nil
+	}
 
+	return response, nil
+}

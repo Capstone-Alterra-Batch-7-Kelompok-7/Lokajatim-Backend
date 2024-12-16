@@ -95,7 +95,7 @@ func TestAddItemToCart_Success(t *testing.T) {
 	cartService := cart.NewCartService(mockRepo)
 
 	cartItem := entities.CartItem{
-		ID:       1,
+		ID:        1,
 		ProductID: 1,
 		Quantity:  2,
 	}
@@ -114,7 +114,7 @@ func TestAddItemToCart_Error(t *testing.T) {
 	cartService := cart.NewCartService(mockRepo)
 
 	cartItem := entities.CartItem{
-		ID:       1,
+		ID:        1,
 		ProductID: 1,
 		Quantity:  2,
 	}
@@ -135,7 +135,7 @@ func TestUpdateItemQuantity_Success(t *testing.T) {
 	cartService := cart.NewCartService(mockRepo)
 
 	updatedItem := entities.CartItem{
-		ID:       1,
+		ID:        1,
 		ProductID: 1,
 		Quantity:  3,
 	}
@@ -214,3 +214,115 @@ func TestClearCart_Error(t *testing.T) {
 	assert.EqualError(t, err, "failed to clear cart")
 	mockRepo.AssertExpectations(t)
 }
+
+func TestFindByID_Success(t *testing.T) {
+	mockRepo := new(MockCartRepository)
+	cartService := cart.NewCartService(mockRepo)
+
+	expectedCart := entities.Cart{
+		ID:     1,
+		UserID: 1,
+		Items:  []entities.CartItem{},
+	}
+
+	mockRepo.On("FindByID", 1).Return(expectedCart, nil)
+
+	result, err := cartService.FindByID(1)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedCart, result)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestFindByID_Error(t *testing.T) {
+	mockRepo := new(MockCartRepository)
+	cartService := cart.NewCartService(mockRepo)
+
+	mockRepo.On("FindByID", 1).Return(entities.Cart{}, errors.New("cart not found"))
+
+	result, err := cartService.FindByID(1)
+
+	assert.Error(t, err)
+	assert.EqualError(t, err, "cart not found")
+	assert.Equal(t, entities.Cart{}, result)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestFindByCartItemID_Success(t *testing.T) {
+	mockRepo := new(MockCartRepository)
+	cartService := cart.NewCartService(mockRepo)
+
+	expectedCart := entities.Cart{
+		ID:     1,
+		UserID: 1,
+		Items: []entities.CartItem{
+			{ID: 1, ProductID: 1, Quantity: 2},
+		},
+	}
+
+	mockRepo.On("FindByCartItemID", 1).Return(expectedCart, nil)
+
+	result, err := cartService.FindByCartItemID(1)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedCart, result)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestFindByCartItemID_Error(t *testing.T) {
+	mockRepo := new(MockCartRepository)
+	cartService := cart.NewCartService(mockRepo)
+
+	mockRepo.On("FindByCartItemID", 1).Return(entities.Cart{}, errors.New("cart item not found"))
+
+	result, err := cartService.FindByCartItemID(1)
+
+	assert.Error(t, err)
+	assert.EqualError(t, err, "cart item not found")
+	assert.Equal(t, entities.Cart{}, result)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestCreateCart_Success(t *testing.T) {
+    mockRepo := new(MockCartRepository)
+    cartService := cart.NewCartService(mockRepo)
+
+    newCart := entities.Cart{
+        UserID: 1,
+        Items:  []entities.CartItem{},
+    }
+
+    expectedCart := entities.Cart{
+        ID:     1,
+        UserID: 1,
+        Items:  []entities.CartItem{},
+    }
+
+    mockRepo.On("Create", newCart).Return(expectedCart, nil)
+
+    result, err := cartService.Create(newCart)
+
+    assert.NoError(t, err)
+    assert.Equal(t, expectedCart, result)
+    mockRepo.AssertExpectations(t)
+}
+
+func TestCreateCart_Error(t *testing.T) {
+    mockRepo := new(MockCartRepository)
+    cartService := cart.NewCartService(mockRepo)
+
+    newCart := entities.Cart{
+        UserID: 1,
+        Items:  []entities.CartItem{},
+    }
+
+    mockRepo.On("Create", newCart).Return(entities.Cart{}, errors.New("failed to create cart"))
+
+    result, err := cartService.Create(newCart)
+
+    assert.Error(t, err)
+    assert.EqualError(t, err, "failed to create cart")
+    assert.Equal(t, entities.Cart{}, result)
+    mockRepo.AssertExpectations(t)
+}
+
