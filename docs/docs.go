@@ -2675,7 +2675,6 @@ const docTemplate = `{
             }
         },
         "lokajatim_controllers_cart_response.ProductResponse": {
-            "description": "ProductResponse is the response for product data retrieval",
             "type": "object",
             "properties": {
                 "created_at": {
@@ -2690,6 +2689,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "price": {
                     "type": "integer"
                 },
@@ -2702,7 +2707,6 @@ const docTemplate = `{
             }
         },
         "lokajatim_controllers_cart_response.UserResponse": {
-            "description": "UserResponse is the response for user data retrieval",
             "type": "object",
             "properties": {
                 "address": {
@@ -3102,7 +3106,6 @@ const docTemplate = `{
             }
         },
         "response.CartItemResponse": {
-            "description": "CartItemResponse is the response for cart item data retrieval",
             "type": "object",
             "properties": {
                 "created_at": {
@@ -3126,7 +3129,6 @@ const docTemplate = `{
             }
         },
         "response.CartResponse": {
-            "description": "CartResponse is the response for cart data retrieval",
             "type": "object",
             "properties": {
                 "created_at": {

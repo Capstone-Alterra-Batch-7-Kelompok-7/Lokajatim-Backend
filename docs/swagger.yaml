@@ -91,7 +91,6 @@ definitions:
         type: string
     type: object
   lokajatim_controllers_cart_response.ProductResponse:
-    description: ProductResponse is the response for product data retrieval
     properties:
       created_at:
         type: string
@@ -101,6 +100,10 @@ definitions:
         type: integer
       name:
         type: string
+      photos:
+        items:
+          type: string
+        type: array
       price:
         type: integer
       stock:
@@ -109,7 +112,6 @@ definitions:
         type: string
     type: object
   lokajatim_controllers_cart_response.UserResponse:
-    description: UserResponse is the response for user data retrieval
     properties:
       address:
         type: string
@@ -378,7 +380,6 @@ definitions:
         type: string
     type: object
   response.CartItemResponse:
-    description: CartItemResponse is the response for cart item data retrieval
     properties:
       created_at:
         type: string
@@ -394,7 +395,6 @@ definitions:
         type: string
     type: object
   response.CartResponse:
-    description: CartResponse is the response for cart data retrieval
     properties:
       created_at:
         type: string
