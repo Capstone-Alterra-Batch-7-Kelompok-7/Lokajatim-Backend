@@ -13,19 +13,34 @@ import (
 // @Param CartID int true "Cart ID of the transaction"
 // @Param TotalPrice float64 true "Total price of the transaction"
 // @Param Status string true "Status of the transaction"
+// @Param Products []ProductInCart true "Products in the cart"
 // @Param PaymentURL string true "Payment URL of the transaction"
 // @Param CreatedAt string true "Created at of the transaction"
 // @Param UpdatedAt string true "Updated at of the transaction"
 type TransactionResponse struct {
-	ID            int          `json:"id"`
-	TransactionID string       `json:"transaction_id"`
-	User          UserResponse `json:"user"`
-	CartID        int          `json:"cart_id"`
-	TotalPrice    float64      `json:"total_price"`
-	Status        string       `json:"status"`
-	PaymentURL    string       `json:"payment_url"`
-	CreatedAt     time.Time    `json:"created_at"`
-	UpdatedAt     time.Time    `json:"updated_at"`
+	ID            int             `json:"id"`
+	TransactionID string          `json:"transaction_id"`
+	User          UserResponse    `json:"user"`
+	CartID        int             `json:"cart_id"`
+	TotalPrice    float64         `json:"total_price"`
+	Status        string          `json:"status"`
+	PaymentURL    string          `json:"payment_url"`
+	Products      []ProductInCart `json:"products"`
+	CreatedAt     time.Time       `json:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at"`
+}
+
+// ProductInCart is the response for the product in cart
+// @Description ProductInCart is the response for product in cart data retrieval
+// @Param Name string true "Name of the product"
+// @Param Category string true "Category of the product"
+// @Param Quantity int true "Quantity of the product"
+// @Param TotalPrice float64 true "Total price of the product"
+type ProductInCart struct {
+	Name       string `json:"name"`
+	Category   string `json:"category"`
+	Quantity   int    `json:"quantity"`
+	TotalPrice float64 `json:"total_price"`
 }
 
 // UserResponse is the response for the user controller
@@ -43,25 +58,6 @@ type UserResponse struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
-// ProductResponse is the response for the product controller
-// @Description ProductResponse is the response for product data retrieval
-// @Param ID int true "ID of the product"
-// @Param Name string true "Name of the product"
-// @Param Price int true "Price of the product"
-// @Param Stock int true "Stock of the product"
-// @Param Description string true "Description of the product"
-// @Param CreatedAt string true "Created at of the product"
-// @Param UpdatedAt string true "Updated at of the product"
-type ProductResponse struct {
-	ID          int       `json:"id"`
-	Name        string    `json:"name"`
-	Price       int       `json:"price"`
-	Stock       int       `json:"stock"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-}
-
 func TransactionFromEntity(transaction entities.Transaction) TransactionResponse {
 
 	userResponse := UserResponse{
@@ -72,6 +68,17 @@ func TransactionFromEntity(transaction entities.Transaction) TransactionResponse
 		PhoneNumber: transaction.User.PhoneNumber,
 	}
 
+	var products []ProductInCart
+	for _, item := range transaction.Cart.Items {
+		product := ProductInCart{
+			Name:       item.Product.Name,
+			Category:   item.Product.Category.Name,
+			Quantity:   item.Quantity,
+			TotalPrice: float64(item.Product.Price) * float64(item.Quantity),
+		}
+		products = append(products, product)
+	}
+
 	return TransactionResponse{
 		ID:            transaction.ID,
 		TransactionID: transaction.TransactionID,
@@ -79,6 +86,7 @@ func TransactionFromEntity(transaction entities.Transaction) TransactionResponse
 		CartID:        transaction.CartID,
 		TotalPrice:    transaction.TotalPrice,
 		Status:        transaction.Status,
+		Products:      products,
 		PaymentURL:    transaction.PaymentURL,
 		CreatedAt:     transaction.CreatedAt,
 		UpdatedAt:     transaction.UpdatedAt,
