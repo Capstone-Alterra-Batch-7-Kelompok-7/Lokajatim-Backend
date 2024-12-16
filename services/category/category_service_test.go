@@ -64,14 +64,15 @@ func TestGetCategories_Error(t *testing.T) {
 	mockRepo := new(MockCategoryRepository)
 	categoryService := category.NewCategoryService(mockRepo)
 
-	mockRepo.On("GetCategories").Return(nil, errors.New("failed to fetch categories"))
+	mockRepo.On("GetCategories").Return([]entities.Category{}, errors.New("failed to fetch categories"))
 
 	result, err := categoryService.GetCategories()
 
 	assert.Error(t, err)
-	assert.Nil(t, result)
+	assert.Equal(t, []entities.Category{}, result)
 	mockRepo.AssertExpectations(t)
 }
+
 
 // Test GetCategoryByID sukses
 func TestGetCategoryByID_Success(t *testing.T) {

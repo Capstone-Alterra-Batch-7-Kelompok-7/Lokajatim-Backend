@@ -89,12 +89,12 @@ func TestGetCommentsByArticleID_Error(t *testing.T) {
 	mockRepo := new(MockCommentRepository)
 	commentService := comment.NewCommentService(mockRepo)
 
-	mockRepo.On("GetCommentsByArticleID", 1).Return(nil, errors.New("failed to fetch comments"))
+	mockRepo.On("GetCommentsByArticleID", 1).Return([]entities.Comment{}, errors.New("failed to fetch comments"))
 
 	result, err := commentService.GetCommentsByArticleID(1)
 
 	assert.Error(t, err)
-	assert.Nil(t, result)
+	assert.Equal(t, []entities.Comment{}, result)
 	mockRepo.AssertExpectations(t)
 }
 
