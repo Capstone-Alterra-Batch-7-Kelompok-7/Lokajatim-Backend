@@ -8,7 +8,6 @@ import (
 	"lokajatim/middleware"
 	services "lokajatim/services/auth"
 	"lokajatim/utils"
-	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -121,34 +120,34 @@ func (ac *AuthController) SendOTPController(c echo.Context) error {
 	}
 
 	if err := c.Bind(&request); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request format")
+		return base.ErrorResponse(c, err, "Invalid request format")
 	}
 
 	// Periksa apakah email ada di database
 	user, err := ac.authService.GetUserByEmail(request.Email)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Email not found")
+		return base.ErrorResponse(c,err, "Email not found")
 	}
 
 	// Generate JWT untuk email
 	token, err := middleware.JwtLokajatimReset{}.GenerateEmailJWT(user.Email)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate token")
+		return base.ErrorResponse(c, err, "Failed to generate token")
 	}
 
 	// Generate OTP dan simpan ke database
 	otp := utils.GenerateOTP()
 	if err := ac.authService.StoreOTP(user.Email, otp); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to store OTP")
+		return base.ErrorResponse(c, err, "Failed to store OTP")
 	}
 
 	// Kirim OTP melalui email (opsional)
 	if err := utils.SendOTPEmail(user.Email, otp); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to send OTP email")
+		return base.ErrorResponse(c, err, "Failed to send OTP email")
 	}
 
 	// Kirimkan token JWT dalam respons
-	return c.JSON(http.StatusOK, map[string]interface{}{
+	return base.SuccesResponse(c, map[string]interface{}{
 		"message": "OTP sent successfully",
 		"token":   token,
 	})
