@@ -19,7 +19,7 @@ type AuthService struct {
 }
 
 // NewAuthService untuk membuat instance baru AuthService
-func NewAuthService(ar auth.AuthRepoInterface, jt middleware.JwtInterface) *AuthService {
+func NewAuthService(ar auth.AuthRepoInterface, jt middleware.JwtInterface, jtr middleware.JwtInterfaceReset) *AuthService {
 	return &AuthService{
 		authRepoInterface: ar,
 		jwtInterface:      jt,
@@ -142,7 +142,6 @@ func (authService AuthService) UpdateUser(userID int, updatedData entities.User)
 	return updatedUser, nil
 }
 
-// DeleteUser menghapus user berdasarkan ID
 func (authService AuthService) DeleteUser(userID int) error {
 	err := authService.authRepoInterface.DeleteUser(userID)
 	if err != nil {
@@ -152,14 +151,18 @@ func (authService AuthService) DeleteUser(userID int) error {
 	return nil
 }
 
-// SendOTPToEmail mengirimkan OTP ke email user
 func (authService *AuthService) SendOTPToEmail(email string) (string, error) {
+	if email == "" {
+		return "", fmt.Errorf("email cannot be empty")
+	}
+
 	_, err := authService.authRepoInterface.GetUserByEmail(email)
 	if err != nil {
 		return "", fmt.Errorf("email not found")
 	}
 
 	otp := utils.GenerateOTP()
+
 	if err := authService.authRepoInterface.StoreOTP(email, otp); err != nil {
 		return "", errors.New("failed to store OTP")
 	}
@@ -171,7 +174,6 @@ func (authService *AuthService) SendOTPToEmail(email string) (string, error) {
 	return "OTP successfully sent", nil
 }
 
-// ResetPassword memperbarui password user setelah verifikasi OTP
 func (authService *AuthService) ResetPassword(email, otp, newPassword string) (string, error) {
 	valid, err := authService.authRepoInterface.VerifyOTP(email, otp)
 	if err != nil || !valid {
@@ -203,4 +205,40 @@ func (authService *AuthService) HashPassword(password string) (string, error) {
 func (authService *AuthService) CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func (authService *AuthService) VerifyOTP(email, otp string) (bool, error) {
+	// Get the OTP and expiration time from the database
+	user, err := authService.authRepoInterface.GetUserByEmail(email)
+    if err != nil {
+        return false, fmt.Errorf("user not found")
+    }
+
+    // Cek kesesuaian OTP
+    if user.OTP != otp {
+        return false, fmt.Errorf("invalid OTP, ini servis")
+    }
+
+    return true, nil
+}
+
+func (s *AuthService) GetUserByEmail(email string) (*entities.User, error) {
+    user, err := s.authRepoInterface.GetUserByEmail(email)
+    if err != nil {
+        return nil, err 
+    }
+    return &user, nil
+}
+
+func (s *AuthService) StoreOTP(email, otp string) error {
+    if email == "" || otp == "" {
+        return errors.New("email and otp cannot be empty")
+    }
+
+    err := s.authRepoInterface.StoreOTP(email, otp)
+    if err != nil {
+        return errors.New("failed to store OTP in database")
+    }
+
+    return nil
 }

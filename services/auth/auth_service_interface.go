@@ -13,4 +13,7 @@ type AuthServiceInterface interface {
 	ResetPassword(email, otp, newPassword string) (string, error)
 	HashPassword(password string) (string, error)
 	CheckPasswordHash(password, hash string) bool
+	VerifyOTP(email, otp string) (bool, error) 
+	GetUserByEmail(email string) (*entities.User, error)
+	StoreOTP(email, otp string) error
 }

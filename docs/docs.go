@@ -2487,6 +2487,52 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/verify-otp": {
+            "post": {
+                "description": "Verify if the provided OTP is valid for the logged-in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify OTP",
+                "parameters": [
+                    {
+                        "description": "Request to verify OTP",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.VerifyOTPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OTP verified successfully",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid OTP",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/base.BaseResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -3016,6 +3062,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.VerifyOTPRequest": {
+            "type": "object",
+            "required": [
+                "otp"
+            ],
+            "properties": {
+                "otp": {
                     "type": "string"
                 }
             }

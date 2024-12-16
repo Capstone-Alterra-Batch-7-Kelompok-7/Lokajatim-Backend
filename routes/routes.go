@@ -44,12 +44,14 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	// Public Authentication Routes
 	e.POST("/login", rc.AuthController.LoginController)
 	e.POST("/register", rc.AuthController.RegisterController)
-	// Route untuk forgot password (mengirim OTP)
 	e.POST("/forgot-password", rc.AuthController.SendOTPController)
 
-	// Route untuk reset password
+	// Reset Password Routes
 	e.POST("/reset-password", rc.AuthController.ResetPasswordController)
 
+	// Verify OTP Routes
+	e.POST("/verify-otp", middleware.JWTMiddlewareReset(rc.AuthController.VerifyOTPController)) 
+	
 	// Basic route to check if API is up and running
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, CORS with Clean Architecture!")
@@ -58,18 +60,20 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	// Grouped routes with JWT authentication
 	eJWT := e.Group("")
 	eJWT.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(os.Getenv("JWT_SECRET_KEY")),
-		ContextKey: "user",
+		SigningKey:    []byte(os.Getenv("JWT_SECRET_KEY")),
+		ContextKey:    "user", 
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return new(middleware.JwtCustomClaims)
+			return new(middleware.JwtCustomClaims)  
 		},
 	}))
-
+	
+	
 	// Auth Routes
 	eJWT.GET("/users", rc.AuthController.GetAllUsersController)
 	eJWT.GET("/users/:id", rc.AuthController.GetUserByID)
 	eJWT.PUT("/users/:id", rc.AuthController.UpdateUserController)
 	eJWT.DELETE("/users/:id", rc.AuthController.DeleteUserController)
+
 
 	// Event Routes
 	e.GET("/events", rc.EventController.GetAllEvents)
