@@ -1,0 +1,2233 @@
+basePath: /
+definitions:
+  base.BaseResponse:
+    properties:
+      data:
+        description: Response data for success
+      error_data:
+        description: Detailed error data for failure
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  entities.Article:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.Category:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.EventCategory:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.Ticket:
+    properties:
+      created_at:
+        type: string
+      events_id:
+        type: integer
+      id:
+        type: integer
+      payment_method:
+        type: string
+      quantity:
+        type: integer
+      status:
+        type: string
+      total_amount:
+        type: integer
+      updated_at:
+        type: string
+      users_id:
+        type: integer
+    type: object
+  entities.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id_user:
+        type: integer
+      name:
+        type: string
+      nik:
+        type: string
+      otp:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+    type: object
+  lokajatim_controllers_cart_response.ProductResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  lokajatim_controllers_cart_response.UserResponse:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  lokajatim_controllers_product_response.ProductResponse:
+    description: ProductResponse is the response for product data retrieval
+    properties:
+      category:
+        $ref: '#/definitions/entities.Category'
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  lokajatim_controllers_transaction_response.UserResponse:
+    description: UserResponse is the response for user data retrieval
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  request.ArticleRequest:
+    description: ArticleRequest is the request for the Article endpoint
+    properties:
+      content:
+        type: string
+      photo:
+        type: string
+      title:
+        type: string
+    type: object
+  request.CartItemRequest:
+    description: CartItemRequest is the request for the CartItem endpoint
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  request.CartRequest:
+    description: CartRequest is the request for the Cart endpoint
+    properties:
+      cart_items:
+        items:
+          $ref: '#/definitions/request.CartItemRequest'
+        type: array
+      user_id:
+        type: integer
+    required:
+    - cart_items
+    - user_id
+    type: object
+  request.CategoryRequest:
+    description: CategoryRequest is the request for the Category endpoint
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  request.ChatbotRequest:
+    properties:
+      message:
+        description: Ensure it's correctly marked as "message"
+        type: string
+    required:
+    - message
+    type: object
+  request.CommentRequest:
+    description: CommentRequest is the request for the Comment endpoint
+    properties:
+      article_id:
+        type: integer
+      comment:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  request.EventCategoryRequest:
+    description: EventCategoryRequest is the request for the Event Category endpoint
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  request.EventRequest:
+    description: EventRequest is the request for creating or updating an event
+    properties:
+      capacity:
+        type: integer
+      category_id:
+        type: integer
+      date_time:
+        type: string
+      description:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      rating:
+        type: number
+      url_photo:
+        type: string
+    type: object
+  request.LikeRequest:
+    description: LikeRequest is the request for the Like endpoint
+    properties:
+      article_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  request.LoginRequest:
+    description: LoginRequest is the request for the login endpoint
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  request.ProductRequest:
+    description: ProductRequest is the request for the Product endpoint
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      stock:
+        type: integer
+    required:
+    - category_id
+    - description
+    - name
+    - photos
+    - price
+    - stock
+    type: object
+  request.QuantityRequest:
+    description: QuantityRequest is the request for the Quantity endpoint
+    properties:
+      quantity:
+        type: integer
+    required:
+    - quantity
+    type: object
+  request.RegisterRequest:
+    description: RegisterRequest is the request for the register endpoint
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  request.ResetPasswordRequest:
+    description: ResetPasswordRequest is the request for the reset password endpoint
+    properties:
+      email:
+        type: string
+      new_password:
+        type: string
+      otp:
+        type: string
+    type: object
+  request.SendOTPRequest:
+    description: SendOTPRequest is the request for sending an OTP to the user's email
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  request.TransactionRequest:
+    description: TransactionRequest is the request for transaction data retrieval
+    properties:
+      cart_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  request.UpdateUserRequest:
+    properties:
+      address:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      nik:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - name
+    type: object
+  request.VerifyOTPRequest:
+    properties:
+      otp:
+        type: string
+    required:
+    - otp
+    type: object
+  response.ArticleResponse:
+    description: ArticleResponse is the response for the Article controller
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.CartItemResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/lokajatim_controllers_cart_response.ProductResponse'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  response.CartResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/response.CartItemResponse'
+        type: array
+      total_price:
+        type: number
+      total_price_after_transaction:
+        type: number
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/lokajatim_controllers_cart_response.UserResponse'
+      user_id:
+        type: integer
+    type: object
+  response.CategoryResponse:
+    description: CategoryResponse is the response for the Category controller
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.CommentResponse:
+    description: CommentResponse is the response for the Comment controller
+    properties:
+      article:
+        $ref: '#/definitions/entities.Article'
+      comment:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/entities.User'
+    type: object
+  response.CountLikesResponse:
+    description: CountLikesResponse is the response for the CountLikes endpoint
+    properties:
+      article_id:
+        type: integer
+      count:
+        type: integer
+    type: object
+  response.EventCategoryResponse:
+    description: EventCategoryResponse is the response for the Event Category controller
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.EventResponse:
+    description: EventResponse is the response for event data retrieval
+    properties:
+      capacity:
+        type: integer
+      category:
+        $ref: '#/definitions/entities.EventCategory'
+      date_time:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      rating:
+        type: number
+      url_photo:
+        type: string
+    type: object
+  response.IsLikedResponse:
+    description: IsLikedResponse is the response for the IsLiked endpoint
+    properties:
+      article_id:
+        type: integer
+      is_liked:
+        type: boolean
+      user_id:
+        type: integer
+    type: object
+  response.LikeResponse:
+    description: LikeResponse is the response for the Like endpoint
+    properties:
+      Article:
+        $ref: '#/definitions/entities.Article'
+      User:
+        $ref: '#/definitions/entities.User'
+      article_id:
+        type: integer
+      id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  response.LoginResponse:
+    description: LoginResponse is the response for the Login controller
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+      token:
+        type: string
+    type: object
+  response.ProductInCart:
+    description: ProductInCart is the response for product in cart data retrieval
+    properties:
+      category:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+      total_price:
+        type: number
+    type: object
+  response.RegisterResponse:
+    description: RegisterResponse is the response for the Register controller
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+    type: object
+  response.ResetPasswordResponse:
+    description: ResetPasswordResponse contains the message confirming the result
+      of the password reset action
+    properties:
+      message:
+        type: string
+    type: object
+  response.SendOTPResponse:
+    description: SendOTPResponse contains the message confirming the result of sending
+      an OTP
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+    type: object
+  response.TransactionResponse:
+    description: TransactionResponse is the response for transaction data retrieval
+    properties:
+      cart_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      payment_url:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/response.ProductInCart'
+        type: array
+      status:
+        type: string
+      total_price:
+        type: number
+      transaction_id:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/lokajatim_controllers_transaction_response.UserResponse'
+    type: object
+  response.UpdateUserResponse:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id_user:
+        type: integer
+      name:
+        type: string
+      nik:
+        type: string
+      phone_number:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: This is the API documentation for Lokajatim.
+  title: Lokajatim API
+  version: "1.0"
+paths:
+  /articles:
+    get:
+      consumes:
+      - application/json
+      description: Get all articles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all articles
+      tags:
+      - Article
+    post:
+      consumes:
+      - application/json
+      description: Create article
+      parameters:
+      - description: Article Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create article
+      tags:
+      - Article
+  /articles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete article
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete article
+      tags:
+      - Article
+    get:
+      consumes:
+      - application/json
+      description: Get article by ID
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get article by ID
+      tags:
+      - Article
+    put:
+      consumes:
+      - application/json
+      description: Update article
+      parameters:
+      - description: ID of the article
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Article Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ArticleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update article
+      tags:
+      - Article
+  /carts:
+    post:
+      consumes:
+      - application/json
+      description: Add item to cart
+      parameters:
+      - description: ID of the user
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: Cart Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Add item to cart
+      tags:
+      - Cart
+  /carts/{cart_id}/clear:
+    delete:
+      consumes:
+      - application/json
+      description: Clear cart
+      parameters:
+      - description: ID of the cart
+        in: path
+        name: cart_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Clear cart
+      tags:
+      - Cart
+  /carts/{cart_item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove item from cart
+      parameters:
+      - description: ID of the cart item
+        in: path
+        name: cart_item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Remove item from cart
+      tags:
+      - Cart
+    put:
+      consumes:
+      - application/json
+      description: Update item quantity
+      parameters:
+      - description: ID of the cart item
+        in: path
+        name: cart_item_id
+        required: true
+        type: integer
+      - description: Quantity Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.QuantityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CartItemResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update item quantity
+      tags:
+      - Cart
+  /carts/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get cart by user ID
+      parameters:
+      - description: ID of the user
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get cart by user ID
+      tags:
+      - Cart
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all categories
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Create category
+      parameters:
+      - description: Category Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create category
+      tags:
+      - Category
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete category
+      parameters:
+      - description: ID of the category
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete category
+      tags:
+      - Category
+    get:
+      consumes:
+      - application/json
+      description: Get category by ID
+      parameters:
+      - description: ID of the category
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get category by ID
+      tags:
+      - Category
+    put:
+      consumes:
+      - application/json
+      description: Update category
+      parameters:
+      - description: ID of the category
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update category
+      tags:
+      - Category
+  /chatbot:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Chatbot Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ChatbotRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Chatbot Response
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Invalid Request Body
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+      summary: Generate Chatbot Response
+      tags:
+      - Chatbot
+  /comments:
+    post:
+      consumes:
+      - application/json
+      description: Create comment
+      parameters:
+      - description: Comment Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create comment
+      tags:
+      - Comment
+  /comments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete comment
+      parameters:
+      - description: ID of the comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete comment
+      tags:
+      - Comment
+    get:
+      consumes:
+      - application/json
+      description: Get comment by ID
+      parameters:
+      - description: ID of the comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get comment by ID
+      tags:
+      - Comment
+  /comments/article/{article_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get comments by article ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get comments by article ID
+      tags:
+      - Comment
+  /event-categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all event categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.EventCategoryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all event categories
+      tags:
+      - Event Category
+    post:
+      consumes:
+      - application/json
+      description: Create event category
+      parameters:
+      - description: Event Category Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.EventCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create event category
+      tags:
+      - Event Category
+  /event-categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete event category
+      parameters:
+      - description: ID of the event category
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete event category
+      tags:
+      - Event Category
+    get:
+      consumes:
+      - application/json
+      description: Get event category by ID
+      parameters:
+      - description: ID of the event category
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EventCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get event category by ID
+      tags:
+      - Event Category
+    put:
+      consumes:
+      - application/json
+      description: Update event category
+      parameters:
+      - description: ID of the event category
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event Category Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EventCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update event category
+      tags:
+      - Event Category
+  /events:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all events
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/response.EventResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get All Events
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: Create a new event
+      parameters:
+      - description: Event data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create Event
+      tags:
+      - Event
+  /events/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an event by ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete Event
+      tags:
+      - Event
+    get:
+      consumes:
+      - application/json
+      description: Get details of an event by ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get Event by ID
+      tags:
+      - Event
+    put:
+      consumes:
+      - application/json
+      description: Update an existing event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated event data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update Event
+      tags:
+      - Event
+  /events/best:
+    get:
+      consumes:
+      - application/json
+      description: Get details of an event with the best price
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/response.EventResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get Event by Best Price
+      tags:
+      - Event
+  /forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint sends an OTP to the provided email address
+      parameters:
+      - description: Request to send OTP
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.SendOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.SendOTPResponse'
+              type: object
+        "400":
+          description: Invalid email address
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Send OTP to the user's email
+      tags:
+      - Auth
+  /likes:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Like Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LikeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.LikeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Like an article
+      tags:
+      - Likes
+  /likes/{article_id}/{user_id}:
+    delete:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Unlike an article
+      tags:
+      - Likes
+  /likes/{article_id}/users/{user_id}/status:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IsLikedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Check if a user liked an article
+      tags:
+      - Likes
+  /likes/articles/{article_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.LikeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all likes for an article
+      tags:
+      - Likes
+  /likes/articles/{article_id}/count:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CountLikesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Count likes for an article
+      tags:
+      - Likes
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: User login endpoint
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Login
+      tags:
+      - Auth
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get all products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get all products
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Create product
+      parameters:
+      - description: Product body
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Create product
+      tags:
+      - Product
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product
+      parameters:
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product deleted successfully
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete product
+      tags:
+      - Product
+    get:
+      consumes:
+      - application/json
+      description: Get product by ID
+      parameters:
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get product by ID
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update product
+      parameters:
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product body
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update product
+      tags:
+      - Product
+  /products/best:
+    get:
+      consumes:
+      - application/json
+      description: Get best products by price
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/lokajatim_controllers_product_response.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get best products by price
+      tags:
+      - Product
+  /products/import:
+    post:
+      consumes:
+      - application/json
+      description: Import products from CSV file
+      parameters:
+      - description: CSV file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products imported successfully
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Import products
+      tags:
+      - Product
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: User registration endpoint
+      parameters:
+      - description: Register Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Register
+      tags:
+      - Auth
+  /reset-password:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint resets the password after validating the OTP
+      parameters:
+      - description: Request to reset password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset successfully
+          schema:
+            $ref: '#/definitions/response.ResetPasswordResponse'
+        "400":
+          description: Invalid OTP or email
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Reset the user's password
+      tags:
+      - Auth
+  /tickets:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Ticket'
+                  type: array
+              type: object
+      summary: Get All Tickets
+      tags:
+      - Ticket
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create Ticket
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Create Ticket
+      tags:
+      - Ticket
+  /tickets/{id}:
+    delete:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete Ticket
+      tags:
+      - Ticket
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Get Ticket By ID
+      tags:
+      - Ticket
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Ticket
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Ticket'
+              type: object
+      summary: Update Ticket
+      tags:
+      - Ticket
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.TransactionResponse'
+            type: array
+      summary: Get All Transactions
+      tags:
+      - Transaction
+    post:
+      consumes:
+      - application/json
+      description: Create new transaction
+      parameters:
+      - description: Transaction data
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/request.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+      summary: Create Transaction
+      tags:
+      - Transaction
+  /transactions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete Transaction
+      tags:
+      - Transaction
+    get:
+      consumes:
+      - application/json
+      description: Get transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Transaction by ID
+      tags:
+      - Transaction
+    put:
+      consumes:
+      - application/json
+      description: Update transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+      summary: Update Transaction
+      tags:
+      - Transaction
+  /transactions/{id}/status/{status}:
+    put:
+      consumes:
+      - application/json
+      description: Update transaction status by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Transaction status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update Transaction Status
+      tags:
+      - Transaction
+  /transactions/notifications:
+    post:
+      consumes:
+      - application/json
+      description: Handle payment notification from Midtrans
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Handle Midtrans Notification
+      tags:
+      - Transaction
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Fetch a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/response.RegisterResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get All Users
+      tags:
+      - Auth
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Delete User
+      tags:
+      - Auth
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.UpdateUserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Get User by ID
+      tags:
+      - Auth
+    put:
+      consumes:
+      - application/json
+      description: Update a user's information by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update User Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            $ref: '#/definitions/response.RegisterResponse'
+        "400":
+          description: Invalid input or user not found
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Update User
+      tags:
+      - Auth
+  /verify-otp:
+    post:
+      consumes:
+      - application/json
+      description: Verify if the provided OTP is valid for the logged-in user
+      parameters:
+      - description: Request to verify OTP
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.VerifyOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP verified successfully
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "400":
+          description: Invalid OTP
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/base.BaseResponse'
+      summary: Verify OTP
+      tags:
+      - Auth
+swagger: "2.0"
