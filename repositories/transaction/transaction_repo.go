@@ -24,7 +24,7 @@ func (r *TransactionRepositoryImpl) CreateTransaction(transaction entities.Trans
 	}
 
 	var createdTransaction entities.Transaction
-	if err := r.db.Preload("User").First(&createdTransaction, transaction.ID).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Cart.Items.Product.Category").First(&createdTransaction, transaction.ID).Error; err != nil {
 		return entities.Transaction{}, err
 	}
 	return createdTransaction, nil
@@ -32,7 +32,7 @@ func (r *TransactionRepositoryImpl) CreateTransaction(transaction entities.Trans
 
 func (r *TransactionRepositoryImpl) GetTransactionByID(transactionID int) (entities.Transaction, error) {
 	var transaction entities.Transaction
-	if err := r.db.Preload("User").First(&transaction, transactionID).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Cart.Items.Product.Category").First(&transaction, transactionID).Error; err != nil {
 		return entities.Transaction{}, err
 	}
 	return transaction, nil
@@ -40,7 +40,7 @@ func (r *TransactionRepositoryImpl) GetTransactionByID(transactionID int) (entit
 
 func (r *TransactionRepositoryImpl) GetAllTransactions() ([]entities.Transaction, error) {
 	var transactions []entities.Transaction
-	if err := r.db.Preload("User").Find(&transactions).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Cart.Items.Product.Category").Find(&transactions).Error; err != nil {
 		return nil, err
 	}
 	return transactions, nil
@@ -52,7 +52,7 @@ func (r *TransactionRepositoryImpl) UpdateTransaction(transactionID int, updates
 	}
 
 	var updatedTransaction entities.Transaction
-	if err := r.db.Preload("User").First(&updatedTransaction, transactionID).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Cart.Items.Product.Category").First(&updatedTransaction, transactionID).Error; err != nil {
 		return entities.Transaction{}, err
 	}
 	return updatedTransaction, nil
@@ -75,7 +75,7 @@ func (r *TransactionRepositoryImpl) DeleteTransaction(transactionID int) error {
 
 func (r *TransactionRepositoryImpl) GetTransactionByOrderID(orderID string) (entities.Transaction, error) {
 	var transaction entities.Transaction
-	if err := r.db.Preload("User").Where("transaction_id = ?", orderID).First(&transaction).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Cart.Items.Product.Category").Where("transaction_id = ?", orderID).First(&transaction).Error; err != nil {
 		return entities.Transaction{}, err
 	}
 	return transaction, nil
