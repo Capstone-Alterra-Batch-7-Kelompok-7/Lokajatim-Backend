@@ -150,5 +150,5 @@ func (rc RouteController) InitRoute(e *echo.Echo) {
 	e.POST("/transactions/notifications", rc.TransactionController.HandleMidtransNotification)
 
 	// Chatbot Routes
-	eJWT.POST("/chatbot", rc.ChatbotController.ChatbotController)
+	e.POST("/chatbot", rc.ChatbotController.ChatbotController)
 }
