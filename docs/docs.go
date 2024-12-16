@@ -1352,9 +1352,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OTP sent successfully",
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.SendOTPResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.SendOTPResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {

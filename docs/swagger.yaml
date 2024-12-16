@@ -1462,9 +1462,14 @@ paths:
       - application/json
       responses:
         "200":
-          description: OTP sent successfully
+          description: OK
           schema:
-            $ref: '#/definitions/response.SendOTPResponse'
+            allOf:
+            - $ref: '#/definitions/base.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.SendOTPResponse'
+              type: object
         "400":
           description: Invalid email address
           schema:

@@ -110,7 +110,7 @@ func (userController AuthController) GetUserByID(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body request.SendOTPRequest true "Request to send OTP"
-// @Success 200 {object} response.SendOTPResponse "OTP sent successfully"
+// @Success 200 {object} base.BaseResponse{data=response.SendOTPResponse}
 // @Failure 400 {object} base.BaseResponse "Invalid email address"
 // @Failure 500 {object} base.BaseResponse "Internal server error"
 // @Router /forgot-password [post]
